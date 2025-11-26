@@ -2,12 +2,13 @@
 
 ## Existing & Required Endpoints
 
-### **EXISTING ENDPOINTS** (29 total)
+### **EXISTING ENDPOINTS** (36 total)
 
 - ✅ Auth: `/register`, `/login`, `/me`
 - ✅ User Profile: `/users/me`, `/users/me` (update), `/users/me/preferences`, `/users/me/profile-picture`, `/users/me` (delete), `/users/{id}`
 - ✅ Cinemas: `/cinemas`, `/cinemas/{id}`, create rooms, rooms (3/5+)
 - ✅ Movies: `/movies` CRUD + list (5/5)
+- ✅ Reviews: Create, list, get, update, delete, react, summary (7/7)
 - ✅ Screenings: Create, list, get, available seats (4/5)
 - ✅ Seats: Bulk create, list (2/2)
 - ✅ Tickets: Book, list, get, cancel (4/8)
@@ -28,14 +29,14 @@
 
 ### 👤 \*\*2. User Profile
 
-| Endpoint                        | Method | Status         | Notes                              |
-| ------------------------------- | ------ | -------------- | ---------------------------------- |
-| `GET /users/me`                 | GET    | ✅ IMPLEMENTED | Get current user profile           |
-| `PUT /users/me`                 | PUT    | ✅ IMPLEMENTED | Update profile (name, email)       |
-| `PUT /users/me/profile-picture` | PUT    | ✅ IMPLEMENTED | Upload profile picture             |
-| `PUT /users/me/preferences`     | PUT    | ✅ IMPLEMENTED | Dark mode, notifications |
-| `DELETE /users/me`              | DELETE | ✅ IMPLEMENTED | Delete account (soft delete)       |
-| `GET /users/:id`                | GET    | ✅ IMPLEMENTED | Public user profile                |
+| Endpoint                        | Method | Status         | Notes                        |
+| ------------------------------- | ------ | -------------- | ---------------------------- |
+| `GET /users/me`                 | GET    | ✅ IMPLEMENTED | Get current user profile     |
+| `PUT /users/me`                 | PUT    | ✅ IMPLEMENTED | Update profile (name, email) |
+| `PUT /users/me/profile-picture` | PUT    | ✅ IMPLEMENTED | Upload profile picture       |
+| `PUT /users/me/preferences`     | PUT    | ✅ IMPLEMENTED | Dark mode, notifications     |
+| `DELETE /users/me`              | DELETE | ✅ IMPLEMENTED | Delete account (soft delete) |
+| `GET /users/:id`                | GET    | ✅ IMPLEMENTED | Public user profile          |
 
 ---
 
@@ -51,23 +52,23 @@
 
 ### ⭐ \*\*4. Reviews
 
-| Endpoint                          | Method | Status     | Notes                   |
-| --------------------------------- | ------ | ---------- | ----------------------- |
-| `POST /movies/:id/reviews`        | POST   | ❌ MISSING | Add review              |
-| `GET /movies/:id/reviews`         | GET    | ❌ MISSING | Get reviews (paginated) |
-| `GET /movies/:id/reviews/summary` | GET    | ❌ MISSING | Rating breakdown        |
-| `PUT /reviews/:id`                | PUT    | ❌ MISSING | Edit review             |
-| `DELETE /reviews/:id`             | DELETE | ❌ MISSING | Delete review           |
-| `POST /reviews/:id/react`         | POST   | ❌ MISSING | Like/dislike review     |
-| `GET /reviews/:id`                | GET    | ❌ MISSING | Get single review       |
+| Endpoint                          | Method | Status         | Notes                   |
+| --------------------------------- | ------ | -------------- | ----------------------- |
+| `POST /movies/:id/reviews`        | POST   | ✅ IMPLEMENTED | Add review              |
+| `GET /movies/:id/reviews`         | GET    | ✅ IMPLEMENTED | Get reviews (paginated) |
+| `GET /movies/:id/reviews/summary` | GET    | ✅ IMPLEMENTED | Rating breakdown        |
+| `PUT /reviews/:id`                | PUT    | ✅ IMPLEMENTED | Edit review             |
+| `DELETE /reviews/:id`             | DELETE | ✅ IMPLEMENTED | Delete review           |
+| `POST /reviews/:id/react`         | POST   | ✅ IMPLEMENTED | Like/dislike review     |
+| `GET /reviews/:id`                | GET    | ✅ IMPLEMENTED | Get single review       |
 
-**Missing Features:**
+**Implemented Features:**
 
-- [ ] Review model/schema
-- [ ] CRUD operations for reviews
-- [ ] Rating system
-- [ ] Review reactions (like/dislike)
-- [ ] Review pagination & sorting
+- [x] Review model/schema
+- [x] CRUD operations for reviews
+- [x] Rating system (1-5 stars)
+- [x] Review reactions (like/dislike)
+- [x] Review pagination & sorting
 
 ---
 
@@ -208,7 +209,7 @@
 | Authentication             | 3        | 8        | 5       | 37.5%     |
 | User Profile               | 6        | 6        | 0       | 100% ✅   |
 | Movies                     | 5        | 7        | 2       | 71.4%     |
-| Reviews                    | 0        | 7        | 7       | 0%        |
+| Reviews                    | 7        | 7        | 0       | 100% ✅   |
 | Cinemas                    | 3        | 6        | 3       | 50%       |
 | Showtimes                  | 2        | 7        | 5       | 28.6%     |
 | Bookings/Tickets           | 4        | 8        | 4       | 50%       |
@@ -218,4 +219,4 @@
 | Favorites (Optional)       | 0        | 2        | 2       | 0%        |
 | Searches (Optional)        | 0        | 2        | 2       | 0%        |
 | Recommendations (Optional) | 0        | 1        | 1       | 0%        |
-| **TOTALS**                 | **29**   | **75**   | **46**  | **38.7%** |
+| **TOTALS**                 | **36**   | **75**   | **39**  | **48.0%** |

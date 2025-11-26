@@ -12,6 +12,7 @@ from app.routers import (
     screening_router,
     ticket_router,
     user_router,
+    review_router,
 )
 
 # Create FastAPI application
@@ -48,3 +49,4 @@ app.include_router(movie_router)
 app.include_router(screening_router)
 app.include_router(ticket_router)
 app.include_router(user_router)
+app.include_router(review_router)

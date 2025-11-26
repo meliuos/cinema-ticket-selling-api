@@ -3,7 +3,20 @@
 ## 📋 Overview
 
 **Base URL**: `http://localhost:8000/api/v1`  
-**API Documentation**: `http://localhost:8000/docs`
+**API Documentation**: `http://localhost:8000/docs`  
+**Total Endpoints**: 36 implemented
+
+### Endpoint Categories:
+
+- 🔐 Authentication (3)
+- 🎬 Cinemas (3)
+- 🏠 Rooms (3)
+- 💺 Seats (2)
+- 🎥 Movies (5)
+- 📽️ Screenings (4)
+- ⭐ Reviews (7)
+- 🎫 Tickets (4)
+- 👤 User Profile (6)
 
 ---
 
@@ -81,18 +94,47 @@
 
 ---
 
+## ⭐ Review Endpoints
+
+### Base Path: `/api/v1/movies`
+
+| Method   | Endpoint                      | Description                                      | Auth Required |
+| -------- | ----------------------------- | ------------------------------------------------ | ------------- |
+| `POST`   | `/{movie_id}/reviews`         | Create a new review for a movie (1-5 stars)      | ✅            |
+| `GET`    | `/{movie_id}/reviews`         | Get paginated reviews for a movie (with sorting) | ❌            |
+| `GET`    | `/{movie_id}/reviews/summary` | Get review summary with rating breakdown         | ❌            |
+| `GET`    | `/reviews/{review_id}`        | Get a single review by ID                        | ❌            |
+| `PUT`    | `/reviews/{review_id}`        | Update a review (author only)                    | ✅            |
+| `DELETE` | `/reviews/{review_id}`        | Delete a review (soft delete, author only)       | ✅            |
+| `POST`   | `/reviews/{review_id}/react`  | Add like/dislike reaction to a review            | ✅            |
+
+---
+
+## 🎫 Ticket Endpoints
+
+### Base Path: `/api/v1/tickets`
+
+| Method   | Endpoint       | Description                               | Auth Required |
+| -------- | -------------- | ----------------------------------------- | ------------- |
+| `POST`   | `/book`        | Book tickets for a screening              | ✅            |
+| `GET`    | `/my-tickets`  | Get current user's tickets                | ✅            |
+| `GET`    | `/{ticket_id}` | Get ticket details by ID                  | ✅            |
+| `DELETE` | `/{ticket_id}` | Cancel a ticket (if cancellation allowed) | ✅            |
+
+---
+
 ## 👤 User Profile Endpoints
 
 ### Base Path: `/api/v1/users`
 
-| Method   | Endpoint              | Description                                                  | Auth Required |
-| -------- | --------------------- | ------------------------------------------------------------ | ------------- |
-| `GET`    | `/me`                 | Get current user profile                                     | ✅            |
-| `PUT`    | `/me`                 | Update user profile (name, email)                            | ✅            |
-| `PUT`    | `/me/preferences`     | Update user preferences (dark mode, notifications) |            ✅            |
-| `PUT`    | `/me/profile-picture` | Upload/update profile picture                                | ✅            |
-| `DELETE` | `/me`                 | Delete user account (soft delete)                            | ✅            |
-| `GET`    | `/{user_id}`          | Get public user profile by ID                                | ❌            |
+| Method   | Endpoint              | Description                                        | Auth Required |
+| -------- | --------------------- | -------------------------------------------------- | ------------- |
+| `GET`    | `/me`                 | Get current user profile                           | ✅            |
+| `PUT`    | `/me`                 | Update user profile (name, email)                  | ✅            |
+| `PUT`    | `/me/preferences`     | Update user preferences (dark mode, notifications) | ✅            |
+| `PUT`    | `/me/profile-picture` | Upload/update profile picture                      | ✅            |
+| `DELETE` | `/me`                 | Delete user account (soft delete)                  | ✅            |
+| `GET`    | `/{user_id}`          | Get public user profile by ID                      | ❌            |
 
 ---
 

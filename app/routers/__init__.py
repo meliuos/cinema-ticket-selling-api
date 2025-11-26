@@ -7,6 +7,7 @@ from app.routers.movie import router as movie_router
 from app.routers.screening import router as screening_router
 from app.routers.ticket import router as ticket_router
 from app.routers.user import router as user_router
+from app.routers.review import router as review_router
 
 __all__ = [
     "auth_router",
@@ -16,4 +17,5 @@ __all__ = [
     "screening_router",
     "ticket_router",
     "user_router",
+    "review_router",
 ]
