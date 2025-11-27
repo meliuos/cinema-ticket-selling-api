@@ -1,7 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
 import bcrypt
+import secrets
+import hashlib
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session, select
@@ -9,6 +11,7 @@ from sqlmodel import Session, select
 from app.config import settings
 from app.database import get_session
 from app.models.user import User
+from app.models.token_blacklist import TokenBlacklist
 from app.schemas.user import TokenData
 
 # OAuth2 scheme for token extraction
@@ -40,11 +43,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     """
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
-    to_encode.update({"exp": expire})
+    # Add JWT ID for token tracking/blacklisting
+    jti = secrets.token_urlsafe(32)
+    to_encode.update({"exp": expire, "jti": jti})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
@@ -68,6 +73,84 @@ def authenticate_user(session: Session, email: str, password: str) -> Optional[U
         return None
     if not verify_password(password, user.hashed_password):
         return None
+    return user
+
+
+def is_token_blacklisted(session: Session, jti: str) -> bool:
+    """
+    Check if a token is blacklisted.
+    
+    Args:
+        session: Database session
+        jti: JWT ID (jti claim)
+        
+    Returns:
+        True if token is blacklisted, False otherwise
+    """
+    statement = select(TokenBlacklist).where(TokenBlacklist.token_jti == jti)
+    blacklisted = session.exec(statement).first()
+    return blacklisted is not None
+
+
+def blacklist_token(session: Session, jti: str, user_id: int, expires_at: datetime) -> None:
+    """
+    Add a token to the blacklist.
+    
+    Args:
+        session: Database session
+        jti: JWT ID (jti claim)
+        user_id: User ID
+        expires_at: Token expiration time
+    """
+    blacklist_entry = TokenBlacklist(
+        token_jti=jti,
+        user_id=user_id,
+        expires_at=expires_at
+    )
+    session.add(blacklist_entry)
+    session.commit()
+
+
+def generate_reset_token() -> str:
+    """
+    Generate a secure random token for password reset.
+    
+    Returns:
+        A URL-safe random token
+    """
+    return secrets.token_urlsafe(32)
+
+
+def hash_reset_token(token: str) -> str:
+    """
+    Hash a reset token for secure storage.
+    
+    Args:
+        token: Plain reset token
+        
+    Returns:
+        SHA256 hash of the token
+    """
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def verify_reset_token(session: Session, token: str) -> Optional[User]:
+    """
+    Verify a password reset token and return the associated user.
+    
+    Args:
+        session: Database session
+        token: Plain reset token
+        
+    Returns:
+        User if token is valid and not expired, None otherwise
+    """
+    hashed_token = hash_reset_token(token)
+    statement = select(User).where(
+        User.reset_token == hashed_token,
+        User.reset_token_expiry > datetime.now(timezone.utc)
+    )
+    user = session.exec(statement).first()
     return user
 
 
@@ -97,8 +180,19 @@ async def get_current_user(
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         email: str = payload.get("sub")
-        if email is None:
+        jti: str = payload.get("jti")
+        
+        if email is None or jti is None:
             raise credentials_exception
+        
+        # Check if token is blacklisted
+        if is_token_blacklisted(session, jti):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has been revoked",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
         token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
