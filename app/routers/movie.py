@@ -14,6 +14,13 @@ from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
 from app.schemas.screening import ScreeningRead
 from app.services.auth import get_current_admin_user
 
+def normalize_movie_genre(movie: Movie) -> dict:
+    """Normalize movie data, converting genre string to list if needed."""
+    movie_dict = movie.model_dump()
+    if isinstance(movie_dict.get('genre'), str):
+        movie_dict['genre'] = [movie_dict['genre']] if movie_dict['genre'] else None
+    return movie_dict
+
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/movies", tags=["Movies"])
 
 
@@ -32,7 +39,7 @@ def create_movie(
     session.add(db_movie)
     session.commit()
     session.refresh(db_movie)
-    return db_movie
+    return normalize_movie_genre(db_movie)
 
 
 @router.get("/", response_model=List[MovieRead])
@@ -43,7 +50,8 @@ def list_movies(
 ):
     """List all movies."""
     movies = session.exec(select(Movie).offset(skip).limit(limit)).all()
-    return movies
+    # Normalize genre fields for backward compatibility
+    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
 
 
 @router.get("/search", response_model=List[MovieRead])
@@ -67,7 +75,8 @@ def search_movies(
     ).offset(skip).limit(limit)
     
     movies = session.exec(statement).all()
-    return movies
+    # Normalize genre fields for backward compatibility
+    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
 
 
 @router.get("/{movie_id}", response_model=MovieRead)
@@ -79,7 +88,7 @@ def get_movie(movie_id: int, session: Session = Depends(get_session)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Movie with id {movie_id} not found"
         )
-    return movie
+    return normalize_movie_genre(movie)
 
 
 @router.get("/{movie_id}/cast", response_model=List[str])
@@ -154,7 +163,7 @@ def update_movie(
     session.add(db_movie)
     session.commit()
     session.refresh(db_movie)
-    return db_movie
+    return normalize_movie_genre(db_movie)
 
 
 @router.delete("/{movie_id}", status_code=status.HTTP_204_NO_CONTENT)

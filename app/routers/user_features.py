@@ -15,6 +15,7 @@ from app.models.ticket import Ticket
 from app.schemas.search_history import SearchHistoryRead
 from app.schemas.movie import MovieRead
 from app.services.auth import get_current_active_user
+from app.routers.movie import normalize_movie_genre
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/users/me", tags=["User"])
 
@@ -165,4 +166,4 @@ def get_recommended_movies(
         ).all()
         unique_movies.extend(recent)
     
-    return unique_movies[:limit]
+    return [MovieRead(**normalize_movie_genre(movie)) for movie in unique_movies[:limit]]

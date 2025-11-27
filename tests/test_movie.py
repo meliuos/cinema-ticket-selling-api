@@ -12,7 +12,7 @@ def test_create_movie_basic(client: TestClient, admin_headers):
             "title": "New Movie",
             "description": "A new movie",
             "duration_minutes": 120,
-            "genre": "Drama",
+            "genre": ["Drama"],
             "rating": "PG-13"
         },
         headers=admin_headers
@@ -32,7 +32,7 @@ def test_create_movie_with_enhanced_fields(client: TestClient, admin_headers):
             "title": "Enhanced Movie",
             "description": "A movie with all fields",
             "duration_minutes": 150,
-            "genre": "Sci-Fi",
+            "genre": ["Sci-Fi"],
             "rating": "R",
             "cast": ["Actor A", "Actor B", "Actor C"],
             "director": "Famous Director",
@@ -107,7 +107,7 @@ def test_update_movie(client: TestClient, test_movie, admin_headers):
     assert data["cast"] == ["New Actor 1", "New Actor 2"]
     assert data["budget"] == 2000000
     # Other fields should remain unchanged
-    assert data["genre"] == test_movie.genre
+    assert data["genre"] == [test_movie.genre]
 
 
 def test_update_nonexistent_movie(client: TestClient, admin_headers):

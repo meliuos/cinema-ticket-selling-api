@@ -10,7 +10,13 @@ class Cinema(SQLModel, table=True):
     name: str = Field(max_length=255)
     address: str = Field(max_length=500)
     city: str = Field(max_length=100)
-    amenities: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))  # List of amenities
+    longitude: Optional[float] = Field(default=None)  
+    latitude: Optional[float] = Field(default=None)   
+    imageurl: Optional[str] = Field(default=None, max_length=500)  
+    phone: Optional[str] = Field(default=None, max_length=20)      
+    hasParking: bool = Field(default=False)  
+    isAccessible: bool = Field(default=False)  # Whether cinema is wheelchair accessible
+    amenities: Optional[List[str]] = Field(default=None, sa_column=Column(JSON)) 
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 

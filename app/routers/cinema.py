@@ -13,6 +13,7 @@ from app.models.movie import Movie
 from app.models.user import User
 from app.schemas.cinema import CinemaCreate, CinemaRead, RoomCreate, RoomRead
 from app.schemas.movie import MovieRead
+from app.routers.movie import normalize_movie_genre
 from app.schemas.screening import ScreeningRead
 from app.services.auth import get_current_admin_user
 
@@ -132,7 +133,7 @@ def get_cinema_movies(
         select(Movie).where(Movie.id.in_(movie_ids))
     ).all()
     
-    return movies
+    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
 
 
 @router.get("/cinemas/{cinema_id}/showtimes", response_model=List[ScreeningRead], tags=["Cinemas"])

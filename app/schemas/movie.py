@@ -3,6 +3,8 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from sqlmodel import SQLModel, Field
+from sqlalchemy import Column
+from sqlalchemy.types import JSON
 
 
 class MovieBase(SQLModel):
@@ -11,7 +13,7 @@ class MovieBase(SQLModel):
     title: str = Field(max_length=255)
     description: Optional[str] = Field(default=None, max_length=2000)
     duration_minutes: int = Field(gt=0)
-    genre: str = Field(max_length=100)
+    genre: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))
     rating: Optional[str] = Field(default=None, max_length=10)
     
     # Cast & Crew
@@ -77,8 +79,43 @@ class MovieUpdate(SQLModel):
     details: Optional[Dict[str, Any]] = None
 
 
-class MovieRead(MovieBase):
+class MovieRead(SQLModel):
     """Schema for reading a movie - includes id and timestamps."""
     id: int
+    title: str
+    description: Optional[str] = None
+    duration_minutes: int
+    genre: Optional[List[str]] = None  # Normalized to list
+    rating: Optional[str] = None
+    
+    # Cast & Crew
+    cast: Optional[List[str]] = None
+    director: Optional[str] = None
+    writers: Optional[List[str]] = None
+    producers: Optional[List[str]] = None
+    
+    # Release Information
+    release_date: Optional[date] = None
+    country: Optional[str] = None
+    language: Optional[str] = None
+    
+    # Financial Information
+    budget: Optional[float] = None
+    revenue: Optional[float] = None
+    
+    # Production
+    production_company: Optional[str] = None
+    distributor: Optional[str] = None
+    
+    # Media & Awards
+    image_url: Optional[str] = None
+    trailer_url: Optional[str] = None
+    awards: Optional[List[str]] = None
+    
+    # Additional Details
+    details: Optional[Dict[str, Any]] = None
+    
+    # Timestamps
     created_at: datetime
+    updated_at: datetime
     updated_at: datetime
