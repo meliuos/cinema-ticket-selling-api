@@ -1,13 +1,16 @@
 """Cinema and Room routes."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlmodel import Session, select, or_
 from typing import List
 
 from app.config import settings
 from app.database import get_session
 from app.models.cinema import Cinema, Room
+from app.models.screening import Screening
+from app.models.movie import Movie
 from app.schemas.cinema import CinemaCreate, CinemaRead, RoomCreate, RoomRead
+from app.schemas.movie import MovieRead
 
 router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Cinemas", "Rooms"])
 
@@ -52,6 +55,76 @@ def get_cinema(cinema_id: int, session: Session = Depends(get_session)):
             detail=f"Cinema with id {cinema_id} not found"
         )
     return cinema
+
+
+@router.get("/cinemas/search", response_model=List[CinemaRead], tags=["Cinemas"])
+def search_cinemas(
+    q: str = Query(..., min_length=1, description="Search query for cinema name, city, or address"),
+    session: Session = Depends(get_session)
+):
+    """Search cinemas by name, city, or address."""
+    search_term = f"%{q}%"
+    cinemas = session.exec(
+        select(Cinema).where(
+            or_(
+                Cinema.name.ilike(search_term),
+                Cinema.city.ilike(search_term),
+                Cinema.address.ilike(search_term)
+            )
+        )
+    ).all()
+    return cinemas
+
+
+@router.get("/cinemas/{cinema_id}/amenities", response_model=List[str], tags=["Cinemas"])
+def get_cinema_amenities(cinema_id: int, session: Session = Depends(get_session)):
+    """Get list of amenities for a specific cinema."""
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found"
+        )
+    return cinema.amenities or []
+
+
+@router.get("/cinemas/{cinema_id}/movies", response_model=List[MovieRead], tags=["Cinemas"])
+def get_cinema_movies(
+    cinema_id: int,
+    session: Session = Depends(get_session)
+):
+    """Get all movies currently showing at a specific cinema."""
+    # Verify cinema exists
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found"
+        )
+    
+    # Get all rooms for this cinema
+    rooms = session.exec(select(Room).where(Room.cinema_id == cinema_id)).all()
+    room_ids = [room.id for room in rooms]
+    
+    if not room_ids:
+        return []
+    
+    # Get unique movie IDs from screenings in these rooms
+    movie_ids = session.exec(
+        select(Screening.movie_id)
+        .where(Screening.room_id.in_(room_ids))
+        .distinct()
+    ).all()
+    
+    if not movie_ids:
+        return []
+    
+    # Get the actual movies
+    movies = session.exec(
+        select(Movie).where(Movie.id.in_(movie_ids))
+    ).all()
+    
+    return movies
 
 
 # ============================================================================

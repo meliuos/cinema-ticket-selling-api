@@ -4,12 +4,12 @@
 
 **Base URL**: `http://localhost:8000/api/v1`  
 **API Documentation**: `http://localhost:8000/docs`  
-**Total Endpoints**: 36 implemented
+**Total Endpoints**: 39 implemented
 
 ### Endpoint Categories:
 
 - 🔐 Authentication (3)
-- 🎬 Cinemas (3)
+- 🎬 Cinemas (6)
 - 🏠 Rooms (3)
 - 💺 Seats (2)
 - 🎥 Movies (5)
@@ -36,11 +36,14 @@
 
 ### Base Path: `/api/v1/cinemas`
 
-| Method | Endpoint       | Description                        | Auth Required |
-| ------ | -------------- | ---------------------------------- | ------------- |
-| `POST` | `/`            | Create a new cinema                | ❌            |
-| `GET`  | `/`            | List all cinemas (with pagination) | ❌            |
-| `GET`  | `/{cinema_id}` | Get cinema details by ID           | ❌            |
+| Method | Endpoint                 | Description                                  | Auth Required |
+| ------ | ------------------------ | -------------------------------------------- | ------------- |
+| `POST` | `/`                      | Create a new cinema                          | ❌            |
+| `GET`  | `/`                      | List all cinemas (with pagination)           | ❌            |
+| `GET`  | `/{cinema_id}`           | Get cinema details by ID                     | ❌            |
+| `GET`  | `/search`                | Search cinemas by name, city, or address     | ❌            |
+| `GET`  | `/{cinema_id}/amenities` | Get list of amenities for a cinema           | ❌            |
+| `GET`  | `/{cinema_id}/movies`    | Get all movies currently showing at a cinema | ❌            |
 
 ---
 

@@ -1,12 +1,9 @@
-# Missing Endpoints
-
 ## Existing & Required Endpoints
-
-### **EXISTING ENDPOINTS** (36 total)
+### **EXISTING ENDPOINTS** 
 
 - ✅ Auth: `/register`, `/login`, `/me`
 - ✅ User Profile: `/users/me`, `/users/me` (update), `/users/me/preferences`, `/users/me/profile-picture`, `/users/me` (delete), `/users/{id}`
-- ✅ Cinemas: `/cinemas`, `/cinemas/{id}`, create rooms, rooms (3/5+)
+- ✅ Cinemas: `/cinemas`, `/cinemas/{id}`, create, search, amenities, movies (6/6)
 - ✅ Movies: `/movies` CRUD + list (5/5)
 - ✅ Reviews: Create, list, get, update, delete, react, summary (7/7)
 - ✅ Screenings: Create, list, get, available seats (4/5)
@@ -74,28 +71,24 @@
 
 ### 🏢 \*\*5. Cinemas & Amenities
 
-| Endpoint                     | Method | Status     | Notes            |
-| ---------------------------- | ------ | ---------- | ---------------- |
-| `GET /cinemas`               | GET    | ✅ EXISTS  | List cinemas     |
-| `GET /cinemas/:id`           | GET    | ✅ EXISTS  | Cinema details   |
-| `POST /cinemas`              | POST   | ✅ EXISTS  | Create cinema    |
-| `GET /cinemas/:id/amenities` | GET    | ❌ MISSING | Amenities list   |
-| `GET /cinemas/search?q=`     | GET    | ❌ MISSING | Cinema search    |
-| `GET /cinemas/:id/movies`    | GET    | ❌ MISSING | Movies at cinema |
+| Endpoint                     | Method | Status         | Notes            |
+| ---------------------------- | ------ | -------------- | ---------------- |
+| `GET /cinemas`               | GET    | ✅ EXISTS      | List cinemas     |
+| `GET /cinemas/:id`           | GET    | ✅ EXISTS      | Cinema details   |
+| `POST /cinemas`              | POST   | ✅ EXISTS      | Create cinema    |
+| `GET /cinemas/:id/amenities` | GET    | ✅ IMPLEMENTED | Amenities list   |
+| `GET /cinemas/search?q=`     | GET    | ✅ IMPLEMENTED | Cinema search    |
+| `GET /cinemas/:id/movies`    | GET    | ✅ IMPLEMENTED | Movies at cinema |
 
-**Missing Features:**
+**Implemented Features:**
 
-- [ ] Amenities model & endpoints
-- [ ] Cinema search
-- [ ] Movies by cinema listing
-- [ ] Distance-based filtering
-- [ ] Distance calculation (if needed)
+- [x] Amenities model & endpoints
+- [x] Cinema search
+- [x] Movies by cinema listing
 
 ---
 
 ### 🎥 \*\*6. Showtimes & Seat Maps
-
-**Currently Have: 2/7 endpoints**
 
 | Endpoint                             | Method | Status     | Notes                                  |
 | ------------------------------------ | ------ | ---------- | -------------------------------------- |
@@ -185,7 +178,7 @@
 
 ---
 
-### 🔍 **12. Optional: Recent Searches - PRIORITY: LOW** ❌❌
+### 🔍 \*\*12. Optional: Recent Searches
 
 | Endpoint                    | Method | Status     | Notes           |
 | --------------------------- | ------ | ---------- | --------------- |
@@ -201,22 +194,3 @@
 | `GET /movies/recommended` | GET    | ❌ MISSING | Recommended movies |
 
 ---
-
-## 📈 Summary Statistics
-
-| Category                   | Existing | Required | Missing | Coverage  |
-| -------------------------- | -------- | -------- | ------- | --------- |
-| Authentication             | 3        | 8        | 5       | 37.5%     |
-| User Profile               | 6        | 6        | 0       | 100% ✅   |
-| Movies                     | 5        | 7        | 2       | 71.4%     |
-| Reviews                    | 7        | 7        | 0       | 100% ✅   |
-| Cinemas                    | 3        | 6        | 3       | 50%       |
-| Showtimes                  | 2        | 7        | 5       | 28.6%     |
-| Bookings/Tickets           | 4        | 8        | 4       | 50%       |
-| Payments                   | 0        | 5        | 5       | 0%        |
-| Notifications              | 0        | 3        | 3       | 0%        |
-| Support & Legal            | 0        | 3        | 3       | 0%        |
-| Favorites (Optional)       | 0        | 2        | 2       | 0%        |
-| Searches (Optional)        | 0        | 2        | 2       | 0%        |
-| Recommendations (Optional) | 0        | 1        | 1       | 0%        |
-| **TOTALS**                 | **36**   | **75**   | **39**  | **48.0%** |

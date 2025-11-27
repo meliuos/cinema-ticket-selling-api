@@ -1,6 +1,7 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Column
+from sqlalchemy import JSON
 
 
 class Cinema(SQLModel, table=True):
@@ -9,6 +10,7 @@ class Cinema(SQLModel, table=True):
     name: str = Field(max_length=255)
     address: str = Field(max_length=500)
     city: str = Field(max_length=100)
+    amenities: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))  # List of amenities
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
