@@ -1,6 +1,8 @@
 from sqlmodel import SQLModel, create_engine, Session
 from app.config import settings
-from app.models import User, Cinema, Room, Seat, Movie, Screening, Ticket  # noqa: F401
+from app.models import (
+    User, Cinema, Room, Seat, Movie, Screening, Ticket, Review, Favorite, SearchHistory, TokenBlacklist
+)  
 
 # Create database engine
 engine = create_engine(

@@ -68,3 +68,27 @@ class Token(SQLModel):
 class TokenData(SQLModel):
     """Schema for token payload data."""
     email: Optional[str] = None
+
+
+class RefreshTokenRequest(SQLModel):
+    """Schema for refresh token request."""
+    token: str
+
+
+class ForgotPasswordRequest(SQLModel):
+    """Schema for forgot password request."""
+    email: str = Field(max_length=255)
+
+
+class ResetPasswordRequest(SQLModel):
+    """Schema for reset password request."""
+    token: str
+    new_password: str = Field(min_length=8)
+
+
+class PasswordResetResponse(SQLModel):
+    """Schema for password reset token response (simulating email)."""
+    message: str
+    reset_token: str  # In production, this would be sent via email
+    expires_in_minutes: int
+

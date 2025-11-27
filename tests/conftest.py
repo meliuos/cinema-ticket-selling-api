@@ -51,10 +51,33 @@ def test_user_fixture(session: Session):
     return user
 
 
+@pytest.fixture(name="admin_user")
+def admin_user_fixture(session: Session):
+    """Create an admin user."""
+    admin = User(
+        email="admin@example.com",
+        full_name="Admin User",
+        hashed_password=get_password_hash("adminpassword123"),
+        is_active=True,
+        is_admin=True
+    )
+    session.add(admin)
+    session.commit()
+    session.refresh(admin)
+    return admin
+
+
 @pytest.fixture(name="auth_token")
 def auth_token_fixture(test_user: User):
     """Create an authentication token for the test user."""
     token = create_access_token(data={"sub": test_user.email})
+    return token
+
+
+@pytest.fixture(name="admin_token")
+def admin_token_fixture(admin_user: User):
+    """Create an authentication token for the admin user."""
+    token = create_access_token(data={"sub": admin_user.email})
     return token
 
 
@@ -64,13 +87,20 @@ def auth_headers_fixture(auth_token: str):
     return {"Authorization": f"Bearer {auth_token}"}
 
 
+@pytest.fixture(name="admin_headers")
+def admin_headers_fixture(admin_token: str):
+    """Create admin authentication headers."""
+    return {"Authorization": f"Bearer {admin_token}"}
+
+
 @pytest.fixture(name="test_cinema")
 def test_cinema_fixture(session: Session):
     """Create a test cinema."""
     cinema = Cinema(
         name="Test Cinema",
         address="123 Test Street",
-        city="Test City"
+        city="Test City",
+        amenities=["Parking", "Food Court", "IMAX"]
     )
     session.add(cinema)
     session.commit()
@@ -144,11 +174,11 @@ def test_movie_fixture(session: Session):
 @pytest.fixture(name="test_screening")
 def test_screening_fixture(session: Session, test_movie: Movie, test_room: Room):
     """Create a test screening."""
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     screening = Screening(
         movie_id=test_movie.id,
         room_id=test_room.id,
-        screening_time=datetime.utcnow() + timedelta(days=1),
+        screening_time=datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=1),
         price=15.0
     )
     session.add(screening)

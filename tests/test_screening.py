@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 
 
-def test_create_screening(client: TestClient, test_movie, test_room):
+def test_create_screening(client: TestClient, test_movie, test_room, admin_headers):
     """Test creating a screening."""
     future_time = (datetime.utcnow() + timedelta(days=2)).isoformat()
     response = client.post(
@@ -14,7 +14,8 @@ def test_create_screening(client: TestClient, test_movie, test_room):
             "room_id": test_room.id,
             "screening_time": future_time,
             "price": 20.0
-        }
+        },
+        headers=admin_headers
     )
     assert response.status_code == 201
     data = response.json()
@@ -23,7 +24,7 @@ def test_create_screening(client: TestClient, test_movie, test_room):
     assert data["price"] == 20.0
 
 
-def test_create_screening_nonexistent_movie(client: TestClient, test_room):
+def test_create_screening_nonexistent_movie(client: TestClient, test_room, admin_headers):
     """Test creating screening with nonexistent movie fails."""
     future_time = (datetime.utcnow() + timedelta(days=2)).isoformat()
     response = client.post(
@@ -33,12 +34,13 @@ def test_create_screening_nonexistent_movie(client: TestClient, test_room):
             "room_id": test_room.id,
             "screening_time": future_time,
             "price": 20.0
-        }
+        },
+        headers=admin_headers
     )
     assert response.status_code == 404
 
 
-def test_create_screening_nonexistent_room(client: TestClient, test_movie):
+def test_create_screening_nonexistent_room(client: TestClient, test_movie, admin_headers):
     """Test creating screening with nonexistent room fails."""
     future_time = (datetime.utcnow() + timedelta(days=2)).isoformat()
     response = client.post(
@@ -48,7 +50,8 @@ def test_create_screening_nonexistent_room(client: TestClient, test_movie):
             "room_id": 99999,
             "screening_time": future_time,
             "price": 20.0
-        }
+        },
+        headers=admin_headers
     )
     assert response.status_code == 404
 

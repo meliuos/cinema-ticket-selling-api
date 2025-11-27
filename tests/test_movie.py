@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from datetime import date
 
 
-def test_create_movie_basic(client: TestClient):
+def test_create_movie_basic(client: TestClient, admin_headers):
     """Test creating a movie with basic fields."""
     response = client.post(
         "/api/v1/movies/",
@@ -12,9 +12,10 @@ def test_create_movie_basic(client: TestClient):
             "title": "New Movie",
             "description": "A new movie",
             "duration_minutes": 120,
-            "genre": "Drama",
+            "genre": ["Drama"],
             "rating": "PG-13"
-        }
+        },
+        headers=admin_headers
     )
     assert response.status_code == 201
     data = response.json()
@@ -23,7 +24,7 @@ def test_create_movie_basic(client: TestClient):
     assert "id" in data
 
 
-def test_create_movie_with_enhanced_fields(client: TestClient):
+def test_create_movie_with_enhanced_fields(client: TestClient, admin_headers):
     """Test creating a movie with all enhanced fields."""
     response = client.post(
         "/api/v1/movies/",
@@ -31,7 +32,7 @@ def test_create_movie_with_enhanced_fields(client: TestClient):
             "title": "Enhanced Movie",
             "description": "A movie with all fields",
             "duration_minutes": 150,
-            "genre": "Sci-Fi",
+            "genre": ["Sci-Fi"],
             "rating": "R",
             "cast": ["Actor A", "Actor B", "Actor C"],
             "director": "Famous Director",
@@ -48,7 +49,8 @@ def test_create_movie_with_enhanced_fields(client: TestClient):
             "trailer_url": "https://youtube.com/watch?v=abc123",
             "awards": ["Oscar for Best Picture", "Golden Globe"],
             "details": {"imdb_rating": 8.5, "runtime_extended": 180}
-        }
+        },
+        headers=admin_headers
     )
     assert response.status_code == 201
     data = response.json()
@@ -88,7 +90,7 @@ def test_get_nonexistent_movie(client: TestClient):
     assert response.status_code == 404
 
 
-def test_update_movie(client: TestClient, test_movie):
+def test_update_movie(client: TestClient, test_movie, admin_headers):
     """Test updating a movie."""
     response = client.patch(
         f"/api/v1/movies/{test_movie.id}",
@@ -96,7 +98,8 @@ def test_update_movie(client: TestClient, test_movie):
             "title": "Updated Title",
             "cast": ["New Actor 1", "New Actor 2"],
             "budget": 2000000
-        }
+        },
+        headers=admin_headers
     )
     assert response.status_code == 200
     data = response.json()
@@ -104,19 +107,20 @@ def test_update_movie(client: TestClient, test_movie):
     assert data["cast"] == ["New Actor 1", "New Actor 2"]
     assert data["budget"] == 2000000
     # Other fields should remain unchanged
-    assert data["genre"] == test_movie.genre
+    assert data["genre"] == [test_movie.genre]
 
 
-def test_update_nonexistent_movie(client: TestClient):
+def test_update_nonexistent_movie(client: TestClient, admin_headers):
     """Test updating a nonexistent movie fails."""
     response = client.patch(
         "/api/v1/movies/99999",
-        json={"title": "Updated"}
+        json={"title": "Updated"},
+        headers=admin_headers
     )
     assert response.status_code == 404
 
 
-def test_delete_movie(client: TestClient, session):
+def test_delete_movie(client: TestClient, session, admin_headers):
     """Test deleting a movie."""
     # Create a movie to delete
     from app.models import Movie
@@ -132,7 +136,7 @@ def test_delete_movie(client: TestClient, session):
     session.refresh(movie)
     movie_id = movie.id
     
-    response = client.delete(f"/api/v1/movies/{movie_id}")
+    response = client.delete(f"/api/v1/movies/{movie_id}", headers=admin_headers)
     assert response.status_code == 204
     
     # Verify it's deleted
@@ -140,7 +144,163 @@ def test_delete_movie(client: TestClient, session):
     assert response.status_code == 404
 
 
-def test_delete_nonexistent_movie(client: TestClient):
+def test_delete_nonexistent_movie(client: TestClient, admin_headers):
     """Test deleting a nonexistent movie fails."""
-    response = client.delete("/api/v1/movies/99999")
+    response = client.delete("/api/v1/movies/99999", headers=admin_headers)
     assert response.status_code == 404
+
+
+# ============= Search Tests =============
+
+def test_search_movies_by_title(client: TestClient, test_movie, session):
+    """Test searching movies by title."""
+    response = client.get("/api/v1/movies/search?q=Test")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
+    assert any(m["id"] == test_movie.id for m in data)
+
+
+def test_search_movies_by_genre(client: TestClient, test_movie):
+    """Test searching movies by genre."""
+    response = client.get(f"/api/v1/movies/search?q={test_movie.genre}")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
+
+
+def test_search_movies_by_director(client: TestClient, test_movie):
+    """Test searching movies by director."""
+    response = client.get(f"/api/v1/movies/search?q={test_movie.director}")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
+    assert any(m["director"] == test_movie.director for m in data)
+
+
+def test_search_movies_no_results(client: TestClient):
+    """Test searching movies with no results."""
+    response = client.get("/api/v1/movies/search?q=NonexistentMovieXYZ123")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 0
+
+
+def test_search_movies_case_insensitive(client: TestClient, test_movie):
+    """Test search is case-insensitive."""
+    # Search with lowercase
+    response = client.get(f"/api/v1/movies/search?q={test_movie.title.lower()}")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) >= 1
+    
+    # Search with uppercase
+    response = client.get(f"/api/v1/movies/search?q={test_movie.title.upper()}")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) >= 1
+
+
+# ============= Cast Tests =============
+
+def test_get_movie_cast(client: TestClient, test_movie):
+    """Test getting movie cast."""
+    response = client.get(f"/api/v1/movies/{test_movie.id}/cast")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert data == test_movie.cast
+
+
+def test_get_movie_cast_empty(client: TestClient, session):
+    """Test getting cast for movie without cast."""
+    from app.models import Movie
+    movie = Movie(
+        title="No Cast Movie",
+        description="Movie without cast",
+        duration_minutes=90,
+        genre="Drama",
+        rating="PG",
+        cast=[]
+    )
+    session.add(movie)
+    session.commit()
+    session.refresh(movie)
+    
+    response = client.get(f"/api/v1/movies/{movie.id}/cast")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 0
+
+
+def test_get_cast_nonexistent_movie(client: TestClient):
+    """Test getting cast for nonexistent movie fails."""
+    response = client.get("/api/v1/movies/99999/cast")
+    assert response.status_code == 404
+
+
+# ============= Showtimes Tests =============
+
+def test_get_movie_showtimes(client: TestClient, test_movie, test_screening):
+    """Test getting movie showtimes."""
+    response = client.get(f"/api/v1/movies/{test_movie.id}/showtimes")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
+    # Verify screening is in the list
+    assert any(s["id"] == test_screening.id for s in data)
+
+
+def test_get_movie_showtimes_with_date_filter(client: TestClient, test_movie, test_screening):
+    """Test getting movie showtimes filtered by date."""
+    from datetime import datetime
+    screening_date = test_screening.screening_time.date().isoformat()
+    
+    response = client.get(f"/api/v1/movies/{test_movie.id}/showtimes?date={screening_date}")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
+
+
+def test_get_movie_showtimes_wrong_date(client: TestClient, test_movie):
+    """Test getting movie showtimes for date with no screenings."""
+    response = client.get(f"/api/v1/movies/{test_movie.id}/showtimes?date=2030-12-31")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 0
+
+
+def test_get_movie_showtimes_no_screenings(client: TestClient, session):
+    """Test getting showtimes for movie without screenings."""
+    from app.models import Movie
+    movie = Movie(
+        title="No Screenings Movie",
+        description="Movie without screenings",
+        duration_minutes=90,
+        genre="Drama",
+        rating="PG"
+    )
+    session.add(movie)
+    session.commit()
+    session.refresh(movie)
+    
+    response = client.get(f"/api/v1/movies/{movie.id}/showtimes")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 0
+
+
+def test_get_showtimes_nonexistent_movie(client: TestClient):
+    """Test getting showtimes for nonexistent movie fails."""
+    response = client.get("/api/v1/movies/99999/showtimes")
+    assert response.status_code == 404
+

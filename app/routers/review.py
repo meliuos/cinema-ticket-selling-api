@@ -65,7 +65,20 @@ async def create_review(
     session.commit()
     session.refresh(review)
     
-    return review
+    return ReviewRead(
+        id=review.id,
+        user_id=review.user_id,
+        movie_id=review.movie_id,
+        rating=review.rating,
+        title=review.title,
+        comment=review.comment,
+        reviewerName=current_user.full_name,
+        reviewerAvatar=current_user.profile_picture_url,
+        likes=review.likes,
+        dislikes=review.dislikes,
+        created_at=review.created_at,
+        updated_at=review.updated_at
+    )
 
 
 @router.get("/{movie_id}/reviews", response_model=ReviewListResponse)
@@ -86,8 +99,10 @@ async def get_movie_reviews(
             detail="Movie not found"
         )
     
-    # Build query
-    query = select(Review).where(
+    # Build query with user join
+    query = select(Review, User.full_name, User.profile_picture_url).join(
+        User, Review.user_id == User.id
+    ).where(
         Review.movie_id == movie_id,
         Review.is_deleted == False
     )
@@ -111,7 +126,25 @@ async def get_movie_reviews(
     offset = (page - 1) * page_size
     query = query.offset(offset).limit(page_size)
     
-    reviews = session.exec(query).all()
+    reviews_data = session.exec(query).all()
+    
+    # Convert to ReviewRead objects with reviewer information
+    reviews = []
+    for review, reviewer_name, reviewer_avatar in reviews_data:
+        reviews.append(ReviewRead(
+            id=review.id,
+            user_id=review.user_id,
+            movie_id=review.movie_id,
+            rating=review.rating,
+            title=review.title,
+            comment=review.comment,
+            reviewerName=reviewer_name,
+            reviewerAvatar=reviewer_avatar,
+            likes=review.likes,
+            dislikes=review.dislikes,
+            created_at=review.created_at,
+            updated_at=review.updated_at
+        ))
     
     return ReviewListResponse(
         reviews=reviews,
@@ -176,15 +209,38 @@ async def get_review(
     session: Session = Depends(get_session)
 ):
     """Get a single review by ID."""
-    review = session.get(Review, review_id)
+    # Query with user join
+    result = session.exec(
+        select(Review, User.full_name, User.profile_picture_url).join(
+            User, Review.user_id == User.id
+        ).where(
+            Review.id == review_id,
+            Review.is_deleted == False
+        )
+    ).first()
     
-    if not review or review.is_deleted:
+    if not result:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Review not found"
         )
     
-    return review
+    review, reviewer_name, reviewer_avatar = result
+    
+    return ReviewRead(
+        id=review.id,
+        user_id=review.user_id,
+        movie_id=review.movie_id,
+        rating=review.rating,
+        title=review.title,
+        comment=review.comment,
+        reviewerName=reviewer_name,
+        reviewerAvatar=reviewer_avatar,
+        likes=review.likes,
+        dislikes=review.dislikes,
+        created_at=review.created_at,
+        updated_at=review.updated_at
+    )
 
 
 @router.put("/reviews/{review_id}", response_model=ReviewRead)
@@ -220,7 +276,20 @@ async def update_review(
     session.commit()
     session.refresh(review)
     
-    return review
+    return ReviewRead(
+        id=review.id,
+        user_id=review.user_id,
+        movie_id=review.movie_id,
+        rating=review.rating,
+        title=review.title,
+        comment=review.comment,
+        reviewerName=current_user.full_name,
+        reviewerAvatar=current_user.profile_picture_url,
+        likes=review.likes,
+        dislikes=review.dislikes,
+        created_at=review.created_at,
+        updated_at=review.updated_at
+    )
 
 
 @router.delete("/reviews/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -288,4 +357,20 @@ async def react_to_review(
     session.commit()
     session.refresh(review)
     
-    return review
+    # Get user information for reviewer fields
+    user = session.get(User, review.user_id)
+    
+    return ReviewRead(
+        id=review.id,
+        user_id=review.user_id,
+        movie_id=review.movie_id,
+        rating=review.rating,
+        title=review.title,
+        comment=review.comment,
+        reviewerName=user.full_name if user else "Unknown",
+        reviewerAvatar=user.profile_picture_url if user else None,
+        likes=review.likes,
+        dislikes=review.dislikes,
+        created_at=review.created_at,
+        updated_at=review.updated_at
+    )

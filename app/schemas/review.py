@@ -24,6 +24,8 @@ class ReviewRead(ReviewBase):
     id: int
     user_id: int
     movie_id: int
+    reviewerName: str  
+    reviewerAvatar: Optional[str] = None  # User's profile picture URL
     likes: int = 0
     dislikes: int = 0
     created_at: datetime

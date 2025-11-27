@@ -12,10 +12,9 @@ class Movie(SQLModel, table=True):
     title: str = Field(max_length=255)
     description: Optional[str] = Field(default=None, max_length=2000)
     duration_minutes: int = Field(gt=0)
-    genre: str = Field(max_length=100)
+    genre: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))  
     rating: Optional[str] = Field(default=None, max_length=10)  # e.g., "PG-13", "R"
     
-    # Enhanced Fields
     cast: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))  # List of actor names
     director: Optional[str] = Field(default=None, max_length=255)
     writers: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))
@@ -39,7 +38,7 @@ class Movie(SQLModel, table=True):
     trailer_url: Optional[str] = Field(default=None, max_length=500)
     awards: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))
     
-    # Additional Details (flexible JSON field for any other metadata)
+    # Additional Details (JSON field for any other metadata)
     details: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
     
     # Timestamps

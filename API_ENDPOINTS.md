@@ -1,150 +1,132 @@
 # Cinema Ticketing API - Endpoints Documentation
 
-## 📋 Overview
-
-**Base URL**: `http://localhost:8000/api/v1`  
-**API Documentation**: `http://localhost:8000/docs`  
-**Total Endpoints**: 39 implemented
-
-### Endpoint Categories:
-
-- 🔐 Authentication (3)
-- 🎬 Cinemas (6)
-- 🏠 Rooms (3)
-- 💺 Seats (2)
-- 🎥 Movies (5)
-- 📽️ Screenings (4)
-- ⭐ Reviews (7)
-- 🎫 Tickets (4)
-- 👤 User Profile (6)
+**Legend:**
+- 🔐 = Admin authorization required
+- ✅ = User authentication required
+- ❌ = No authentication required
 
 ---
 
-## 🔐 Authentication Endpoints
+##  Health Check
 
-### Base Path: `/api/v1/auth`
-
-| Method | Endpoint    | Description                                    | Auth Required |
-| ------ | ----------- | ---------------------------------------------- | ------------- |
-| `POST` | `/register` | Register a new user account                    | ❌            |
-| `POST` | `/login`    | Login with email + password, returns JWT token | ❌            |
-| `GET`  | `/me`       | Get current authenticated user profile         | ✅            |
+**GET** `/` - API health check and welcome message ❌
 
 ---
 
-## 🎬 Cinema Endpoints
+##  Authentication
 
-### Base Path: `/api/v1/cinemas`
-
-| Method | Endpoint                 | Description                                  | Auth Required |
-| ------ | ------------------------ | -------------------------------------------- | ------------- |
-| `POST` | `/`                      | Create a new cinema                          | ❌            |
-| `GET`  | `/`                      | List all cinemas (with pagination)           | ❌            |
-| `GET`  | `/{cinema_id}`           | Get cinema details by ID                     | ❌            |
-| `GET`  | `/search`                | Search cinemas by name, city, or address     | ❌            |
-| `GET`  | `/{cinema_id}/amenities` | Get list of amenities for a cinema           | ❌            |
-| `GET`  | `/{cinema_id}/movies`    | Get all movies currently showing at a cinema | ❌            |
+**POST** `/api/v1/auth/register` - Register User ❌  
+**POST** `/api/v1/auth/login` - Login ❌  
+**GET** `/api/v1/auth/me` - Read Users Me ✅  
+**POST** `/api/v1/auth/logout` - Logout ✅  
+**POST** `/api/v1/auth/refresh-token` - Refresh Token ✅  
+**POST** `/api/v1/auth/forgot-password` - Forgot Password ❌  
+**POST** `/api/v1/auth/reset-password` - Reset Password ❌
 
 ---
 
-## 🏠 Room Endpoints
+##  Favorites
 
-### Base Path: `/api/v1`
-
-| Method | Endpoint                      | Description                   | Auth Required |
-| ------ | ----------------------------- | ----------------------------- | ------------- |
-| `POST` | `/cinemas/{cinema_id}/rooms/` | Create a new room in a cinema | ❌            |
-| `GET`  | `/cinemas/{cinema_id}/rooms/` | List all rooms in a cinema    | ❌            |
-| `GET`  | `/rooms/{room_id}`            | Get room details by ID        | ❌            |
+**POST** `/api/v1/cinemas/{cinema_id}/favorite` - Add Cinema To Favorites ✅  
+**DELETE** `/api/v1/cinemas/{cinema_id}/favorite` - Remove Cinema From Favorites ✅  
+**GET** `/api/v1/cinemas/favorites` - Get User Favorite Cinemas ✅
 
 ---
 
-## 💺 Seat Endpoints
+##  Cinemas
 
-### Base Path: `/api/v1`
-
-| Method | Endpoint                      | Description                                             | Auth Required |
-| ------ | ----------------------------- | ------------------------------------------------------- | ------------- |
-| `POST` | `/rooms/{room_id}/seats/bulk` | Bulk create seats for a room (e.g., 10 rows × 15 seats) | ❌            |
-| `GET`  | `/rooms/{room_id}/seats/`     | List all seats in a room                                | ❌            |
-
----
-
-## 🎥 Movie Endpoints
-
-### Base Path: `/api/v1/movies`
-
-| Method   | Endpoint      | Description                        | Auth Required |
-| -------- | ------------- | ---------------------------------- | ------------- |
-| `POST`   | `/`           | Create a new movie                 | ❌            |
-| `GET`    | `/`           | List all movies (with pagination)  | ❌            |
-| `GET`    | `/{movie_id}` | Get movie details by ID            | ❌            |
-| `PATCH`  | `/{movie_id}` | Update movie information (partial) | ❌            |
-| `DELETE` | `/{movie_id}` | Delete a movie                     | ❌            |
+**POST** `/api/v1/cinemas/` - Create Cinema 🔐  
+**GET** `/api/v1/cinemas/` - List Cinemas ❌  
+**GET** `/api/v1/cinemas/search` - Search Cinemas ❌  
+**GET** `/api/v1/cinemas/{cinema_id}` - Get Cinema ❌  
+**GET** `/api/v1/cinemas/{cinema_id}/amenities` - Get Cinema Amenities ❌  
+**GET** `/api/v1/cinemas/{cinema_id}/movies` - Get Cinema Movies ❌  
+**GET** `/api/v1/cinemas/{cinema_id}/showtimes` - Get Cinema Showtimes ❌
 
 ---
 
-## 📽️ Screening Endpoints
+##  Rooms
 
-### Base Path: `/api/v1/screenings`
-
-| Method | Endpoint                          | Description                                                  | Auth Required |
-| ------ | --------------------------------- | ------------------------------------------------------------ | ------------- |
-| `POST` | `/`                               | Create a new screening (showtime)                            | ❌            |
-| `GET`  | `/`                               | List screenings (with filters: movie_id, room_id, cinema_id) | ❌            |
-| `GET`  | `/{screening_id}`                 | Get screening details by ID                                  | ❌            |
-| `GET`  | `/{screening_id}/available-seats` | Get available seats for a screening                          | ❌            |
+**POST** `/api/v1/cinemas/{cinema_id}/rooms/` - Create Room 🔐  
+**GET** `/api/v1/cinemas/{cinema_id}/rooms/` - List Cinema Rooms ❌  
+**GET** `/api/v1/rooms/{room_id}` - Get Room ❌
 
 ---
 
-## ⭐ Review Endpoints
+##  Seats
 
-### Base Path: `/api/v1/movies`
-
-| Method   | Endpoint                      | Description                                      | Auth Required |
-| -------- | ----------------------------- | ------------------------------------------------ | ------------- |
-| `POST`   | `/{movie_id}/reviews`         | Create a new review for a movie (1-5 stars)      | ✅            |
-| `GET`    | `/{movie_id}/reviews`         | Get paginated reviews for a movie (with sorting) | ❌            |
-| `GET`    | `/{movie_id}/reviews/summary` | Get review summary with rating breakdown         | ❌            |
-| `GET`    | `/reviews/{review_id}`        | Get a single review by ID                        | ❌            |
-| `PUT`    | `/reviews/{review_id}`        | Update a review (author only)                    | ✅            |
-| `DELETE` | `/reviews/{review_id}`        | Delete a review (soft delete, author only)       | ✅            |
-| `POST`   | `/reviews/{review_id}/react`  | Add like/dislike reaction to a review            | ✅            |
+**POST** `/api/v1/rooms/{room_id}/seats/bulk` - Create Seats Bulk 🔐  
+**GET** `/api/v1/rooms/{room_id}/seats/` - List Room Seats ❌
 
 ---
 
-## 🎫 Ticket Endpoints
+##  Movies
 
-### Base Path: `/api/v1/tickets`
-
-| Method   | Endpoint       | Description                               | Auth Required |
-| -------- | -------------- | ----------------------------------------- | ------------- |
-| `POST`   | `/book`        | Book tickets for a screening              | ✅            |
-| `GET`    | `/my-tickets`  | Get current user's tickets                | ✅            |
-| `GET`    | `/{ticket_id}` | Get ticket details by ID                  | ✅            |
-| `DELETE` | `/{ticket_id}` | Cancel a ticket (if cancellation allowed) | ✅            |
-
----
-
-## 👤 User Profile Endpoints
-
-### Base Path: `/api/v1/users`
-
-| Method   | Endpoint              | Description                                        | Auth Required |
-| -------- | --------------------- | -------------------------------------------------- | ------------- |
-| `GET`    | `/me`                 | Get current user profile                           | ✅            |
-| `PUT`    | `/me`                 | Update user profile (name, email)                  | ✅            |
-| `PUT`    | `/me/preferences`     | Update user preferences (dark mode, notifications) | ✅            |
-| `PUT`    | `/me/profile-picture` | Upload/update profile picture                      | ✅            |
-| `DELETE` | `/me`                 | Delete user account (soft delete)                  | ✅            |
-| `GET`    | `/{user_id}`          | Get public user profile by ID                      | ❌            |
+**GET** `/api/v1/movies/recommended` - Get Recommended Movies ✅  
+**POST** `/api/v1/movies/` - Create Movie 🔐  
+**GET** `/api/v1/movies/` - List Movies ❌  
+**GET** `/api/v1/movies/search` - Search Movies ❌  
+**GET** `/api/v1/movies/{movie_id}` - Get Movie ❌  
+**PATCH** `/api/v1/movies/{movie_id}` - Update Movie 🔐  
+**DELETE** `/api/v1/movies/{movie_id}` - Delete Movie 🔐  
+**GET** `/api/v1/movies/{movie_id}/cast` - Get Movie Cast ❌  
+**GET** `/api/v1/movies/{movie_id}/showtimes` - Get Movie Showtimes ❌
 
 ---
 
-## 🏥 Health Check
+##  Screenings
 
-| Method | Endpoint | Description                          | Auth Required |
-| ------ | -------- | ------------------------------------ | ------------- |
-| `GET`  | `/`      | API health check and welcome message | ❌            |
+**POST** `/api/v1/screenings/` - Create Screening 🔐  
+**GET** `/api/v1/screenings/` - List Screenings ❌  
+**GET** `/api/v1/screenings/{screening_id}` - Get Screening ❌  
+**GET** `/api/v1/screenings/{screening_id}/available-seats` - Get Screening Available Seats ❌
+
+---
+
+##  Showtimes
+
+**GET** `/api/v1/showtimes/` - List Showtimes ❌  
+**GET** `/api/v1/showtimes/{showtime_id}` - Get Showtime ❌  
+**GET** `/api/v1/showtimes/{showtime_id}/seats` - Get Showtime Seats ❌
+
+---
+
+##  Tickets
+
+**POST** `/api/v1/tickets/book` - Book Tickets Endpoint ✅  
+**GET** `/api/v1/tickets/my-tickets` - Get My Tickets ✅  
+**GET** `/api/v1/tickets/{ticket_id}` - Get Ticket ✅  
+**DELETE** `/api/v1/tickets/{ticket_id}` - Cancel Ticket Endpoint ✅  
+**POST** `/api/v1/tickets/{ticket_id}/confirm-payment` - Confirm Payment ✅  
+**GET** `/api/v1/tickets/` - List All Tickets 🔐  
+**PUT** `/api/v1/tickets/{ticket_id}/status` - Update Ticket Status 🔐  
+**POST** `/api/v1/tickets/{ticket_id}/resend` - Resend Ticket Confirmation ✅
+
+---
+
+## Users
+
+**GET** `/api/v1/users/me` - Get Current User Profile ✅  
+**PUT** `/api/v1/users/me` - Update User Profile ✅  
+**DELETE** `/api/v1/users/me` - Delete User Account ✅  
+**PUT** `/api/v1/users/me/preferences` - Update User Preferences ✅  
+**PUT** `/api/v1/users/me/profile-picture` - Upload Profile Picture ✅  
+**GET** `/api/v1/users/{user_id}` - Get User Profile ❌  
+**GET** `/api/v1/users/me/search-history` - Get User Search History ✅  
+**POST** `/api/v1/users/me/search-history` - Add Search Query ✅  
+**DELETE** `/api/v1/users/me/search-history/{id}` - Delete Search Entry ✅  
+**DELETE** `/api/v1/users/me/search-history` - Clear User Search History ✅
+
+---
+
+## Reviews
+
+**POST** `/api/v1/movies/{movie_id}/reviews` - Create Review ✅  
+**GET** `/api/v1/movies/{movie_id}/reviews` - Get Movie Reviews ❌  
+**GET** `/api/v1/movies/{movie_id}/reviews/summary` - Get Movie Reviews Summary ❌  
+**GET** `/api/v1/movies/reviews/{review_id}` - Get Review ❌  
+**PUT** `/api/v1/movies/reviews/{review_id}` - Update Review ✅  
+**DELETE** `/api/v1/movies/reviews/{review_id}` - Delete Review ✅  
+**POST** `/api/v1/movies/reviews/{review_id}/react` - React To Review ✅
 
 ---

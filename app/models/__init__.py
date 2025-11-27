@@ -5,6 +5,10 @@ from app.models.cinema import Cinema, Room, Seat
 from app.models.movie import Movie
 from app.models.screening import Screening
 from app.models.ticket import Ticket
+from app.models.review import Review
+from app.models.favorite import Favorite
+from app.models.search_history import SearchHistory
+from app.models.token_blacklist import TokenBlacklist
 
 __all__ = [
     "User",
@@ -14,4 +18,8 @@ __all__ = [
     "Movie",
     "Screening",
     "Ticket",
+    "Review",
+    "Favorite",
+    "SearchHistory",
+    "TokenBlacklist",
 ]

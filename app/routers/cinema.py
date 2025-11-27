@@ -2,7 +2,8 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, or_
-from typing import List
+from typing import List, Optional
+from datetime import datetime, date
 
 from app.config import settings
 from app.database import get_session
@@ -12,6 +13,8 @@ from app.models.movie import Movie
 from app.models.user import User
 from app.schemas.cinema import CinemaCreate, CinemaRead, RoomCreate, RoomRead
 from app.schemas.movie import MovieRead
+from app.routers.movie import normalize_movie_genre
+from app.schemas.screening import ScreeningRead
 from app.services.auth import get_current_admin_user
 
 router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Cinemas", "Rooms"])
@@ -51,18 +54,6 @@ def list_cinemas(
     return cinemas
 
 
-@router.get("/cinemas/{cinema_id}", response_model=CinemaRead, tags=["Cinemas"])
-def get_cinema(cinema_id: int, session: Session = Depends(get_session)):
-    """Get a specific cinema by ID."""
-    cinema = session.get(Cinema, cinema_id)
-    if not cinema:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cinema with id {cinema_id} not found"
-        )
-    return cinema
-
-
 @router.get("/cinemas/search", response_model=List[CinemaRead], tags=["Cinemas"])
 def search_cinemas(
     q: str = Query(..., min_length=1, description="Search query for cinema name, city, or address"),
@@ -80,6 +71,18 @@ def search_cinemas(
         )
     ).all()
     return cinemas
+
+
+@router.get("/cinemas/{cinema_id}", response_model=CinemaRead, tags=["Cinemas"])
+def get_cinema(cinema_id: int, session: Session = Depends(get_session)):
+    """Get a specific cinema by ID."""
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found"
+        )
+    return cinema
 
 
 @router.get("/cinemas/{cinema_id}/amenities", response_model=List[str], tags=["Cinemas"])
@@ -130,7 +133,50 @@ def get_cinema_movies(
         select(Movie).where(Movie.id.in_(movie_ids))
     ).all()
     
-    return movies
+    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+
+
+@router.get("/cinemas/{cinema_id}/showtimes", response_model=List[ScreeningRead], tags=["Cinemas"])
+def get_cinema_showtimes(
+    cinema_id: int,
+    date: Optional[date] = Query(None, description="Filter by date (YYYY-MM-DD)"),
+    skip: int = 0,
+    limit: int = 100,
+    session: Session = Depends(get_session)
+):
+    """Get all showtimes at a specific cinema, optionally filtered by date."""
+    # Verify cinema exists
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found"
+        )
+    
+    # Get all rooms for this cinema
+    rooms = session.exec(select(Room).where(Room.cinema_id == cinema_id)).all()
+    room_ids = [room.id for room in rooms]
+    
+    if not room_ids:
+        return []
+    
+    # Build query for screenings
+    query = select(Screening).where(Screening.room_id.in_(room_ids))
+    
+    if date:
+        # Filter by date
+        start_of_day = datetime.combine(date, datetime.min.time())
+        end_of_day = datetime.combine(date, datetime.max.time())
+        query = query.where(
+            Screening.screening_time >= start_of_day,
+            Screening.screening_time <= end_of_day
+        )
+    
+    # Order by screening time
+    query = query.order_by(Screening.screening_time)
+    
+    screenings = session.exec(query.offset(skip).limit(limit)).all()
+    return screenings
 
 
 # ============================================================================
