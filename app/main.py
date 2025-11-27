@@ -10,9 +10,13 @@ from app.routers import (
     seat_router,
     movie_router,
     screening_router,
+    showtime_router,
     ticket_router,
     user_router,
     review_router,
+    favorite_router,
+    user_features_router,
+    recommendation_router,
 )
 
 # Create FastAPI application
@@ -43,10 +47,14 @@ def read_root():
 
 # Include all routers
 app.include_router(auth_router)
+app.include_router(favorite_router)  # Must be before cinema_router to match /cinemas/favorites before /cinemas/{cinema_id}
 app.include_router(cinema_router)
 app.include_router(seat_router)
+app.include_router(recommendation_router)  # Must be before movie_router to match /movies/recommended before /movies/{movie_id}
 app.include_router(movie_router)
 app.include_router(screening_router)
+app.include_router(showtime_router)
 app.include_router(ticket_router)
 app.include_router(user_router)
 app.include_router(review_router)
+app.include_router(user_features_router)

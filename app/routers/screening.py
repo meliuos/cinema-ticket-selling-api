@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select
 from typing import List, Optional
+from datetime import datetime, date
 
 from app.config import settings
 from app.database import get_session
@@ -57,6 +58,7 @@ def list_screenings(
     movie_id: Optional[int] = Query(None, description="Filter by movie ID"),
     room_id: Optional[int] = Query(None, description="Filter by room ID"),
     cinema_id: Optional[int] = Query(None, description="Filter by cinema ID"),
+    date: Optional[date] = Query(None, description="Filter by date (YYYY-MM-DD)"),
     skip: int = 0,
     limit: int = 100,
     session: Session = Depends(get_session)
@@ -73,6 +75,15 @@ def list_screenings(
     if cinema_id:
         # Join with Room to filter by cinema
         query = query.join(Room).where(Room.cinema_id == cinema_id)
+    
+    if date:
+        # Filter by date (screening_time on the given date)
+        start_of_day = datetime.combine(date, datetime.min.time())
+        end_of_day = datetime.combine(date, datetime.max.time())
+        query = query.where(
+            Screening.screening_time >= start_of_day,
+            Screening.screening_time <= end_of_day
+        )
     
     screenings = session.exec(query.offset(skip).limit(limit)).all()
     return screenings
