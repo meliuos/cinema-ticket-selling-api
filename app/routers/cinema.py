@@ -9,8 +9,10 @@ from app.database import get_session
 from app.models.cinema import Cinema, Room
 from app.models.screening import Screening
 from app.models.movie import Movie
+from app.models.user import User
 from app.schemas.cinema import CinemaCreate, CinemaRead, RoomCreate, RoomRead
 from app.schemas.movie import MovieRead
+from app.services.auth import get_current_admin_user
 
 router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Cinemas", "Rooms"])
 
@@ -25,8 +27,12 @@ router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Cinemas", "Rooms"])
     status_code=status.HTTP_201_CREATED,
     tags=["Cinemas"]
 )
-def create_cinema(cinema: CinemaCreate, session: Session = Depends(get_session)):
-    """Create a new cinema."""
+def create_cinema(
+    cinema: CinemaCreate,
+    current_admin: User = Depends(get_current_admin_user),
+    session: Session = Depends(get_session)
+):
+    """Create a new cinema (admin only)."""
     db_cinema = Cinema.model_validate(cinema)
     session.add(db_cinema)
     session.commit()
@@ -140,9 +146,10 @@ def get_cinema_movies(
 def create_room(
     cinema_id: int,
     room: RoomCreate,
+    current_admin: User = Depends(get_current_admin_user),
     session: Session = Depends(get_session)
 ):
-    """Create a new room in a cinema."""
+    """Create a new room in a cinema (admin only)."""
     # Verify cinema exists
     cinema = session.get(Cinema, cinema_id)
     if not cinema:

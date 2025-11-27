@@ -26,6 +26,7 @@ class UserRead(UserBase):
     updated_at: datetime
     date_of_birth: Optional[datetime] = None
     profile_picture_url: Optional[str] = None
+    is_admin: bool = Field(default=False)
     dark_mode: bool = Field(default=False)
     notifications_enabled: bool = Field(default=True)
     newsletter_subscribed: bool = Field(default=False)

@@ -1,7 +1,7 @@
 """Pydantic schemas for Ticket-related API operations."""
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from sqlmodel import SQLModel, Field
 
 
@@ -10,7 +10,7 @@ class TicketBase(SQLModel):
     screening_id: int
     seat_id: int
     price: float = Field(gt=0)
-    status: str = Field(default="booked", max_length=50)
+    status: str = Field(default="pending", max_length=50)
 
 
 class TicketCreate(SQLModel):
@@ -28,3 +28,15 @@ class TicketRead(SQLModel):
     price: float
     status: str
     booked_at: datetime
+    confirmed_at: Optional[datetime] = None
+
+
+class TicketStatusUpdate(SQLModel):
+    """Schema for updating ticket status."""
+    status: str = Field(description="New status: pending, confirmed, or cancelled")
+
+
+class TicketConfirmPayment(SQLModel):
+    """Schema for confirming payment."""
+    payment_method: str = Field(description="Payment method used")
+    transaction_id: Optional[str] = Field(None, description="External transaction ID")

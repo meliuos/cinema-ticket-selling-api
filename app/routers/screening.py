@@ -9,9 +9,11 @@ from app.database import get_session
 from app.models.movie import Movie
 from app.models.cinema import Room, Seat
 from app.models.screening import Screening
+from app.models.user import User
 from app.schemas.screening import ScreeningCreate, ScreeningRead
 from app.schemas.cinema import SeatRead
 from app.services.cinema import get_available_seats
+from app.services.auth import get_current_admin_user
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/screenings", tags=["Screenings"])
 
@@ -21,8 +23,12 @@ router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/screenings", tags=["Screeni
     response_model=ScreeningRead,
     status_code=status.HTTP_201_CREATED
 )
-def create_screening(screening: ScreeningCreate, session: Session = Depends(get_session)):
-    """Create a new screening (showtime)."""
+def create_screening(
+    screening: ScreeningCreate,
+    session: Session = Depends(get_session),
+    current_admin: User = Depends(get_current_admin_user)
+):
+    """Create a new screening (showtime) (admin only)."""
     # Verify movie exists
     movie = session.get(Movie, screening.movie_id)
     if not movie:

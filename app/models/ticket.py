@@ -10,8 +10,9 @@ class Ticket(SQLModel, table=True):
     screening_id: int = Field(foreign_key="screening.id")
     seat_id: int = Field(foreign_key="seat.id")
     price: float = Field(gt=0)
-    status: str = Field(default="booked", max_length=50)  # booked, cancelled
+    status: str = Field(default="pending", max_length=50)  # pending, confirmed, cancelled
     booked_at: datetime = Field(default_factory=datetime.utcnow)
+    confirmed_at: Optional[datetime] = None
     
     class Config:
         # Ensure one seat can only be booked once per screening
