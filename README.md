@@ -86,16 +86,19 @@ psql -U postgres -c "CREATE DATABASE fastapi_db;"
 ### 5. Start the Server
 
 **Option A: Quick Start (with seeding)**
+
 ```bash
 ./start.sh --seed
 ```
 
 **Option B: Quick Start (without seeding)**
+
 ```bash
 ./start.sh
 ```
 
 **Option C: Manual Start**
+
 ```bash
 # Without seeding
 venv/bin/uvicorn app.main:app --reload
@@ -109,9 +112,59 @@ The API will be running at: **http://localhost:8000**
 
 ## 📚 Database Setup
 
-### Automatic Migrations
+### Database Migrations with Alembic
 
-Tables are **automatically created** on server startup using SQLModel. No manual migration needed for initial setup.
+This project uses **Alembic** for database migrations to manage schema changes safely across environments.
+
+#### Initial Setup
+
+```bash
+# 1. Install dependencies (Alembic already included in requirements.txt)
+pip install -r requirements.txt
+
+# 2. Apply all existing migrations to your database
+alembic upgrade head
+
+# 3. Seed the database with sample data (if needed)
+python seed.py
+```
+
+#### Creating New Migrations
+
+When you modify any SQLModel classes (add/remove/change fields), create a migration:
+
+```bash
+# Generate migration automatically
+alembic revision --autogenerate -m "Describe your changes"
+
+# Review the generated migration file in alembic/versions/
+# Make manual adjustments if needed
+
+# Apply the migration
+alembic upgrade head
+```
+
+#### Common Alembic Commands
+
+```bash
+# Check current migration status
+alembic current
+
+# View migration history
+alembic history --verbose
+
+# Upgrade to specific revision
+alembic upgrade <revision_id>
+
+# Downgrade to previous migration
+alembic downgrade -1
+
+# Downgrade to specific revision
+alembic downgrade <revision_id>
+
+# Create empty migration (for manual changes)
+alembic revision -m "Description"
+```
 
 ### Database Seeding
 
@@ -122,6 +175,7 @@ venv/bin/python seed.py
 ```
 
 **Sample Data Includes**:
+
 - 2 Cinemas (Tunis locations)
 - 3 Rooms (including IMAX)
 - 300+ Seats (auto-configured)
@@ -155,36 +209,43 @@ Interactive API documentation is automatically available:
 ## 🔗 API Endpoints Overview
 
 ### Authentication
+
 - `POST /api/v1/auth/register` - Register new user
 - `POST /api/v1/auth/login` - Login (get JWT token)
 - `GET /api/v1/auth/me` - Get current user info 🔐
 
 ### Cinemas
+
 - `POST /api/v1/cinemas/` - Create cinema
 - `GET /api/v1/cinemas/` - List cinemas
 - `GET /api/v1/cinemas/{id}` - Get cinema details
 
 ### Rooms
+
 - `POST /api/v1/cinemas/{cinema_id}/rooms/` - Create room
 - `GET /api/v1/cinemas/{cinema_id}/rooms/` - List rooms
 - `GET /api/v1/rooms/{id}` - Get room details
 
 ### Seats
+
 - `POST /api/v1/rooms/{room_id}/seats/bulk` - Bulk create seats
 - `GET /api/v1/rooms/{room_id}/seats/` - List seats
 
 ### Movies
+
 - `POST /api/v1/movies/` - Create movie
 - `GET /api/v1/movies/` - List movies
 - `GET /api/v1/movies/{id}` - Get movie details
 
 ### Screenings
+
 - `POST /api/v1/screenings/` - Create screening
 - `GET /api/v1/screenings/` - List screenings (filterable)
 - `GET /api/v1/screenings/{id}` - Get screening details
 - `GET /api/v1/screenings/{id}/available-seats` - Get available seats
 
 ### Tickets (Protected 🔐)
+
 - `POST /api/v1/tickets/book` - Book tickets
 - `GET /api/v1/tickets/my-tickets` - Get user's tickets
 - `GET /api/v1/tickets/{id}` - Get ticket details
@@ -195,6 +256,7 @@ Interactive API documentation is automatically available:
 ## 🧪 Quick Test
 
 ### 1. Register a User
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/auth/register" \
   -H "Content-Type: application/json" \
@@ -206,6 +268,7 @@ curl -X POST "http://localhost:8000/api/v1/auth/register" \
 ```
 
 ### 2. Login & Get Token
+
 ```bash
 TOKEN=$(curl -s -X POST "http://localhost:8000/api/v1/auth/login" \
   -H "Content-Type: application/x-www-form-urlencoded" \
@@ -216,6 +279,7 @@ echo $TOKEN
 ```
 
 ### 3. Book Tickets
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/tickets/book" \
   -H "Authorization: Bearer $TOKEN" \
@@ -227,6 +291,7 @@ curl -X POST "http://localhost:8000/api/v1/tickets/book" \
 ```
 
 ### 4. Get Your Tickets
+
 ```bash
 curl "http://localhost:8000/api/v1/tickets/my-tickets" \
   -H "Authorization: Bearer $TOKEN"
@@ -279,6 +344,7 @@ venv/bin/python
 ## 📦 Dependencies
 
 **Core**:
+
 - `fastapi` - Web framework
 - `uvicorn` - ASGI server
 - `sqlmodel` - ORM
@@ -286,17 +352,19 @@ venv/bin/python
 - `pydantic` - Data validation
 
 **Security**:
+
 - `python-jose[cryptography]` - JWT tokens
 - `bcrypt` - Password hashing
 - `python-multipart` - Form data
 
 **Configuration**:
+
 - `python-dotenv` - Environment variables
 - `pydantic-settings` - Settings management
 
 ## 🎯 Next Steps
 
-- [ ] Add Alembic for database migrations
+- [x] Add Alembic for database migrations
 - [ ] Implement refresh tokens
 - [ ] Add email verification
 - [ ] Create admin panel
@@ -310,6 +378,7 @@ venv/bin/python
 ## 🐛 Troubleshooting
 
 ### Database Connection Error
+
 ```bash
 # Check PostgreSQL is running
 sudo service postgresql status
@@ -321,6 +390,7 @@ psql -U postgres -l | grep fastapi_db
 ```
 
 ### Port Already in Use
+
 ```bash
 # Kill process on port 8000
 lsof -ti:8000 | xargs kill -9
@@ -330,6 +400,7 @@ venv/bin/uvicorn app.main:app --reload --port 8080
 ```
 
 ### Import Errors
+
 ```bash
 # Ensure virtual environment is activated
 source venv/bin/activate

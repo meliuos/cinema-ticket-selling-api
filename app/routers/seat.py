@@ -7,8 +7,10 @@ from typing import List
 from app.config import settings
 from app.database import get_session
 from app.models.cinema import Seat
+from app.models.user import User
 from app.schemas.cinema import SeatRead, SeatBulkCreate
 from app.services.cinema import bulk_create_seats
+from app.services.auth import get_current_admin_user
 
 router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Seats"])
 
@@ -21,9 +23,10 @@ router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Seats"])
 def create_seats_bulk(
     room_id: int,
     data: SeatBulkCreate,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    current_admin: User = Depends(get_current_admin_user)
 ):
-    """Bulk create seats for a room (e.g., 10 rows x 15 seats)."""
+    """Bulk create seats for a room (e.g., 10 rows x 15 seats) (admin only)."""
     seats = bulk_create_seats(session, room_id, data)
     return seats
 

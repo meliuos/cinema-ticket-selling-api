@@ -1,6 +1,7 @@
 """Main FastAPI application - Cinema Ticketing System."""
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.config import settings
 from app.database import create_db_and_tables
 from app.routers import (
@@ -10,6 +11,8 @@ from app.routers import (
     movie_router,
     screening_router,
     ticket_router,
+    user_router,
+    review_router,
 )
 
 # Create FastAPI application
@@ -17,6 +20,9 @@ app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.DEBUG,
 )
+
+# Mount static files for uploads
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 @app.on_event("startup")
@@ -42,3 +48,5 @@ app.include_router(seat_router)
 app.include_router(movie_router)
 app.include_router(screening_router)
 app.include_router(ticket_router)
+app.include_router(user_router)
+app.include_router(review_router)

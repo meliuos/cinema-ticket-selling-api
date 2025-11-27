@@ -24,6 +24,33 @@ class UserRead(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    date_of_birth: Optional[datetime] = None
+    profile_picture_url: Optional[str] = None
+    is_admin: bool = Field(default=False)
+    dark_mode: bool = Field(default=False)
+    notifications_enabled: bool = Field(default=True)
+    newsletter_subscribed: bool = Field(default=False)
+
+
+class UserUpdate(SQLModel):
+    """Schema for updating user profile."""
+    full_name: Optional[str] = Field(None, max_length=255)
+    email: Optional[str] = Field(None, max_length=255)
+    date_of_birth: Optional[datetime] = None
+
+
+class UserPreferences(SQLModel):
+    """Schema for user preferences."""
+    dark_mode: bool = Field(default=False)
+    notifications_enabled: bool = Field(default=True)
+    newsletter_subscribed: bool = Field(default=False)
+
+
+class UserPreferencesUpdate(SQLModel):
+    """Schema for updating user preferences."""
+    dark_mode: Optional[bool] = None
+    notifications_enabled: Optional[bool] = None
+    newsletter_subscribed: Optional[bool] = None
 
 
 class UserLogin(SQLModel):

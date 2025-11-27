@@ -8,7 +8,9 @@ from datetime import datetime
 from app.config import settings
 from app.database import get_session
 from app.models.movie import Movie
+from app.models.user import User
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
+from app.services.auth import get_current_admin_user
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/movies", tags=["Movies"])
 
@@ -18,8 +20,12 @@ router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/movies", tags=["Movies"])
     response_model=MovieRead,
     status_code=status.HTTP_201_CREATED
 )
-def create_movie(movie: MovieCreate, session: Session = Depends(get_session)):
-    """Create a new movie with comprehensive details."""
+def create_movie(
+    movie: MovieCreate,
+    session: Session = Depends(get_session),
+    current_admin: User = Depends(get_current_admin_user)
+):
+    """Create a new movie with comprehensive details (admin only)."""
     db_movie = Movie.model_validate(movie)
     session.add(db_movie)
     session.commit()
@@ -54,9 +60,10 @@ def get_movie(movie_id: int, session: Session = Depends(get_session)):
 def update_movie(
     movie_id: int,
     movie_update: MovieUpdate,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    current_admin: User = Depends(get_current_admin_user)
 ):
-    """Update a movie's information."""
+    """Update a movie's information (admin only)."""
     db_movie = session.get(Movie, movie_id)
     if not db_movie:
         raise HTTPException(
@@ -77,8 +84,12 @@ def update_movie(
 
 
 @router.delete("/{movie_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_movie(movie_id: int, session: Session = Depends(get_session)):
-    """Delete a movie."""
+def delete_movie(
+    movie_id: int,
+    session: Session = Depends(get_session),
+    current_admin: User = Depends(get_current_admin_user)
+):
+    """Delete a movie (admin only)."""
     movie = session.get(Movie, movie_id)
     if not movie:
         raise HTTPException(
