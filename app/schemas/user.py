@@ -70,6 +70,12 @@ class TokenData(SQLModel):
     email: Optional[str] = None
 
 
+class EmailCheckResponse(SQLModel):
+    """Schema for email check response."""
+    email: str
+    exists: bool
+
+
 class RefreshTokenRequest(SQLModel):
     """Schema for refresh token request."""
     token: str

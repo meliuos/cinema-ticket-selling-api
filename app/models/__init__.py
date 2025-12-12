@@ -5,6 +5,7 @@ from app.models.cinema import Cinema, Room, Seat
 from app.models.movie import Movie
 from app.models.screening import Screening
 from app.models.ticket import Ticket
+from app.models.cast import Cast
 from app.models.review import Review
 from app.models.favorite import Favorite
 from app.models.search_history import SearchHistory

@@ -17,6 +17,7 @@ from app.routers import (
     favorite_router,
     user_features_router,
     recommendation_router,
+    cast_router,
 )
 
 # Create FastAPI application
@@ -58,3 +59,5 @@ app.include_router(ticket_router)
 app.include_router(user_router)
 app.include_router(review_router)
 app.include_router(user_features_router)
+app.include_router(cast_router)
+

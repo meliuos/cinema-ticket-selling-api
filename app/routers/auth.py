@@ -13,6 +13,7 @@ from app.schemas.user import (
     UserCreate, 
     UserRead, 
     Token, 
+    EmailCheckResponse,
     RefreshTokenRequest,
     ForgotPasswordRequest,
     ResetPasswordRequest,
@@ -87,6 +88,14 @@ def login(
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     """Get current user information."""
     return current_user
+
+
+@router.get("/check-email", response_model=EmailCheckResponse)
+def check_email_exists(email: str, session: Session = Depends(get_session)):
+    """Check if an email address is already registered."""
+    statement = select(User).where(User.email == email)
+    existing_user = session.exec(statement).first()
+    return EmailCheckResponse(email=email, exists=existing_user is not None)
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)

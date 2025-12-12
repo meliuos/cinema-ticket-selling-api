@@ -11,6 +11,7 @@ from app.routers.user import router as user_router
 from app.routers.review import router as review_router
 from app.routers.favorite import router as favorite_router
 from app.routers.user_features import router as user_features_router, movie_router as recommendation_router
+from app.routers.cast import router as cast_router
 
 __all__ = [
     "auth_router",
@@ -25,4 +26,6 @@ __all__ = [
     "favorite_router",
     "user_features_router",
     "recommendation_router",
+    "cast_router",
 ]
+
