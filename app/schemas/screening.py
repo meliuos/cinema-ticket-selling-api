@@ -2,6 +2,8 @@
 
 from datetime import datetime
 from sqlmodel import SQLModel, Field
+from app.schemas.movie import MovieRead
+from app.schemas.cinema import RoomWithCinemaRead
 
 
 class ScreeningBase(SQLModel):
@@ -21,3 +23,9 @@ class ScreeningRead(ScreeningBase):
     """Schema for reading a screening."""
     id: int
     created_at: datetime
+class ScreeningReadDetailed(SQLModel):
+    id: int
+    screening_time: datetime
+    price: float
+    movie: MovieRead
+    room: RoomWithCinemaRead

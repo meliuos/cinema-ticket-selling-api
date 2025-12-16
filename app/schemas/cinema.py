@@ -54,3 +54,5 @@ class SeatBulkCreate(SQLModel):
     rows: int = Field(gt=0, description="Number of rows (e.g., 10 for rows A-J)")
     seats_per_row: int = Field(gt=0, description="Number of seats per row")
     seat_type: str = Field(default="standard", max_length=50)
+class RoomWithCinemaRead(RoomRead):
+    cinema: CinemaRead

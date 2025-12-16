@@ -14,8 +14,9 @@ from app.models.user import User
 from app.schemas.cinema import CinemaCreate, CinemaRead, RoomCreate, RoomRead
 from app.schemas.movie import MovieRead
 from app.routers.movie import normalize_movie_genre
-from app.schemas.screening import ScreeningRead
+from app.schemas.screening import ScreeningRead, ScreeningReadDetailed
 from app.services.auth import get_current_admin_user
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Cinemas", "Rooms"])
 
@@ -136,7 +137,11 @@ def get_cinema_movies(
     return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
 
 
-@router.get("/cinemas/{cinema_id}/showtimes", response_model=List[ScreeningRead], tags=["Cinemas"])
+@router.get(
+    "/cinemas/{cinema_id}/showtimes",
+    response_model=List[ScreeningReadDetailed],
+    tags=["Cinemas"]
+)
 def get_cinema_showtimes(
     cinema_id: int,
     date: Optional[date] = Query(None, description="Filter by date (YYYY-MM-DD)"),
@@ -144,37 +149,33 @@ def get_cinema_showtimes(
     limit: int = 100,
     session: Session = Depends(get_session)
 ):
-    """Get all showtimes at a specific cinema, optionally filtered by date."""
+    """Get all showtimes at a specific cinema with movie and room details."""
+    
     # Verify cinema exists
-    cinema = session.get(Cinema, cinema_id)
-    if not cinema:
+    cinema_exists = session.get(Cinema, cinema_id)
+    if not cinema_exists:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Cinema with id {cinema_id} not found"
         )
-    
-    # Get all rooms for this cinema
-    rooms = session.exec(select(Room).where(Room.cinema_id == cinema_id)).all()
-    room_ids = [room.id for room in rooms]
-    
-    if not room_ids:
-        return []
-    
-    # Build query for screenings
-    query = select(Screening).where(Screening.room_id.in_(room_ids))
-    
+    query = (
+        select(Screening)
+        .join(Room)
+        .where(Room.cinema_id == cinema_id)
+        .options(
+            selectinload(Screening.movie),  # eager load movie
+            selectinload(Screening.room).selectinload(Room.cinema),  # eager load room + cinema
+        )
+        .order_by(Screening.screening_time)
+    )
+
     if date:
-        # Filter by date
         start_of_day = datetime.combine(date, datetime.min.time())
         end_of_day = datetime.combine(date, datetime.max.time())
         query = query.where(
-            Screening.screening_time >= start_of_day,
-            Screening.screening_time <= end_of_day
+            Screening.screening_time.between(start_of_day, end_of_day)
         )
-    
-    # Order by screening time
-    query = query.order_by(Screening.screening_time)
-    
+
     screenings = session.exec(query.offset(skip).limit(limit)).all()
     return screenings
 

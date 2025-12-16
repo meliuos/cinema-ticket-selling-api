@@ -1,6 +1,6 @@
 from typing import Optional, List
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Column
+from sqlmodel import Relationship, SQLModel, Field, Column
 from sqlalchemy import JSON
 
 
@@ -25,7 +25,8 @@ class Room(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=100)
     cinema_id: int = Field(foreign_key="cinema.id")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.utcnow)    
+    cinema: Optional[Cinema] = Relationship()
 
 
 class Seat(SQLModel, table=True):
