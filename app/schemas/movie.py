@@ -5,6 +5,7 @@ from datetime import datetime, date
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column
 from sqlalchemy.types import JSON
+from typing import Union
 
 
 class MovieBase(SQLModel):
@@ -85,7 +86,7 @@ class MovieRead(SQLModel):
     title: str
     description: Optional[str] = None
     duration_minutes: int
-    genre: Optional[List[str]] = None  # Normalized to list
+    genre: Optional[Union[str,List[str]]] = None  # Normalized to list
     rating: Optional[str] = None
     
     # Cast & Crew
