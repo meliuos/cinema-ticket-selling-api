@@ -17,6 +17,7 @@ from app.schemas.user import (
     RefreshTokenRequest,
     ForgotPasswordRequest,
     ResetPasswordRequest,
+    ChangePasswordRequest,
     PasswordResetResponse
 )
 from app.services.auth import (
@@ -251,4 +252,38 @@ async def reset_password(
     session.commit()
     
     return {"message": "Password successfully reset"}
+
+
+@router.put("/change-password", status_code=status.HTTP_200_OK)
+async def change_password(
+    request: ChangePasswordRequest,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Change the current user's password.
+    Requires the current password for verification.
+    """
+    # Verify current password
+    if not authenticate_user(session, current_user.email, request.current_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+    
+    # Check if new password is different from current
+    if request.current_password == request.new_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from current password"
+        )
+    
+    # Update password
+    current_user.hashed_password = get_password_hash(request.new_password)
+    current_user.updated_at = datetime.now(timezone.utc)
+    
+    session.add(current_user)
+    session.commit()
+    
+    return {"message": "Password successfully changed"}
 

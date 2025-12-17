@@ -92,6 +92,12 @@ class ResetPasswordRequest(SQLModel):
     new_password: str = Field(min_length=8)
 
 
+class ChangePasswordRequest(SQLModel):
+    """Schema for change password request."""
+    current_password: str
+    new_password: str = Field(min_length=8)
+
+
 class PasswordResetResponse(SQLModel):
     """Schema for password reset token response (simulating email)."""
     message: str

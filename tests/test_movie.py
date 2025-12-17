@@ -207,13 +207,35 @@ def test_search_movies_case_insensitive(client: TestClient, test_movie):
 
 # ============= Cast Tests =============
 
-def test_get_movie_cast(client: TestClient, test_movie):
+def test_get_movie_cast(client: TestClient, test_movie, session):
     """Test getting movie cast."""
+    from app.models import Cast
+    # Create test cast members
+    cast1 = Cast(
+        movie_id=test_movie.id,
+        character_name="Character One",
+        role="Lead Role",
+        actor_name="Actor One",
+        order=1
+    )
+    cast2 = Cast(
+        movie_id=test_movie.id,
+        character_name="Character Two",
+        role="Supporting Role",
+        actor_name="Actor Two",
+        order=2
+    )
+    session.add(cast1)
+    session.add(cast2)
+    session.commit()
+    
     response = client.get(f"/api/v1/movies/{test_movie.id}/cast")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert data == test_movie.cast
+    assert len(data) == 2
+    assert data[0]["actor_name"] == "Actor One"
+    assert data[1]["actor_name"] == "Actor Two"
 
 
 def test_get_movie_cast_empty(client: TestClient, session):
