@@ -182,6 +182,7 @@ venv/bin/python seed.py
 - 5 Movies (Matrix, Inception, Dark Knight, etc.)
 - 80+ Screenings (next 7 days)
 - 1 Demo user (`demo@cinema.com` / `demo123`)
+- 1 Admin user (`admin@cinema.com` / `admin123`)
 
 > **Note**: Seeding is idempotent - it won't duplicate data if run multiple times.
 

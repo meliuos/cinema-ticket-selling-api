@@ -18,6 +18,7 @@ from app.routers import (
     favorite_router,
     user_features_router,
     recommendation_router,
+    admin_router,
     cast_router,
 )
 origins = [
@@ -69,5 +70,6 @@ app.include_router(ticket_router)
 app.include_router(user_router)
 app.include_router(review_router)
 app.include_router(user_features_router)
+app.include_router(admin_router)
 app.include_router(cast_router)
 

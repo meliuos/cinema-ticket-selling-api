@@ -32,9 +32,22 @@ def seed_database():
             is_active=True
         )
         session.add(demo_user)
+        
+        # Create admin user
+        print("👑 Creating admin user...")
+        admin_user = User(
+            email="admin@cinema.com",
+            full_name="Admin User",
+            hashed_password=get_password_hash("admin123"),
+            is_active=True,
+            is_admin=True
+        )
+        session.add(admin_user)
         session.commit()
         session.refresh(demo_user)
+        session.refresh(admin_user)
         print(f"   ✓ Created user: {demo_user.email}")
+        print(f"   ✓ Created admin: {admin_user.email}")
         
         # Create cinemas
         print("\n🎬 Creating cinemas...")

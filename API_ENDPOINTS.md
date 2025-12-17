@@ -1,19 +1,20 @@
 # Cinema Ticketing API - Endpoints Documentation
 
 **Legend:**
+
 - 🔐 = Admin authorization required
 - ✅ = User authentication required
 - ❌ = No authentication required
 
 ---
 
-##  Health Check
+## Health Check
 
 **GET** `/` - API health check and welcome message ❌
 
 ---
 
-##  Authentication
+## Authentication
 
 **POST** `/api/v1/auth/register` - Register User ❌  
 **POST** `/api/v1/auth/login` - Login ❌  
@@ -25,7 +26,7 @@
 
 ---
 
-##  Favorites
+## Favorites
 
 **POST** `/api/v1/cinemas/{cinema_id}/favorite` - Add Cinema To Favorites ✅  
 **DELETE** `/api/v1/cinemas/{cinema_id}/favorite` - Remove Cinema From Favorites ✅  
@@ -33,7 +34,7 @@
 
 ---
 
-##  Cinemas
+## Cinemas
 
 **POST** `/api/v1/cinemas/` - Create Cinema 🔐  
 **GET** `/api/v1/cinemas/` - List Cinemas ❌  
@@ -45,7 +46,7 @@
 
 ---
 
-##  Rooms
+## Rooms
 
 **POST** `/api/v1/cinemas/{cinema_id}/rooms/` - Create Room 🔐  
 **GET** `/api/v1/cinemas/{cinema_id}/rooms/` - List Cinema Rooms ❌  
@@ -53,14 +54,14 @@
 
 ---
 
-##  Seats
+## Seats
 
 **POST** `/api/v1/rooms/{room_id}/seats/bulk` - Create Seats Bulk 🔐  
 **GET** `/api/v1/rooms/{room_id}/seats/` - List Room Seats ❌
 
 ---
 
-##  Movies
+## Movies
 
 **GET** `/api/v1/movies/recommended` - Get Recommended Movies ✅  
 **POST** `/api/v1/movies/` - Create Movie 🔐  
@@ -74,7 +75,7 @@
 
 ---
 
-##  Screenings
+## Screenings
 
 **POST** `/api/v1/screenings/` - Create Screening 🔐  
 **GET** `/api/v1/screenings/` - List Screenings ❌  
@@ -83,7 +84,7 @@
 
 ---
 
-##  Showtimes
+## Showtimes
 
 **GET** `/api/v1/showtimes/` - List Showtimes ❌  
 **GET** `/api/v1/showtimes/{showtime_id}` - Get Showtime ❌  
@@ -91,7 +92,7 @@
 
 ---
 
-##  Tickets
+## Tickets
 
 **POST** `/api/v1/tickets/book` - Book Tickets Endpoint ✅  
 **GET** `/api/v1/tickets/my-tickets` - Get My Tickets ✅  
@@ -128,5 +129,22 @@
 **PUT** `/api/v1/movies/reviews/{review_id}` - Update Review ✅  
 **DELETE** `/api/v1/movies/reviews/{review_id}` - Delete Review ✅  
 **POST** `/api/v1/movies/reviews/{review_id}/react` - React To Review ✅
+
+---
+
+## Admin
+
+**GET** `/api/v1/admin/stats/movies` - Get Movies Count 🔐
+**GET** `/api/v1/admin/stats/cinemas` - Get Cinemas Count 🔐
+**GET** `/api/v1/admin/stats/users` - Get Users Count 🔐
+**GET** `/api/v1/admin/stats/bookings/recent` - Get Recent Bookings 🔐
+**GET** `/api/v1/admin/stats/revenue` - Get Total Revenue 🔐
+**GET** `/api/v1/admin/stats/revenue/period` - Get Revenue By Period 🔐
+**GET** `/api/v1/admin/stats/tickets/total` - Get Total Tickets Sold 🔐
+**GET** `/api/v1/admin/stats/movies/popular` - Get Popular Movies 🔐
+**GET** `/api/v1/admin/stats/today` - Get Today's Statistics 🔐
+**GET** `/api/v1/tickets/` - List All Tickets 🔐
+**PUT** `/api/v1/tickets/{ticket_id}/status` - Update Ticket Status 🔐
+**POST** `/api/v1/tickets/{ticket_id}/resend` - Resend Ticket Confirmation ✅
 
 ---
