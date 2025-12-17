@@ -7,7 +7,7 @@ from sqlmodel import SQLModel, Field
 
 class CastBase(SQLModel):
     """Base model for Cast with shared fields."""
-    name: str = Field(max_length=255)  # Character name
+    character_name: str = Field(max_length=255)  # Character name
     role: str = Field(max_length=255)  # Role description
     actor_name: str = Field(max_length=255)  # Real actor name
     profile_image_url: Optional[str] = Field(default=None, max_length=500)
@@ -22,7 +22,7 @@ class CastCreate(CastBase):
 
 class CastUpdate(SQLModel):
     """Schema for updating a cast member - all fields optional."""
-    name: Optional[str] = Field(default=None, max_length=255)
+    character_name: Optional[str] = Field(default=None, max_length=255)
     role: Optional[str] = Field(default=None, max_length=255)
     actor_name: Optional[str] = Field(default=None, max_length=255)
     profile_image_url: Optional[str] = Field(default=None, max_length=500)

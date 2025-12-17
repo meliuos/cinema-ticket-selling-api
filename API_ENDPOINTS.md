@@ -20,6 +20,7 @@
 **POST** `/api/v1/auth/login` - Login ❌  
 **GET** `/api/v1/auth/me` - Read Users Me ✅  
 **POST** `/api/v1/auth/logout` - Logout ✅  
+**PUT** `/api/v1/auth/change-password` - Change Password ✅  
 **POST** `/api/v1/auth/refresh-token` - Refresh Token ✅  
 **POST** `/api/v1/auth/forgot-password` - Forgot Password ❌  
 **POST** `/api/v1/auth/reset-password` - Reset Password ❌
@@ -67,6 +68,8 @@
 **POST** `/api/v1/movies/` - Create Movie 🔐  
 **GET** `/api/v1/movies/` - List Movies ❌  
 **GET** `/api/v1/movies/search` - Search Movies ❌  
+**GET** `/api/v1/movies/filter` - Filter Movies by Criteria ❌  
+**GET** `/api/v1/movies/advanced-search` - Advanced Search Movies ❌  
 **GET** `/api/v1/movies/{movie_id}` - Get Movie ❌  
 **PATCH** `/api/v1/movies/{movie_id}` - Update Movie 🔐  
 **DELETE** `/api/v1/movies/{movie_id}` - Delete Movie 🔐  

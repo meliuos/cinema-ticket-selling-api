@@ -117,7 +117,7 @@ async def upload_profile_picture(
         f.write(content)
 
     # Update user profile picture URL
-    current_user.profile_picture_url = f"/uploads/profile_pictures/{filename}"
+    current_user.profile_picture_url = f"https://localhost:8000/uploads/profile_pictures/{filename}"
     current_user.updated_at = datetime.utcnow()
     session.add(current_user)
     session.commit()
@@ -125,6 +125,33 @@ async def upload_profile_picture(
 
     return {
         "message": "Profile picture uploaded successfully",
+        "profile_picture_url": current_user.profile_picture_url
+    }
+
+
+@router.put("/me/profile-picture-url")
+async def update_profile_picture_url(
+    profile_picture_url: str,
+    current_user: User = Depends(get_current_active_user),
+    session: Session = Depends(get_session)
+):
+    """Update user profile picture URL with an absolute URL."""
+    # Basic validation for URL format
+    if not profile_picture_url.startswith("https://"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Profile picture URL must be an absolute HTTPS URL"
+        )
+
+    # Update user profile picture URL
+    current_user.profile_picture_url = profile_picture_url
+    current_user.updated_at = datetime.utcnow()
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+
+    return {
+        "message": "Profile picture URL updated successfully",
         "profile_picture_url": current_user.profile_picture_url
     }
 
