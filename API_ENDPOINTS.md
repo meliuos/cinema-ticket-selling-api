@@ -73,8 +73,19 @@
 **GET** `/api/v1/movies/{movie_id}` - Get Movie ❌  
 **PATCH** `/api/v1/movies/{movie_id}` - Update Movie 🔐  
 **DELETE** `/api/v1/movies/{movie_id}` - Delete Movie 🔐  
-**GET** `/api/v1/movies/{movie_id}/cast` - Get Movie Cast ❌  
+**GET** `/api/v1/movies/{movie_id}/cast` - Get Movie Cast (Detailed) ❌  
 **GET** `/api/v1/movies/{movie_id}/showtimes` - Get Movie Showtimes ❌
+
+---
+
+## Cast
+
+**POST** `/api/v1/casts/` - Create Cast Member 🔐  
+**GET** `/api/v1/casts/` - List Cast Members ❌  
+**GET** `/api/v1/casts/{cast_id}` - Get Cast Member ❌  
+**PUT** `/api/v1/casts/{cast_id}` - Update Cast Member 🔐  
+**DELETE** `/api/v1/casts/{cast_id}` - Delete Cast Member 🔐  
+**GET** `/api/v1/casts/movie/{movie_id}` - Get Movie Cast Members ❌
 
 ---
 
@@ -115,6 +126,7 @@
 **DELETE** `/api/v1/users/me` - Delete User Account ✅  
 **PUT** `/api/v1/users/me/preferences` - Update User Preferences ✅  
 **PUT** `/api/v1/users/me/profile-picture` - Upload Profile Picture ✅  
+**PUT** `/api/v1/users/me/profile-picture-url` - Update Profile Picture URL ✅  
 **GET** `/api/v1/users/{user_id}` - Get User Profile ❌  
 **GET** `/api/v1/users/me/search-history` - Get User Search History ✅  
 **POST** `/api/v1/users/me/search-history` - Add Search Query ✅  
