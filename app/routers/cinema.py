@@ -1,5 +1,6 @@
 """Cinema and Room routes."""
 
+from collections import defaultdict
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, or_
 from typing import List, Optional
@@ -14,9 +15,10 @@ from app.models.user import User
 from app.schemas.cinema import CinemaCreate, CinemaRead, RoomCreate, RoomRead
 from app.schemas.movie import MovieRead
 from app.routers.movie import normalize_movie_genre
-from app.schemas.screening import ScreeningRead, ScreeningReadDetailed
+from app.schemas.screening import (
+    MovieShowtimesRead,
+)
 from app.services.auth import get_current_admin_user
-from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Cinemas", "Rooms"])
 
@@ -25,16 +27,17 @@ router = APIRouter(prefix=settings.API_V1_PREFIX, tags=["Cinemas", "Rooms"])
 # Cinema Endpoints
 # ============================================================================
 
+
 @router.post(
     "/cinemas/",
     response_model=CinemaRead,
     status_code=status.HTTP_201_CREATED,
-    tags=["Cinemas"]
+    tags=["Cinemas"],
 )
 def create_cinema(
     cinema: CinemaCreate,
     current_admin: User = Depends(get_current_admin_user),
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
 ):
     """Create a new cinema (admin only)."""
     db_cinema = Cinema.model_validate(cinema)
@@ -46,9 +49,7 @@ def create_cinema(
 
 @router.get("/cinemas/", response_model=List[CinemaRead], tags=["Cinemas"])
 def list_cinemas(
-    skip: int = 0,
-    limit: int = 100,
-    session: Session = Depends(get_session)
+    skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
 ):
     """List all cinemas."""
     cinemas = session.exec(select(Cinema).offset(skip).limit(limit)).all()
@@ -57,8 +58,10 @@ def list_cinemas(
 
 @router.get("/cinemas/search", response_model=List[CinemaRead], tags=["Cinemas"])
 def search_cinemas(
-    q: str = Query(..., min_length=1, description="Search query for cinema name, city, or address"),
-    session: Session = Depends(get_session)
+    q: str = Query(
+        ..., min_length=1, description="Search query for cinema name, city, or address"
+    ),
+    session: Session = Depends(get_session),
 ):
     """Search cinemas by name, city, or address."""
     search_term = f"%{q}%"
@@ -67,7 +70,7 @@ def search_cinemas(
             or_(
                 Cinema.name.ilike(search_term),
                 Cinema.city.ilike(search_term),
-                Cinema.address.ilike(search_term)
+                Cinema.address.ilike(search_term),
             )
         )
     ).all()
@@ -81,120 +84,109 @@ def get_cinema(cinema_id: int, session: Session = Depends(get_session)):
     if not cinema:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cinema with id {cinema_id} not found"
+            detail=f"Cinema with id {cinema_id} not found",
         )
     return cinema
 
 
-@router.get("/cinemas/{cinema_id}/amenities", response_model=List[str], tags=["Cinemas"])
+@router.get(
+    "/cinemas/{cinema_id}/amenities", response_model=List[str], tags=["Cinemas"]
+)
 def get_cinema_amenities(cinema_id: int, session: Session = Depends(get_session)):
     """Get list of amenities for a specific cinema."""
     cinema = session.get(Cinema, cinema_id)
     if not cinema:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cinema with id {cinema_id} not found"
+            detail=f"Cinema with id {cinema_id} not found",
         )
     return cinema.amenities or []
 
 
-@router.get("/cinemas/{cinema_id}/movies", response_model=List[MovieRead], tags=["Cinemas"])
-def get_cinema_movies(
-    cinema_id: int,
-    session: Session = Depends(get_session)
-):
+@router.get(
+    "/cinemas/{cinema_id}/movies", response_model=List[MovieRead], tags=["Cinemas"]
+)
+def get_cinema_movies(cinema_id: int, session: Session = Depends(get_session)):
     """Get all movies currently showing at a specific cinema."""
     # Verify cinema exists
     cinema = session.get(Cinema, cinema_id)
     if not cinema:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cinema with id {cinema_id} not found"
+            detail=f"Cinema with id {cinema_id} not found",
         )
-    
+
     # Get all rooms for this cinema
     rooms = session.exec(select(Room).where(Room.cinema_id == cinema_id)).all()
     room_ids = [room.id for room in rooms]
-    
+
     if not room_ids:
         return []
-    
+
     # Get unique movie IDs from screenings in these rooms
     movie_ids = session.exec(
-        select(Screening.movie_id)
-        .where(Screening.room_id.in_(room_ids))
-        .distinct()
+        select(Screening.movie_id).where(Screening.room_id.in_(room_ids)).distinct()
     ).all()
-    
+
     if not movie_ids:
         return []
-    
+
     # Get the actual movies
-    movies = session.exec(
-        select(Movie).where(Movie.id.in_(movie_ids))
-    ).all()
-    
+    movies = session.exec(select(Movie).where(Movie.id.in_(movie_ids))).all()
+
     return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
 
 
 @router.get(
     "/cinemas/{cinema_id}/showtimes",
-    response_model=List[ScreeningReadDetailed],
-    tags=["Cinemas"]
+    response_model=list[MovieShowtimesRead],
+    tags=["Cinemas"],
 )
-def get_cinema_showtimes(
+def get_grouped_cinema_showtimes(
     cinema_id: int,
-    date: Optional[date] = Query(None, description="Filter by date (YYYY-MM-DD)"),
-    skip: int = 0,
-    limit: int = 100,
-    session: Session = Depends(get_session)
+    date: Optional[date] = Query(None),
+    session: Session = Depends(get_session),
 ):
-    """Get all showtimes at a specific cinema with movie and room details."""
-    
-    # Verify cinema exists
-    cinema_exists = session.get(Cinema, cinema_id)
-    if not cinema_exists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cinema with id {cinema_id} not found"
-        )
-    query = (
-        select(Screening)
-        .join(Room)
-        .where(Room.cinema_id == cinema_id)
-        .options(
-            selectinload(Screening.movie),  # eager load movie
-            selectinload(Screening.room).selectinload(Room.cinema),  # eager load room + cinema
-        )
-        .order_by(Screening.screening_time)
-    )
-
+    query = select(Screening).join(Room).join(Movie).where(Room.cinema_id == cinema_id)
     if date:
-        start_of_day = datetime.combine(date, datetime.min.time())
-        end_of_day = datetime.combine(date, datetime.max.time())
+        start = datetime.combine(date, datetime.min.time())
+        end = datetime.combine(date, datetime.max.time())
         query = query.where(
-            Screening.screening_time.between(start_of_day, end_of_day)
+            Screening.screening_time >= start, Screening.screening_time <= end
         )
+    screenings = session.exec(query).all()
+    grouped = defaultdict(lambda: {
+        "movie": None,
+        "room_names": [],
+        "price": None,
+        "showtimes": []
+    })
+    for s in screenings:
+        movie_id = s.movie.id
 
-    screenings = session.exec(query.offset(skip).limit(limit)).all()
-    return screenings
+        grouped[movie_id]["movie"] = s.movie
+        grouped[movie_id]["room_name"] = s.room.name
+        grouped[movie_id]["price"] = s.price
+        grouped[movie_id]["showtimes"].append(s.screening_time)
+    return list(grouped.values())
 
 
 # ============================================================================
 # Room Endpoints
 # ============================================================================
 
+
 @router.post(
     "/cinemas/{cinema_id}/rooms/",
     response_model=RoomRead,
     status_code=status.HTTP_201_CREATED,
-    tags=["Rooms"]
+    tags=["Rooms"],
 )
 def create_room(
     cinema_id: int,
     room: RoomCreate,
     current_admin: User = Depends(get_current_admin_user),
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
 ):
     """Create a new room in a cinema (admin only)."""
     # Verify cinema exists
@@ -202,9 +194,9 @@ def create_room(
     if not cinema:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cinema with id {cinema_id} not found"
+            detail=f"Cinema with id {cinema_id} not found",
         )
-    
+
     db_room = Room(**room.model_dump(), cinema_id=cinema_id)
     session.add(db_room)
     session.commit()
@@ -213,14 +205,9 @@ def create_room(
 
 
 @router.get(
-    "/cinemas/{cinema_id}/rooms/",
-    response_model=List[RoomRead],
-    tags=["Rooms"]
+    "/cinemas/{cinema_id}/rooms/", response_model=List[RoomRead], tags=["Rooms"]
 )
-def list_cinema_rooms(
-    cinema_id: int,
-    session: Session = Depends(get_session)
-):
+def list_cinema_rooms(cinema_id: int, session: Session = Depends(get_session)):
     """List all rooms in a cinema."""
     rooms = session.exec(select(Room).where(Room.cinema_id == cinema_id)).all()
     return rooms
@@ -233,6 +220,6 @@ def get_room(room_id: int, session: Session = Depends(get_session)):
     if not room:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Room with id {room_id} not found"
+            detail=f"Room with id {room_id} not found",
         )
     return room

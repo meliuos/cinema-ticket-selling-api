@@ -7,8 +7,7 @@ from datetime import datetime, date
 
 from app.config import settings
 from app.database import get_session
-from app.models.movie import Movie
-from app.models.cinema import Cinema, Room
+from app.models.cinema import Room
 from app.models.screening import Screening
 from app.schemas.screening import ScreeningRead
 from app.schemas.cinema import SeatRead
