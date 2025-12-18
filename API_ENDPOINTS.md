@@ -41,6 +41,8 @@
 **GET** `/api/v1/cinemas/` - List Cinemas ❌  
 **GET** `/api/v1/cinemas/search` - Search Cinemas ❌  
 **GET** `/api/v1/cinemas/{cinema_id}` - Get Cinema ❌  
+**PATCH** `/api/v1/cinemas/{cinema_id}` - Update Cinema 🔐  
+**DELETE** `/api/v1/cinemas/{cinema_id}` - Delete Cinema 🔐  
 **GET** `/api/v1/cinemas/{cinema_id}/amenities` - Get Cinema Amenities ❌  
 **GET** `/api/v1/cinemas/{cinema_id}/movies` - Get Cinema Movies ❌  
 **GET** `/api/v1/cinemas/{cinema_id}/showtimes` - Get Cinema Showtimes ❌

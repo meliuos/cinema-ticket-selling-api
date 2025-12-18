@@ -15,6 +15,13 @@ class CinemaCreate(CinemaBase):
     """Schema for creating a cinema."""
     pass
 
+class CinemaUpdate(SQLModel):
+    """Schema for updating a cinema."""
+    name: Optional[str] = Field(default=None, max_length=255)
+    address: Optional[str] = Field(default=None, max_length=500)
+    city: Optional[str] = Field(default=None, max_length=100)
+    amenities: Optional[List[str]] = None
+
 class CinemaRead(CinemaBase):
     """Schema for reading a cinema."""
     id: int

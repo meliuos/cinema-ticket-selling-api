@@ -12,7 +12,7 @@ from app.models.cinema import Cinema, Room
 from app.models.screening import Screening
 from app.models.movie import Movie
 from app.models.user import User
-from app.schemas.cinema import CinemaCreate, CinemaRead, RoomCreate, RoomRead
+from app.schemas.cinema import CinemaCreate, CinemaRead, CinemaUpdate, RoomCreate, RoomRead
 from app.schemas.movie import MovieRead
 from app.routers.movie import normalize_movie_genre
 from app.schemas.screening import (
@@ -87,6 +87,49 @@ def get_cinema(cinema_id: int, session: Session = Depends(get_session)):
             detail=f"Cinema with id {cinema_id} not found",
         )
     return cinema
+
+
+@router.patch("/cinemas/{cinema_id}", response_model=CinemaRead, tags=["Cinemas"])
+def update_cinema(
+    cinema_id: int,
+    cinema_update: CinemaUpdate,
+    current_admin: User = Depends(get_current_admin_user),
+    session: Session = Depends(get_session),
+):
+    """Update a cinema (admin only)."""
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found",
+        )
+    
+    # Update only provided fields
+    update_data = cinema_update.model_dump(exclude_unset=True)
+    cinema.sqlmodel_update(update_data)
+    session.add(cinema)
+    session.commit()
+    session.refresh(cinema)
+    return cinema
+
+
+@router.delete("/cinemas/{cinema_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Cinemas"])
+def delete_cinema(
+    cinema_id: int,
+    current_admin: User = Depends(get_current_admin_user),
+    session: Session = Depends(get_session),
+):
+    """Delete a cinema (admin only)."""
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found",
+        )
+    
+    session.delete(cinema)
+    session.commit()
+    return None
 
 
 @router.get(
