@@ -4,7 +4,6 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from datetime import datetime
-
 from app.config import settings
 from app.database import get_session
 from app.models.cast import Cast

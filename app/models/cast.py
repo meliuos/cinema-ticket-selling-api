@@ -10,8 +10,8 @@ class Cast(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     
     # Basic Information
-    name: str = Field(max_length=255)
-    role: str = Field(max_length=255)  # Character name or role in the movie
+    character_name: str = Field(max_length=255)  # Character name
+    role: str = Field(max_length=255)  # Role description
     
     # Relationship
     movie_id: int = Field(foreign_key="movie.id", index=True)
