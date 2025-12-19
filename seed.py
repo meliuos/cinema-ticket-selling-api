@@ -172,19 +172,6 @@ def seed_database():
         
         session.commit()
         print(f"   Total seats created: {total_seats}")
-        # Create admin user
-        print("👤 Creating admin user...")
-        admin_user = User(
-            email="admin@cinema.com",
-            full_name="Admin User",
-            hashed_password=get_password_hash("admin123"),  # Make sure to hash
-            is_active=True,
-            is_admin=True
-        )
-        session.add(admin_user)
-        session.commit()
-        session.refresh(admin_user)
-        print(f"   ✓ Created admin user: {admin_user.email}")
 
         # Updated movies with newer release dates
         print("\n🎥 Creating movies with newer release dates...")
