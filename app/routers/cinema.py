@@ -149,7 +149,12 @@ def get_cinema_amenities(cinema_id: int, session: Session = Depends(get_session)
 @router.get(
     "/cinemas/{cinema_id}/movies", response_model=List[MovieRead], tags=["Cinemas"]
 )
-def get_cinema_movies(cinema_id: int, session: Session = Depends(get_session)):
+def get_cinema_movies(
+    cinema_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    session: Session = Depends(get_session)
+):
     """Get all movies currently showing at a specific cinema."""
     # Verify cinema exists
     cinema = session.get(Cinema, cinema_id)
@@ -174,8 +179,10 @@ def get_cinema_movies(cinema_id: int, session: Session = Depends(get_session)):
     if not movie_ids:
         return []
 
-    # Get the actual movies
-    movies = session.exec(select(Movie).where(Movie.id.in_(movie_ids))).all()
+    # Get the actual movies with pagination
+    movies = session.exec(
+        select(Movie).where(Movie.id.in_(movie_ids)).offset(skip).limit(limit)
+    ).all()
 
     return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
 
