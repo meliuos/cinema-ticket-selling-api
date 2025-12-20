@@ -96,7 +96,9 @@
 **POST** `/api/v1/screenings/` - Create Screening 🔐  
 **GET** `/api/v1/screenings/` - List Screenings ❌  
 **GET** `/api/v1/screenings/{screening_id}` - Get Screening ❌  
-**GET** `/api/v1/screenings/{screening_id}/available-seats` - Get Screening Available Seats ❌
+**GET** `/api/v1/screenings/{screening_id}/available-seats` - Get Screening Available Seats ❌  
+**PUT** `/api/v1/screenings/{screening_id}` - Update Screening 🔐  
+**DELETE** `/api/v1/screenings/{screening_id}` - Delete Screening 🔐
 
 ---
 
