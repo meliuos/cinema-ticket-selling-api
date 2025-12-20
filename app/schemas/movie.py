@@ -119,4 +119,9 @@ class MovieRead(SQLModel):
     # Timestamps
     created_at: datetime
     updated_at: datetime
-    updated_at: datetime
+
+
+class MovieListResponse(SQLModel):
+    """Schema for movie list with total count."""
+    movies: List[MovieRead]
+    total: int
