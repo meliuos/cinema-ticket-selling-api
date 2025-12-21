@@ -12,7 +12,7 @@ from app.models.cinema import Cinema, Room
 from app.models.screening import Screening
 from app.models.movie import Movie
 from app.models.user import User
-from app.schemas.cinema import CinemaCreate, CinemaRead, CinemaUpdate, RoomCreate, RoomRead
+from app.schemas.cinema import CinemaCreate, CinemaRead, CinemaUpdate, CinemaListResponse, RoomCreate, RoomRead
 from app.schemas.movie import MovieRead, MovieListResponse
 from app.routers.movie import normalize_movie_genre
 from app.schemas.screening import (
@@ -47,13 +47,19 @@ def create_cinema(
     return db_cinema
 
 
-@router.get("/cinemas/", response_model=List[CinemaRead], tags=["Cinemas"])
+@router.get("/cinemas/", response_model=CinemaListResponse, tags=["Cinemas"])
 def list_cinemas(
     skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
 ):
-    """List all cinemas."""
+    """List all cinemas with total count."""
+    # Get total count
+    total = session.exec(select(Cinema)).all()
+    total_count = len(total)
+    
+    # Get paginated cinemas
     cinemas = session.exec(select(Cinema).offset(skip).limit(limit)).all()
-    return cinemas
+    
+    return CinemaListResponse(cinemas=list(cinemas), total=total_count)
 
 
 @router.get("/cinemas/search", response_model=List[CinemaRead], tags=["Cinemas"])
