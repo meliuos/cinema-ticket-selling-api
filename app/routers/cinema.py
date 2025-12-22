@@ -12,8 +12,8 @@ from app.models.cinema import Cinema, Room
 from app.models.screening import Screening
 from app.models.movie import Movie
 from app.models.user import User
-from app.schemas.cinema import CinemaCreate, CinemaRead, CinemaUpdate, RoomCreate, RoomRead
-from app.schemas.movie import MovieRead
+from app.schemas.cinema import CinemaCreate, CinemaRead, CinemaUpdate, CinemaListResponse, RoomCreate, RoomRead
+from app.schemas.movie import MovieRead, MovieListResponse
 from app.routers.movie import normalize_movie_genre
 from app.schemas.screening import (
     MovieShowtimesRead,
@@ -47,13 +47,19 @@ def create_cinema(
     return db_cinema
 
 
-@router.get("/cinemas/", response_model=List[CinemaRead], tags=["Cinemas"])
+@router.get("/cinemas/", response_model=CinemaListResponse, tags=["Cinemas"])
 def list_cinemas(
     skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
 ):
-    """List all cinemas."""
+    """List all cinemas with total count."""
+    # Get total count
+    total = session.exec(select(Cinema)).all()
+    total_count = len(total)
+    
+    # Get paginated cinemas
     cinemas = session.exec(select(Cinema).offset(skip).limit(limit)).all()
-    return cinemas
+    
+    return CinemaListResponse(cinemas=list(cinemas), total=total_count)
 
 
 @router.get("/cinemas/search", response_model=List[CinemaRead], tags=["Cinemas"])
@@ -147,7 +153,7 @@ def get_cinema_amenities(cinema_id: int, session: Session = Depends(get_session)
 
 
 @router.get(
-    "/cinemas/{cinema_id}/movies", response_model=List[MovieRead], tags=["Cinemas"]
+    "/cinemas/{cinema_id}/movies", response_model=MovieListResponse, tags=["Cinemas"]
 )
 def get_cinema_movies(
     cinema_id: int,
@@ -169,7 +175,7 @@ def get_cinema_movies(
     room_ids = [room.id for room in rooms]
 
     if not room_ids:
-        return []
+        return MovieListResponse(movies=[], total=0)
 
     # Get unique movie IDs from screenings in these rooms
     movie_ids = session.exec(
@@ -177,14 +183,19 @@ def get_cinema_movies(
     ).all()
 
     if not movie_ids:
-        return []
+        return MovieListResponse(movies=[], total=0)
+    # Get total count of unique movies
+    total = len(movie_ids)
 
     # Get the actual movies with pagination
     movies = session.exec(
         select(Movie).where(Movie.id.in_(movie_ids)).offset(skip).limit(limit)
     ).all()
 
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    return MovieListResponse(
+        movies=[MovieRead(**normalize_movie_genre(movie)) for movie in movies],
+        total=total
+    )
 
 
 @router.get(
@@ -207,7 +218,6 @@ def get_grouped_cinema_showtimes(
     screenings = session.exec(query).all()
     grouped = defaultdict(lambda: {
         "movie": None,
-        "room_names": [],
         "price": None,
         "showtimes": []
     })
@@ -215,9 +225,11 @@ def get_grouped_cinema_showtimes(
         movie_id = s.movie.id
 
         grouped[movie_id]["movie"] = s.movie
-        grouped[movie_id]["room_name"] = s.room.name
         grouped[movie_id]["price"] = s.price
-        grouped[movie_id]["showtimes"].append(s.screening_time)
+        grouped[movie_id]["showtimes"].append({
+            "id": s.id,
+            "screening_time": s.screening_time
+        })
     return list(grouped.values())
 
 

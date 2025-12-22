@@ -12,7 +12,7 @@ from app.models.movie import Movie
 from app.models.cinema import Room, Seat
 from app.models.screening import Screening
 from app.models.user import User
-from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadDetailed
+from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadDetailed, ScreeningReadEnhanced
 from app.schemas.cinema import SeatRead
 from app.services.cinema import get_available_seats
 from app.services.auth import get_current_admin_user
@@ -93,7 +93,7 @@ def list_screenings(
     return screenings
 
 
-@router.get("/{screening_id}", response_model=ScreeningRead)
+@router.get("/{screening_id}", response_model=ScreeningReadEnhanced)
 def get_screening(screening_id: int, session: Session = Depends(get_session)):
     """Get a specific screening by ID."""
     screening = session.exec(
@@ -109,7 +109,24 @@ def get_screening(screening_id: int, session: Session = Depends(get_session)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Screening with id {screening_id} not found"
         )
-    return screening
+    
+    # Get available seats count
+    available_seats = get_available_seats(session, screening_id)
+    available_seats_count = len(available_seats)
+    
+    # Extract date from screening_time
+    screening_date = screening.screening_time.date()
+    
+    return ScreeningReadEnhanced(
+        id=screening.id,
+        movie_id=screening.movie_id,
+        room_name=screening.room.name,
+        screening_time=screening.screening_time,
+        screening_date=screening_date,
+        price=screening.price,
+        available_seats_count=available_seats_count,
+        created_at=screening.created_at
+    )
 
 
 @router.get("/{screening_id}/available-seats", response_model=List[SeatRead])

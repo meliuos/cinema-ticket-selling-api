@@ -1,5 +1,5 @@
 """Pydantic schemas for Screening-related API operations."""
-from datetime import datetime
+from datetime import datetime, date
 from typing import List
 from sqlmodel import SQLModel, Field
 from app.schemas.movie import MovieRead
@@ -29,8 +29,27 @@ class ScreeningReadDetailed(SQLModel):
     price: float
     movie: MovieRead
     room: RoomWithCinemaRead
+
+
+class ScreeningReadEnhanced(SQLModel):
+    """Enhanced schema for reading a screening with additional details."""
+    id: int
+    movie_id: int
+    room_name: str
+    screening_time: datetime
+    screening_date: date
+    price: float
+    available_seats_count: int
+    created_at: datetime
+
+
+class ShowtimeDetail(SQLModel):
+    """Schema for showtime detail with ID and time."""
+    id: int
+    screening_time: datetime
+
+
 class MovieShowtimesRead(SQLModel):
     movie: MovieRead
-    room_name: str    
     price: float
-    showtimes: List[datetime]
+    showtimes: List[ShowtimeDetail]

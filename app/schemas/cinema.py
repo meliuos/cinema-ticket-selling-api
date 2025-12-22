@@ -27,6 +27,11 @@ class CinemaRead(CinemaBase):
     id: int
     created_at: datetime
 
+class CinemaListResponse(SQLModel):
+    """Schema for cinema list response with total count."""
+    cinemas: List[CinemaRead]
+    total: int
+
 class RoomBase(SQLModel):
     """Base model for Room with shared fields."""
     name: str = Field(max_length=100)

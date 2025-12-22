@@ -53,6 +53,32 @@ def add_cinema_to_favorites(
     return favorite
 
 
+@router.get("/{cinema_id}/favorite/check")
+def check_cinema_is_favorite(
+    cinema_id: int,
+    current_user: User = Depends(get_current_active_user),
+    session: Session = Depends(get_session)
+):
+    """Check if a cinema is in user's favorites."""
+    # Check if cinema exists
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found"
+        )
+    
+    # Check if favorited
+    favorite = session.exec(
+        select(Favorite).where(
+            Favorite.user_id == current_user.id,
+            Favorite.cinema_id == cinema_id
+        )
+    ).first()
+    
+    return {"is_favorite": favorite is not None}
+
+
 @router.delete("/{cinema_id}/favorite", status_code=status.HTTP_204_NO_CONTENT)
 def remove_cinema_from_favorites(
     cinema_id: int,
