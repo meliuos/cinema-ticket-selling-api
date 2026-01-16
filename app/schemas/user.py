@@ -70,6 +70,12 @@ class TokenData(SQLModel):
     email: Optional[str] = None
 
 
+class EmailCheckResponse(SQLModel):
+    """Schema for email check response."""
+    email: str
+    exists: bool
+
+
 class RefreshTokenRequest(SQLModel):
     """Schema for refresh token request."""
     token: str
@@ -83,6 +89,12 @@ class ForgotPasswordRequest(SQLModel):
 class ResetPasswordRequest(SQLModel):
     """Schema for reset password request."""
     token: str
+    new_password: str = Field(min_length=8)
+
+
+class ChangePasswordRequest(SQLModel):
+    """Schema for change password request."""
+    current_password: str
     new_password: str = Field(min_length=8)
 
 

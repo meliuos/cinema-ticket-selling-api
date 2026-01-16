@@ -4,13 +4,14 @@ Database seeding script.
 Run this to populate the database with sample data for development/testing.
 """
 from datetime import datetime, timedelta, date
-from sqlmodel import Session, create_engine, select
+from sqlmodel import Session, create_engine, select, text
 
 from app.config import settings
 from app.database import engine
 from app.models import Cinema, Room, Seat, Movie, Screening, User
 from app.services.auth import get_password_hash
 from sqlmodel import SQLModel
+
 
 
 def seed_database():
@@ -33,23 +34,23 @@ def seed_database():
             is_active=True
         )
         session.add(demo_user)
-        session.commit()
-        session.refresh(demo_user)
-        print(f"   ✓ Created user: {demo_user.email}")
-        print("👤 Creating admin user...")
-        admin = User(
-            email="admin@test.com",
+        
+        # Create admin user
+        print("👑 Creating admin user...")
+        admin_user = User(
+            email="admin@cinema.com",
             full_name="Admin User",
-            hashed_password=get_password_hash("password123"),
-            is_admin=True,
-            is_active=True
+            hashed_password=get_password_hash("admin123"),
+            is_active=True,
+            is_admin=True
         )
-        session.add(admin)
-
+        session.add(admin_user)
         session.commit()
         session.refresh(demo_user)
-        session.refresh(admin)
-
+        session.refresh(admin_user)
+        print(f"   ✓ Created user: {demo_user.email}")
+        print(f"   ✓ Created user: {demo_user.email}")
+        print(f"   ✓ Created admin: {admin_user.email}")
 
         # Create cinemas
         print("\n🎬 Creating cinemas...")
@@ -57,12 +58,56 @@ def seed_database():
             Cinema(
                 name="Mega Cinema Tunis",
                 address="123 Avenue Habib Bourguiba",
-                city="Tunis"
+                city="Tunis",
+                phone="+216 71 123 456",
+                hasParking=True,
+                isAccessible=True,
+                amenities=["IMAX", "3D", "Dolby Atmos", "VIP Seats", "Food Court", "Online Booking"]
             ),
             Cinema(
-                name="Pathé Palace",
-                address="456 Avenue de la Liberté",
-                city="Tunis"
+                name="Pathe Palace",
+                address="456 Avenue de la Liberte",
+                city="Tunis",
+                phone="+216 71 234 567",
+                hasParking=True,
+                isAccessible=True,
+                amenities=["IMAX", "4DX", "3D", "Dolby Atmos", "Premium Seats", "Cafe", "Parking"]
+            ),
+            Cinema(
+                name="ABC Cinema Carthage",
+                address="Avenue de Carthage, Les Berges du Lac",
+                city="Tunis",
+                phone="+216 71 345 678",
+                hasParking=True,
+                isAccessible=True,
+                amenities=["3D", "Dolby Surround", "Comfortable Seats", "Snack Bar", "Air Conditioning"]
+            ),
+            Cinema(
+                name="Prestige Cinema Sousse",
+                address="Boulevard 14 Janvier, City Center",
+                city="Sousse",
+                phone="+216 73 456 789",
+                hasParking=False,
+                isAccessible=True,
+                amenities=["3D", "Digital Projection", "Recliner Seats", "Cafe", "Online Tickets"]
+            ),
+            Cinema(
+                name="Madina Cinema Sfax",
+                address="Avenue de la Republique",
+                city="Sfax",
+                phone="+216 74 567 890",
+                hasParking=True,
+                isAccessible=False,
+                amenities=["3D", "Standard Seats", "Concession Stand", "Multiple Screens"]
+            ),
+            Cinema(
+                name="Star Cinema La Marsa",
+                address="Route de la Marsa, La Marsa Corniche",
+                city="La Marsa",
+                phone="+216 71 678 901",
+                hasParking=True,
+                isAccessible=True,
+                amenities=["IMAX", "3D", "Laser Projection", "VIP Lounge", "Restaurant", "Premium Sound"]
             )
         ]
         
@@ -79,7 +124,9 @@ def seed_database():
         rooms = [
             Room(name="Room 1", cinema_id=cinemas[0].id),
             Room(name="Room 2", cinema_id=cinemas[0].id),
-            Room(name="IMAX", cinema_id=cinemas[1].id),
+            Room(name="IMAX Theater", cinema_id=cinemas[1].id),
+            Room(name="4DX Hall", cinema_id=cinemas[1].id),
+            Room(name="VIP Room", cinema_id=cinemas[5].id),
         ]
         
         for room in rooms:
@@ -94,15 +141,26 @@ def seed_database():
         print("\n💺 Creating seats...")
         total_seats = 0
         for room in rooms:
-            # Standard rooms: 8 rows x 12 seats, IMAX: 12 rows x 20 seats
-            rows = 12 if room.name == "IMAX" else 8
-            seats_per_row = 20 if room.name == "IMAX" else 12
+            # IMAX and VIP rooms: 12 rows x 20 seats, others: 8 rows x 12 seats
+            if "IMAX" in room.name or "VIP" in room.name:
+                rows = 12
+                seats_per_row = 20
+            elif "4DX" in room.name:
+                rows = 10
+                seats_per_row = 16
+            else:
+                rows = 8
+                seats_per_row = 12
             
             for row_num in range(rows):
                 row_label = chr(65 + row_num) if row_num < 26 else f"A{chr(65 + row_num - 26)}"
                 
                 for seat_num in range(1, seats_per_row + 1):
-                    seat_type = "vip" if row_num >= rows - 2 else "standard"
+                    # VIP rooms: all VIP seats, others: last 2 rows are VIP
+                    if "VIP" in room.name:
+                        seat_type = "vip"
+                    else:
+                        seat_type = "vip" if row_num >= rows - 2 else "standard"
                     seat = Seat(
                         room_id=room.id,
                         row_label=row_label,
@@ -116,7 +174,56 @@ def seed_database():
         
         session.commit()
         print(f"   Total seats created: {total_seats}")
-        
+
+        # Updated movies with newer release dates
+        print("\n🎥 Creating movies with newer release dates...")
+        movies = [
+            Movie(
+                title="Avatar: The Way of Water",
+                description="Jake Sully lives with his newfound family formed on Pandora...",
+                duration_minutes=192,
+                genre="Sci-Fi",
+                rating="PG-13",
+                cast=["Sam Worthington", "Zoe Saldaña", "Sigourney Weaver"],
+                director="James Cameron",
+                writers=["James Cameron"],
+                producers=["Jon Landau"],
+                release_date=date(2022, 12, 16),  # newer date
+                country="USA",
+                language="English",
+                budget=250000000,
+                revenue=2300000000,
+                production_company="20th Century Studios",
+                distributor="20th Century Studios",
+                image_url="https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
+                trailer_url="https://www.youtube.com/watch?v=d9MyW72ELq0",
+                awards=[],
+                details={"imdb_rating": 7.8}
+            ),
+            Movie(
+                title="Oppenheimer",
+                description="The story of J. Robert Oppenheimer and the creation of the atomic bomb...",
+                duration_minutes=180,
+                genre="Biography",
+                rating="PG-13",
+                cast=["Cillian Murphy", "Emily Blunt", "Matt Damon"],
+                director="Christopher Nolan",
+                writers=["Christopher Nolan"],
+                producers=["Emma Thomas", "Christopher Nolan"],
+                release_date=date(2023, 7, 21),  # newer date
+                country="USA",
+                language="English",
+                budget=100000000,
+                revenue=900000000,
+                production_company="Universal Pictures",
+                distributor="Universal Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/FiQkXn0i6HsqZfXb4Kt8fhFIdHg.jpg",
+                trailer_url="https://www.youtube.com/watch?v=QPdIXok6GOs",
+                awards=[],
+                details={"imdb_rating": 8.5}
+            ),
+        ]
+
         # Create movies with comprehensive details
         print("\n🎥 Creating movies...")
         movies = [
@@ -240,25 +347,35 @@ def seed_database():
             session.refresh(movie)
             print(f"   ✓ Created movie: {movie.title}")
         
-        # Create screenings (next 7 days)
+        # Create screenings (tomorrow and day after tomorrow for all cinemas)
         print("\n📅 Creating screenings...")
         base_date = datetime.now() + timedelta(days=1)
         screening_count = 0
         
-        for day in range(7):  # Next 7 days
+        for day in range(2):  # Tomorrow and day after tomorrow
             current_date = base_date + timedelta(days=day)
             
             # Morning, afternoon, evening, night showtimes
             times = [10, 14, 18, 21]
             
-            for idx, movie in enumerate(movies[:3]):  # First 3 movies
-                room = rooms[idx % len(rooms)]
+            # Create screenings for all rooms (covering all cinemas)
+            for room_idx, room in enumerate(rooms):
+                # Distribute movies across rooms
+                movie = movies[room_idx % len(movies)]
                 
                 for time_hour in times:
                     screening_time = current_date.replace(hour=time_hour, minute=0, second=0)
                     
-                    # IMAX movies cost more
-                    base_price = 20.0 if room.name == "IMAX" else 15.0
+                    # Premium rooms cost more
+                    if "IMAX" in room.name:
+                        base_price = 22.0
+                    elif "VIP" in room.name:
+                        base_price = 25.0
+                    elif "4DX" in room.name:
+                        base_price = 20.0
+                    else:
+                        base_price = 15.0
+                    
                     # Evening/night shows cost more
                     price = base_price + 3.0 if time_hour >= 18 else base_price
                     
@@ -272,7 +389,7 @@ def seed_database():
                     screening_count += 1
         
         session.commit()
-        print(f"   ✓ Created {screening_count} screenings")
+        print(f"   ✓ Created {screening_count} screenings across all cinemas")
         
         print("\n✅ Database seeding completed successfully!")
         print(f"\n📊 Summary:")
@@ -285,4 +402,18 @@ def seed_database():
 
 
 if __name__ == "__main__":
+    with Session(engine) as session:
+        print("🧹 Deleting previous data...")
+
+        # Delete screenings first (due to foreign key constraints)
+        session.exec(text('DELETE FROM screening'))
+        session.exec(text('DELETE FROM seat'))
+        session.exec(text('DELETE FROM room'))
+        session.exec(text('DELETE FROM movie'))
+        session.exec(text('DELETE FROM cinema'))
+        session.exec(text('DELETE FROM "user"'))
+        session.commit()
+
+        print("   ✓ All previous data deleted")
+
     seed_database()

@@ -1,18 +1,101 @@
 """User profile routes."""
 
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query
 from sqlmodel import Session, select
-from typing import Optional
+from typing import Optional, List
 import os
 from datetime import datetime
 
 from app.config import settings
 from app.database import get_session
 from app.models.user import User
-from app.schemas.user import UserRead, UserUpdate, UserPreferences, UserPreferencesUpdate
-from app.services.auth import get_current_active_user
+from app.schemas.user import UserRead, UserUpdate, UserPreferences, UserPreferencesUpdate, UserCreate
+from app.services.auth import get_current_active_user, get_current_admin_user, get_password_hash
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/users", tags=["Users"])
+
+
+# ============================================================================
+# Admin User Management Endpoints
+# ============================================================================
+
+@router.get("/admin/users/", response_model=List[UserRead])
+def list_all_users(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
+    status_filter: Optional[str] = Query(None, alias="status", description="Filter by status: active, suspended"),
+    role: Optional[str] = Query(None, description="Filter by role: user, admin"),
+    session: Session = Depends(get_session),
+    current_admin: User = Depends(get_current_admin_user),
+):
+    """List all users with optional filters (admin only)."""
+    query = select(User)
+    
+    if status_filter:
+        if status_filter.lower() == "active":
+            query = query.where(User.is_active == True)
+        elif status_filter.lower() == "suspended":
+            query = query.where(User.is_active == False)
+    
+    if role:
+        if role.lower() == "admin":
+            query = query.where(User.is_admin == True)
+        elif role.lower() == "user":
+            query = query.where(User.is_admin == False)
+    
+    users = session.exec(query.offset(skip).limit(limit)).all()
+    return users
+
+
+@router.post("/admin/users/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+def create_admin_user(
+    user_data: UserCreate,
+    session: Session = Depends(get_session),
+    current_admin: User = Depends(get_current_admin_user),
+):
+    """Create a new admin user (admin only)."""
+    # Check if email already exists
+    existing_user = session.exec(select(User).where(User.email == user_data.email)).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    new_admin = User(
+        email=user_data.email,
+        full_name=user_data.full_name,
+        hashed_password=get_password_hash(user_data.password),
+        is_admin=True,
+        is_active=True,
+    )
+    session.add(new_admin)
+    session.commit()
+    session.refresh(new_admin)
+    return new_admin
+
+
+@router.patch("/admin/users/{user_id}/status", response_model=UserRead)
+def update_user_status(
+    user_id: int,
+    is_active: bool,
+    session: Session = Depends(get_session),
+    current_admin: User = Depends(get_current_admin_user),
+):
+    """Update user active/suspended status (admin only)."""
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    user.is_active = is_active
+    user.updated_at = datetime.utcnow()
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
 
 
 @router.get("/me", response_model=UserRead)
@@ -117,7 +200,7 @@ async def upload_profile_picture(
         f.write(content)
 
     # Update user profile picture URL
-    current_user.profile_picture_url = f"/uploads/profile_pictures/{filename}"
+    current_user.profile_picture_url = f"https://localhost:8000/uploads/profile_pictures/{filename}"
     current_user.updated_at = datetime.utcnow()
     session.add(current_user)
     session.commit()
@@ -125,6 +208,33 @@ async def upload_profile_picture(
 
     return {
         "message": "Profile picture uploaded successfully",
+        "profile_picture_url": current_user.profile_picture_url
+    }
+
+
+@router.put("/me/profile-picture-url")
+async def update_profile_picture_url(
+    profile_picture_url: str,
+    current_user: User = Depends(get_current_active_user),
+    session: Session = Depends(get_session)
+):
+    """Update user profile picture URL with an absolute URL."""
+    # Basic validation for URL format
+    if not profile_picture_url.startswith("https://"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Profile picture URL must be an absolute HTTPS URL"
+        )
+
+    # Update user profile picture URL
+    current_user.profile_picture_url = profile_picture_url
+    current_user.updated_at = datetime.utcnow()
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+
+    return {
+        "message": "Profile picture URL updated successfully",
         "profile_picture_url": current_user.profile_picture_url
     }
 

@@ -13,9 +13,11 @@ from app.schemas.user import (
     UserCreate, 
     UserRead, 
     Token, 
+    EmailCheckResponse,
     RefreshTokenRequest,
     ForgotPasswordRequest,
     ResetPasswordRequest,
+    ChangePasswordRequest,
     PasswordResetResponse
 )
 from app.services.auth import (
@@ -87,6 +89,14 @@ def login(
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     """Get current user information."""
     return current_user
+
+
+@router.get("/check-email", response_model=EmailCheckResponse)
+def check_email_exists(email: str, session: Session = Depends(get_session)):
+    """Check if an email address is already registered."""
+    statement = select(User).where(User.email == email)
+    existing_user = session.exec(statement).first()
+    return EmailCheckResponse(email=email, exists=existing_user is not None)
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
@@ -242,4 +252,38 @@ async def reset_password(
     session.commit()
     
     return {"message": "Password successfully reset"}
+
+
+@router.put("/change-password", status_code=status.HTTP_200_OK)
+async def change_password(
+    request: ChangePasswordRequest,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Change the current user's password.
+    Requires the current password for verification.
+    """
+    # Verify current password
+    if not authenticate_user(session, current_user.email, request.current_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+    
+    # Check if new password is different from current
+    if request.current_password == request.new_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from current password"
+        )
+    
+    # Update password
+    current_user.hashed_password = get_password_hash(request.new_password)
+    current_user.updated_at = datetime.now(timezone.utc)
+    
+    session.add(current_user)
+    session.commit()
+    
+    return {"message": "Password successfully changed"}
 

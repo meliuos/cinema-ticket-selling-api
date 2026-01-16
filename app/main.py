@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from app.config import settings
+from fastapi.middleware.cors import CORSMiddleware
 from app.database import create_db_and_tables
 from app.routers import (
     auth_router,
@@ -18,12 +19,23 @@ from app.routers import (
     favorite_router,
     user_features_router,
     recommendation_router,
+    admin_router,
+    cast_router,
 )
+origins = [
+    "http://localhost:4200",]
 
 # Create FastAPI application
 app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.DEBUG,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Mount static files for uploads
@@ -65,3 +77,6 @@ app.include_router(ticket_router)
 app.include_router(user_router)
 app.include_router(review_router)
 app.include_router(user_features_router)
+app.include_router(admin_router)
+app.include_router(cast_router)
+

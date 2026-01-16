@@ -1,6 +1,6 @@
 """Pydantic schemas for the cinema ticketing system."""
 
-from app.schemas.user import UserCreate, UserRead, UserLogin, Token, TokenData
+from app.schemas.user import UserCreate, UserRead, UserLogin, Token, TokenData, EmailCheckResponse
 from app.schemas.cinema import (
     CinemaCreate, CinemaRead,
     RoomCreate, RoomRead,
@@ -9,10 +9,11 @@ from app.schemas.cinema import (
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
 from app.schemas.screening import ScreeningCreate, ScreeningRead
 from app.schemas.ticket import TicketCreate, TicketRead
+from app.schemas.cast import CastCreate, CastRead, CastUpdate
 
 __all__ = [
     # User
-    "UserCreate", "UserRead", "UserLogin", "Token", "TokenData",
+    "UserCreate", "UserRead", "UserLogin", "Token", "TokenData", "EmailCheckResponse",
     # Cinema
     "CinemaCreate", "CinemaRead",
     "RoomCreate", "RoomRead",
@@ -23,4 +24,6 @@ __all__ = [
     "ScreeningCreate", "ScreeningRead",
     # Ticket
     "TicketCreate", "TicketRead",
+    # Cast
+    "CastCreate", "CastRead", "CastUpdate",
 ]

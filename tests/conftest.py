@@ -55,9 +55,9 @@ def test_user_fixture(session: Session):
 def admin_user_fixture(session: Session):
     """Create an admin user."""
     admin = User(
-        email="admin@example.com",
+        email="demo@cinema.com",
         full_name="Admin User",
-        hashed_password=get_password_hash("adminpassword123"),
+        hashed_password=get_password_hash("demo123"),
         is_active=True,
         is_admin=True
     )
