@@ -10,6 +10,7 @@ from app.config import settings
 from app.database import engine
 from app.models import Cinema, Room, Seat, Movie, Screening, User
 from app.services.auth import get_password_hash
+from sqlmodel import SQLModel
 
 
 def seed_database():
@@ -20,8 +21,8 @@ def seed_database():
         # Check if already seeded
         existing_cinema = session.exec(select(Cinema)).first()
         if existing_cinema:
-            print("⚠️  Database already contains data. Skipping seed.")
-            return
+           print("⚠️  Database already contains data. Skipping seed.")
+           return
         
         # Create sample user (for testing ticket booking)
         print("👤 Creating sample user...")
@@ -35,7 +36,21 @@ def seed_database():
         session.commit()
         session.refresh(demo_user)
         print(f"   ✓ Created user: {demo_user.email}")
-        
+        print("👤 Creating admin user...")
+        admin = User(
+            email="admin@test.com",
+            full_name="Admin User",
+            hashed_password=get_password_hash("password123"),
+            is_admin=True,
+            is_active=True
+        )
+        session.add(admin)
+
+        session.commit()
+        session.refresh(demo_user)
+        session.refresh(admin)
+
+
         # Create cinemas
         print("\n🎬 Creating cinemas...")
         cinemas = [

@@ -1,4 +1,5 @@
 """Main FastAPI application - Cinema Ticketing System."""
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -28,7 +29,13 @@ app = FastAPI(
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # you can restrict this later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.on_event("startup")
 def on_startup():
     """Initialize database tables on application startup."""
