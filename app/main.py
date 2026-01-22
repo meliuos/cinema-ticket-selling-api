@@ -22,16 +22,24 @@ from app.routers import (
     cast_router,
 )
 origins = [
-    "http://localhost:4200",]
+    "http://localhost:4200",
+    "http://localhost:52970",
+    "http://localhost:3000",
+    "http://localhost:8080",
+    "http://localhost",
+    "http://127.0.0.1",
+]
 
 # Create FastAPI application
 app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.DEBUG,
 )
+
+# Add CORS middleware FIRST (must be before other middleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
