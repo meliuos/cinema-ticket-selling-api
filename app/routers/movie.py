@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, or_
+from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from datetime import datetime, date
 
@@ -9,10 +10,11 @@ from app.config import settings
 from app.database import get_session
 from app.models.movie import Movie
 from app.models.screening import Screening
+from app.models.cinema import Room
 from app.models.user import User
 from app.models.cast import Cast
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
-from app.schemas.screening import ScreeningRead
+from app.schemas.screening import MovieShowtimeRead
 from app.schemas.cast import CastRead
 from app.services.auth import get_current_admin_user
 
@@ -50,10 +52,21 @@ def list_movies(
     limit: int = 100,
     session: Session = Depends(get_session)
 ):
-    """List all movies."""
+    """List all movies with cast details."""
     movies = session.exec(select(Movie).offset(skip).limit(limit)).all()
-    # Normalize genre fields for backward compatibility
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = casts
+        result.append(movie_dict)
+    
+    return result
 
 
 @router.get("/search", response_model=List[MovieRead])
@@ -77,8 +90,19 @@ def search_movies(
     ).offset(skip).limit(limit)
 
     movies = session.exec(statement).all()
-    # Normalize genre fields for backward compatibility
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        cast_statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(cast_statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = casts
+        result.append(movie_dict)
+    
+    return result
 
 
 @router.get("/filter", response_model=List[MovieRead])
@@ -127,8 +151,19 @@ def filter_movies(
     query = query.order_by(Movie.release_date.desc())
 
     movies = session.exec(query.offset(skip).limit(limit)).all()
-    # Normalize genre fields for backward compatibility
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        cast_statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(cast_statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = casts
+        result.append(movie_dict)
+    
+    return result
 
 
 @router.get("/advanced-search", response_model=List[MovieRead])
@@ -206,20 +241,40 @@ def advanced_search_movies(
         query = query.order_by(Movie.release_date.desc())
 
     movies = session.exec(query.offset(skip).limit(limit)).all()
-    # Normalize genre fields for backward compatibility
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        cast_statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(cast_statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = casts
+        result.append(movie_dict)
+    
+    return result
 
 
 @router.get("/{movie_id}", response_model=MovieRead)
 def get_movie(movie_id: int, session: Session = Depends(get_session)):
-    """Get a specific movie by ID."""
+    """Get a specific movie by ID with cast details."""
     movie = session.get(Movie, movie_id)
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Movie with id {movie_id} not found"
         )
-    return normalize_movie_genre(movie)
+    
+    # Get cast details
+    statement = select(Cast).where(Cast.movie_id == movie_id).order_by(Cast.order)
+    casts = session.exec(statement).all()
+    
+    # Convert movie to dict and add cast details
+    movie_dict = normalize_movie_genre(movie)
+    movie_dict['cast'] = casts
+    
+    return movie_dict
 
 
 @router.get("/{movie_id}/cast", response_model=List[CastRead])
@@ -236,7 +291,7 @@ def get_movie_cast(movie_id: int, session: Session = Depends(get_session)):
     return casts
 
 
-@router.get("/{movie_id}/showtimes", response_model=List[ScreeningRead])
+@router.get("/{movie_id}/showtimes", response_model=List[MovieShowtimeRead])
 def get_movie_showtimes(
     movie_id: int,
     date: Optional[date] = Query(None, description="Filter by date (YYYY-MM-DD)"),
@@ -244,7 +299,7 @@ def get_movie_showtimes(
     limit: int = 100,
     session: Session = Depends(get_session)
 ):
-    """Get all showtimes for a specific movie, optionally filtered by date."""
+    """Get all future showtimes for a specific movie, optionally filtered by date."""
     # Check if movie exists
     movie = session.get(Movie, movie_id)
     if not movie:
@@ -253,8 +308,14 @@ def get_movie_showtimes(
             detail=f"Movie with id {movie_id} not found"
         )
     
-    # Build query
-    query = select(Screening).where(Screening.movie_id == movie_id)
+    # Build query with relationships loaded, only future screenings
+    now = datetime.utcnow()
+    query = select(Screening).where(
+        Screening.movie_id == movie_id,
+        Screening.screening_time > now
+    ).options(
+        selectinload(Screening.room).selectinload(Room.cinema)
+    )
     
     if date:
         # Filter by date

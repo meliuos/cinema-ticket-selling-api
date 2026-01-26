@@ -44,6 +44,13 @@ class ReviewReaction(SQLModel):
     reaction_type: str = Field(description="Either 'like' or 'dislike'")
 
 
+class ReviewReactionResponse(SQLModel):
+    """Schema for reaction response."""
+    message: str
+    review: ReviewRead
+    user_reaction: Optional[str] = None  # Current user's reaction: 'like', 'dislike', or None
+
+
 class ReviewSummary(SQLModel):
     """Schema for review summary with rating breakdown."""
     movie_id: int

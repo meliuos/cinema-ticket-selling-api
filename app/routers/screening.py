@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select
+from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from datetime import datetime, date
 
@@ -11,7 +12,8 @@ from app.models.movie import Movie
 from app.models.cinema import Room, Seat
 from app.models.screening import Screening
 from app.models.user import User
-from app.schemas.screening import ScreeningCreate, ScreeningRead
+from app.models.cast import Cast
+from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadDetailed
 from app.schemas.cinema import SeatRead
 from app.services.cinema import get_available_seats
 from app.services.auth import get_current_admin_user
@@ -89,16 +91,49 @@ def list_screenings(
     return screenings
 
 
-@router.get("/{screening_id}", response_model=ScreeningRead)
+@router.get("/{screening_id}", response_model=ScreeningReadDetailed)
 def get_screening(screening_id: int, session: Session = Depends(get_session)):
     """Get a specific screening by ID."""
-    screening = session.get(Screening, screening_id)
+    screening = session.exec(
+        select(Screening)
+        .where(Screening.id == screening_id)
+        .options(
+            selectinload(Screening.movie),
+            selectinload(Screening.room).selectinload(Room.cinema)
+        )
+    ).first()
+    
     if not screening:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Screening with id {screening_id} not found"
         )
-    return screening
+    
+    # Get cast details for the movie
+    cast_statement = select(Cast).where(Cast.movie_id == screening.movie_id).order_by(Cast.order)
+    casts = session.exec(cast_statement).all()
+    
+    # Convert to dict and normalize
+    screening_dict = screening.model_dump()
+    movie_dict = screening.movie.model_dump()
+    room_dict = screening.room.model_dump()
+    cinema_dict = screening.room.cinema.model_dump() if screening.room.cinema else None
+    
+    # Normalize genre
+    if isinstance(movie_dict.get('genre'), str):
+        movie_dict['genre'] = [movie_dict['genre']] if movie_dict['genre'] else None
+    
+    # Add cast details to movie
+    movie_dict['cast'] = casts
+    
+    # Add cinema to room
+    room_dict['cinema'] = cinema_dict
+    
+    # Build final response
+    screening_dict['movie'] = movie_dict
+    screening_dict['room'] = room_dict
+    
+    return screening_dict
 
 
 @router.get("/{screening_id}/available-seats", response_model=List[SeatRead])

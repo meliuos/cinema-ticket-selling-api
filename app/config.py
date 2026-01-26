@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "FastAPI Application"
     DEBUG: bool = True
     API_V1_PREFIX: str = "/api/v1"
+    BASE_URL: str = "http://localhost:8000"
     
     # Authentication
     SECRET_KEY: str = "your-secret-key-here-change-in-production-use-openssl-rand-hex-32"

@@ -4,7 +4,7 @@ from collections import defaultdict
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, or_
 from typing import List, Optional
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from app.config import settings
 from app.database import get_session
@@ -17,6 +17,7 @@ from app.schemas.movie import MovieRead
 from app.routers.movie import normalize_movie_genre
 from app.schemas.screening import (
     MovieShowtimesRead,
+    ScreeningRead,
 )
 from app.services.auth import get_current_admin_user
 
@@ -169,6 +170,50 @@ def get_grouped_cinema_showtimes(
         grouped[movie_id]["price"] = s.price
         grouped[movie_id]["showtimes"].append(s.screening_time)
     return list(grouped.values())
+
+
+@router.get(
+    "/cinemas/{cinema_id}/movies/{movie_id}/showtimes",
+    response_model=List[ScreeningRead],
+    tags=["Cinemas"],
+)
+def get_cinema_movie_showtimes(
+    cinema_id: int,
+    movie_id: int,
+    session: Session = Depends(get_session),
+):
+    """Get showtimes for a specific cinema and movie from today to the next 6 days."""
+    # Verify cinema exists
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found"
+        )
+    
+    # Verify movie exists
+    movie = session.get(Movie, movie_id)
+    if not movie:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Movie with id {movie_id} not found"
+        )
+    
+    # Get showtimes from today to next 6 days
+    today = date.today()
+    end_date = today + timedelta(days=6)
+    start_dt = datetime.combine(today, datetime.min.time())
+    end_dt = datetime.combine(end_date, datetime.max.time())
+    
+    query = select(Screening).join(Room).where(
+        Room.cinema_id == cinema_id,
+        Screening.movie_id == movie_id,
+        Screening.screening_time >= start_dt,
+        Screening.screening_time <= end_dt
+    )
+    
+    screenings = session.exec(query).all()
+    return screenings
 
 
 # ============================================================================

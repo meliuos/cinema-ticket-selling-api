@@ -26,7 +26,7 @@ def create_seats_bulk(
     session: Session = Depends(get_session),
     current_admin: User = Depends(get_current_admin_user)
 ):
-    """Bulk create seats for a room (e.g., 10 rows x 15 seats) (admin only)."""
+    """Bulk create seats for a room (always 7 rows x 10 seats) (admin only)."""
     seats = bulk_create_seats(session, room_id, data)
     return seats
 

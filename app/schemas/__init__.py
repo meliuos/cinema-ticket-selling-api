@@ -7,7 +7,7 @@ from app.schemas.cinema import (
     SeatCreate, SeatRead, SeatBulkCreate
 )
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
-from app.schemas.screening import ScreeningCreate, ScreeningRead
+from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadDetailed, MovieShowtimeRead
 from app.schemas.ticket import TicketCreate, TicketRead
 from app.schemas.cast import CastCreate, CastRead, CastUpdate
 
@@ -21,7 +21,7 @@ __all__ = [
     # Movie
     "MovieCreate", "MovieRead", "MovieUpdate",
     # Screening
-    "ScreeningCreate", "ScreeningRead",
+    "ScreeningCreate", "ScreeningRead", "ScreeningReadDetailed", "MovieShowtimeRead",
     # Ticket
     "TicketCreate", "TicketRead",
     # Cast

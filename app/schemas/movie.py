@@ -6,6 +6,7 @@ from sqlmodel import SQLModel, Field
 from sqlalchemy import Column
 from sqlalchemy.types import JSON
 from typing import Union
+from app.schemas.cast import CastRead
 
 
 class MovieBase(SQLModel):
@@ -89,8 +90,8 @@ class MovieRead(SQLModel):
     genre: Optional[Union[str,List[str]]] = None  # Normalized to list
     rating: Optional[str] = None
     
-    # Cast & Crew
-    cast: Optional[List[str]] = None
+    # Cast & Crew - detailed cast with images
+    cast: Optional[List[CastRead]] = None
     director: Optional[str] = None
     writers: Optional[List[str]] = None
     producers: Optional[List[str]] = None

@@ -277,6 +277,15 @@ def test_get_movie_showtimes(client: TestClient, test_movie, test_screening):
     assert len(data) >= 1
     # Verify screening is in the list
     assert any(s["id"] == test_screening.id for s in data)
+    # Verify the new structure includes cinema details
+    for showtime in data:
+        assert "id" in showtime
+        assert "screening_time" in showtime
+        assert "price" in showtime
+        assert "room" in showtime
+        assert "cinema" in showtime["room"]
+        assert "name" in showtime["room"]["cinema"]
+        assert "city" in showtime["room"]["cinema"]
 
 
 def test_get_movie_showtimes_with_date_filter(client: TestClient, test_movie, test_screening):
@@ -289,15 +298,41 @@ def test_get_movie_showtimes_with_date_filter(client: TestClient, test_movie, te
     data = response.json()
     assert isinstance(data, list)
     assert len(data) >= 1
+    # Verify structure for date-filtered results
+    for showtime in data:
+        assert "id" in showtime
+        assert "screening_time" in showtime
+        assert "price" in showtime
+        assert "room" in showtime
+        assert "cinema" in showtime["room"]
 
 
-def test_get_movie_showtimes_wrong_date(client: TestClient, test_movie):
-    """Test getting movie showtimes for date with no screenings."""
-    response = client.get(f"/api/v1/movies/{test_movie.id}/showtimes?date=2030-12-31")
+def test_get_movie_showtimes_filters_past_screenings(client: TestClient, session, test_movie, test_room):
+    """Test that past screenings are filtered out."""
+    from datetime import datetime, timedelta, timezone
+    from app.models import Screening
+    
+    # Create a past screening
+    past_screening = Screening(
+        movie_id=test_movie.id,
+        room_id=test_room.id,
+        screening_time=datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=1),
+        price=15.0
+    )
+    session.add(past_screening)
+    session.commit()
+    
+    response = client.get(f"/api/v1/movies/{test_movie.id}/showtimes")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert len(data) == 0
+    # Past screening should not be included
+    assert not any(s["id"] == past_screening.id for s in data)
+    # Verify all returned screenings are in the future
+    current_time = datetime.now(timezone.utc).replace(tzinfo=None)
+    for showtime in data:
+        screening_time = datetime.fromisoformat(showtime["screening_time"].replace('Z', '+00:00'))
+        assert screening_time > current_time
 
 
 def test_get_movie_showtimes_no_screenings(client: TestClient, session):

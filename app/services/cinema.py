@@ -32,11 +32,14 @@ def bulk_create_seats(session: Session, room_id: int, data: SeatBulkCreate) -> L
         )
     
     seats = []
+    # Always create 7 rows and 10 seats per row
+    rows = 7
+    seats_per_row = 10
     # Create row labels (A, B, C, ..., Z, AA, AB, ...)
-    for row_num in range(data.rows):
+    for row_num in range(rows):
         row_label = chr(65 + row_num) if row_num < 26 else f"{chr(65 + row_num // 26 - 1)}{chr(65 + row_num % 26)}"
         
-        for seat_num in range(1, data.seats_per_row + 1):
+        for seat_num in range(1, seats_per_row + 1):
             seat = Seat(
                 room_id=room_id,
                 row_label=row_label,

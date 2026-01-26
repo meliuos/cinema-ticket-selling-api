@@ -96,7 +96,7 @@ def test_bulk_create_seats(client: TestClient, test_room, admin_headers):
     response = client.post(
         f"/api/v1/rooms/{test_room.id}/seats/bulk",
         json={
-            "rows": 5,
+            "rows": 7,
             "seats_per_row": 10,
             "seat_type": "standard"
         },
@@ -105,7 +105,7 @@ def test_bulk_create_seats(client: TestClient, test_room, admin_headers):
     assert response.status_code == 201
     data = response.json()
     assert isinstance(data, list)
-    assert len(data) == 50  # 5 rows x 10 seats
+    assert len(data) == 70  # 7 rows x 10 seats
 
 
 def test_list_room_seats(client: TestClient, test_room, test_seats):

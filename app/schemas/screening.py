@@ -29,6 +29,14 @@ class ScreeningReadDetailed(SQLModel):
     price: float
     movie: MovieRead
     room: RoomWithCinemaRead
+
+class MovieShowtimeRead(SQLModel):
+    """Schema for movie showtimes with cinema details."""
+    id: int
+    screening_time: datetime
+    price: float
+    room: RoomWithCinemaRead
+
 class MovieShowtimesRead(SQLModel):
     movie: MovieRead
     room_name: str    

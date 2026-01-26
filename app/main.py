@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from app.config import settings
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from app.database import create_db_and_tables
 from app.routers import (
     auth_router,
@@ -24,10 +25,19 @@ from app.routers import (
 origins = [
     "http://localhost:4200",]
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle application lifespan events."""
+    # Startup
+    create_db_and_tables()
+    yield
+    # Shutdown (if needed)
+
 # Create FastAPI application
 app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.DEBUG,
+    lifespan=lifespan
 )
 app.add_middleware(
     CORSMiddleware,
@@ -39,12 +49,6 @@ app.add_middleware(
 
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-
-@app.on_event("startup")
-def on_startup():
-    """Initialize database tables on application startup."""
-    create_db_and_tables()
 
 
 @app.get("/")
