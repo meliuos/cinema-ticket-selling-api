@@ -639,6 +639,8 @@ ws.onmessage = (event) => {
 **GET** `/api/v1/cinemas/` - List Cinemas ❌  
 **GET** `/api/v1/cinemas/search` - Search Cinemas ❌  
 **GET** `/api/v1/cinemas/{cinema_id}` - Get Cinema ❌  
+**PATCH** `/api/v1/cinemas/{cinema_id}` - Update Cinema 🔐  
+**DELETE** `/api/v1/cinemas/{cinema_id}` - Delete Cinema 🔐  
 **GET** `/api/v1/cinemas/{cinema_id}/amenities` - Get Cinema Amenities ❌  
 **GET** `/api/v1/cinemas/{cinema_id}/movies` - Get Cinema Movies ❌  
 **GET** `/api/v1/cinemas/{cinema_id}/showtimes` - Get Cinema Showtimes ❌
@@ -694,7 +696,9 @@ ws.onmessage = (event) => {
 **POST** `/api/v1/screenings/` - Create Screening 🔐  
 **GET** `/api/v1/screenings/` - List Screenings ❌  
 **GET** `/api/v1/screenings/{screening_id}` - Get Screening ❌  
-**GET** `/api/v1/screenings/{screening_id}/available-seats` - Get Screening Available Seats ❌
+**GET** `/api/v1/screenings/{screening_id}/available-seats` - Get Screening Available Seats ❌  
+**PUT** `/api/v1/screenings/{screening_id}` - Update Screening 🔐  
+**DELETE** `/api/v1/screenings/{screening_id}` - Delete Screening 🔐
 
 ---
 

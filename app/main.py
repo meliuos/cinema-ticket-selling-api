@@ -1,4 +1,5 @@
 """Main FastAPI application - Cinema Ticketing System."""
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI, Request, status
 from fastapi.staticfiles import StaticFiles
@@ -31,7 +32,14 @@ from app.routers import (
     payment_router,
 )
 origins = [
-    "http://localhost:4200",]
+    
+   "http://localhost:4200",
+    "http://localhost:52970",
+    "http://localhost:3000",
+    "http://localhost:8080",
+    "http://localhost",
+    "http://127.0.0.1",
+]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -55,15 +63,39 @@ async def lifespan(app: FastAPI):
     except asyncio.CancelledError:
         pass
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle application lifespan events."""
+    # Startup
+    create_db_and_tables()
+    
+    # Start background tasks
+    import asyncio
+    cleanup_task = asyncio.create_task(
+        background_manager.start_cleanup_task(interval_minutes=1)
+    )
+    
+    yield
+    
+    # Shutdown
+    background_manager.stop_cleanup_task()
+    cleanup_task.cancel()
+    try:
+        await cleanup_task
+    except asyncio.CancelledError:
+        pass
+    
 # Create FastAPI application
 app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.DEBUG,
     lifespan=lifespan
 )
+
+# Add CORS middleware FIRST (must be before other middleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -71,6 +103,20 @@ app.add_middleware(
 
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.on_event("startup")
+def on_startup():
+    """Initialize database tables on application startup."""
+    create_db_and_tables()
 
 
 @app.get("/")

@@ -123,3 +123,4 @@ class MovieRead(SQLModel):
     # Timestamps
     created_at: datetime
     updated_at: datetime
+    updated_at: datetime

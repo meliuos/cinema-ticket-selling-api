@@ -1,5 +1,5 @@
 """Pydantic schemas for Screening-related API operations."""
-from datetime import datetime
+from datetime import datetime, date
 from typing import List
 from sqlmodel import SQLModel, Field
 from app.schemas.movie import MovieRead
@@ -30,15 +30,16 @@ class ScreeningReadDetailed(SQLModel):
     movie: MovieRead
     room: RoomWithCinemaRead
 
-class MovieShowtimeRead(SQLModel):
-    """Schema for movie showtimes with cinema details."""
+
+class ShowtimeDetail(SQLModel):
+    """Schema for showtime details in movie showtimes."""
     id: int
     screening_time: datetime
     price: float
     room: RoomWithCinemaRead
 
+
 class MovieShowtimesRead(SQLModel):
     movie: MovieRead
-    room_name: str    
     price: float
-    showtimes: List[datetime]
+    showtimes: List[ShowtimeDetail]
