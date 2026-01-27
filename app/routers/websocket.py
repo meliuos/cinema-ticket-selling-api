@@ -41,10 +41,9 @@ async def websocket_endpoint(
             user = await get_current_user_from_token(token, session)
             if user:
                 user_id = user.id
-                logger.info(f"WebSocket connected: User {user.email} joined screening {screening_id}")
             session.close()
         except Exception as e:
-            logger.warning(f"Invalid token in WebSocket connection: {e}")
+            pass
     
     try:
         # Connect to screening room

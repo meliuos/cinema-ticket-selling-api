@@ -29,19 +29,11 @@ async def broadcast_seat_updates(broadcast_updates: dict):
         from app.services.websocket_manager import manager
         
         if not broadcast_updates:
-            logger.warning("[BROADCAST] No updates to broadcast")
             return
         
-        logger.info(f"[BROADCAST] Broadcasting updates for {len(broadcast_updates)} screening(s)")
-        
         for screening_id, updates in broadcast_updates.items():
-            logger.info(f"[BROADCAST] Screening {screening_id}: {len(updates)} seat updates")
             await manager.broadcast_multiple_seat_updates(screening_id, updates)
             
-        logger.info("[BROADCAST] All updates broadcasted successfully")
-        
-    except ImportError as e:
-        logger.warning(f"[BROADCAST] WebSocket manager not available: {e}")
     except Exception as e:
         logger.error(f"[BROADCAST] Failed to broadcast seat updates: {e}", exc_info=True)
 
@@ -117,8 +109,6 @@ def reserve_seats(
             detail=str(e)
         )
     
-    logger.info(f"[RESERVE API] Request received - screening_id: {reservation_request.screening_id}, seat_ids: {seat_ids}, user: {current_user.id}")
-    
     reservations, broadcast_updates = SeatReservationService.reserve_seats(
         session=session,
         user_id=current_user.id,
@@ -179,7 +169,6 @@ def toggle_seat_reservation(
     
     if existing_reservations:
         # User already reserved these seats - cancel them
-        logger.info(f"[TOGGLE] Cancelling {len(existing_reservations)} existing reservations")
         count, broadcast_updates = SeatReservationService.cancel_reservations(
             session=session,
             user_id=current_user.id,
@@ -197,7 +186,6 @@ def toggle_seat_reservation(
         }
     else:
         # Reserve the seats
-        logger.info(f"[TOGGLE] Reserving {len(seat_ids)} new seats")
         reservations, broadcast_updates = SeatReservationService.reserve_seats(
             session=session,
             user_id=current_user.id,

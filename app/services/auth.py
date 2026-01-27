@@ -54,6 +54,41 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 
+async def get_current_user_from_token(token: str, session: Session) -> Optional[User]:
+    """
+    Get user from JWT token (for WebSocket connections).
+    
+    Args:
+        token: JWT token string
+        session: Database session
+        
+    Returns:
+        User object if token is valid, None otherwise
+    """
+    if not token:
+        return None
+        
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email: str = payload.get("sub")
+        jti: str = payload.get("jti")
+        
+        if email is None or jti is None:
+            return None
+        
+        # Check if token is blacklisted
+        if is_token_blacklisted(session, jti):
+            return None
+        
+        # Get user from database
+        statement = select(User).where(User.email == email, User.is_active == True)
+        user = session.exec(statement).first()
+        return user
+        
+    except JWTError:
+        return None
+
+
 def authenticate_user(session: Session, email: str, password: str) -> Optional[User]:
     """
     Authenticate a user by email and password.

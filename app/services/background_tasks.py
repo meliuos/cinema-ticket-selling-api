@@ -27,11 +27,9 @@ class BackgroundTaskManager:
             interval_minutes: How often to run cleanup (in minutes)
         """
         if self.is_running:
-            logger.warning("Cleanup task is already running")
             return
         
         self.is_running = True
-        logger.info(f"Starting reservation cleanup task (interval: {interval_minutes} minutes)")
         
         while self.is_running:
             try:
@@ -39,7 +37,6 @@ class BackgroundTaskManager:
                 await asyncio.sleep(interval_minutes * 60)  # Convert to seconds
                 
             except asyncio.CancelledError:
-                logger.info("Cleanup task cancelled")
                 break
             except Exception as e:
                 logger.error(f"Error in cleanup task: {e}")
@@ -70,24 +67,19 @@ class BackgroundTaskManager:
                         try:
                             await manager.broadcast_multiple_seat_updates(screening_id, updates)
                         except Exception as e:
-                            logger.warning(f"Failed to broadcast expired reservations: {e}")
-                    
-                    logger.info(f"Cleaned up {count} expired reservations at {datetime.utcnow()}")
-                else:
-                    logger.debug(f"No expired reservations to clean up at {datetime.utcnow()}")
+                            pass
                     
             finally:
                 session.close()
                 
-        except Exception as e:
-            logger.error(f"Failed to cleanup expired reservations: {e}")
+        except Exception:
+            pass
     
     def stop_cleanup_task(self):
         """Stop the cleanup task."""
         self.is_running = False
         
         if self.cleanup_task and not self.cleanup_task.done():
-            logger.info("Stopping cleanup task")
             self.cleanup_task.cancel()
     
     async def manual_cleanup(self) -> dict:
@@ -114,7 +106,7 @@ class BackgroundTaskManager:
                         try:
                             await manager.broadcast_multiple_seat_updates(screening_id, updates)
                         except Exception as e:
-                            logger.warning(f"Failed to broadcast expired reservations: {e}")
+                            pass
                 
                 end_time = datetime.utcnow()
                 

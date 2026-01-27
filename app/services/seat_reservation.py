@@ -193,12 +193,8 @@ class SeatReservationService:
         Raises:
             HTTPException: If validation fails or seats cannot be reserved
         """
-        logger.info(f"[RESERVE] Starting seat reservation for user {user_id}, screening {screening_id}, seats {seat_ids}")
-        logger.info(f"[RESERVE] Session state before cleanup: in_transaction={session.in_transaction()}, is_active={session.is_active}")
-        
         # Clean up expired reservations first
         cleanup_count, cleanup_updates = SeatReservationService.cleanup_expired_reservations(session)
-        logger.info(f"[RESERVE] After cleanup: count={cleanup_count}, session state: in_transaction={session.in_transaction()}")
         
         # Flush cleanup changes to ensure they're visible in this transaction
         if cleanup_count > 0:
@@ -207,7 +203,7 @@ class SeatReservationService:
         # Validate screening exists and is future
         screening = session.get(Screening, screening_id)
         if not screening:
-            logger.error(f"[RESERVE] Screening {screening_id} not found")
+
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Screening with id {screening_id} not found"
@@ -216,7 +212,7 @@ class SeatReservationService:
         # Get movie to check state
         movie = session.get(Movie, screening.movie_id)
         if movie and movie.state == MovieState.COMING_SOON:
-            logger.error(f"[RESERVE] Cannot reserve seats for coming soon movie: {movie.title}")
+
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Cannot book seats for coming soon movies"
@@ -234,7 +230,7 @@ class SeatReservationService:
         for seat_id in seat_ids:
             seat = session.get(Seat, seat_id)
             if not seat:
-                logger.error(f"[RESERVE] Seat {seat_id} not found")
+
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail=f"Seat with id {seat_id} not found"
@@ -249,7 +245,6 @@ class SeatReservationService:
         
         # Start transaction with row locking
         try:
-            logger.info(f"[RESERVE] About to lock seats. Session state: in_transaction={session.in_transaction()}")
             # Lock seats for update to prevent concurrent reservations
             locked_seats = session.exec(
                 select(Seat).where(Seat.id.in_(seat_ids)).with_for_update()
@@ -366,22 +361,16 @@ class SeatReservationService:
             
             all_updates[screening_id].extend(seat_updates_for_broadcast)
             
-            logger.info(f"[RESERVE] About to return. Session state: in_transaction={session.in_transaction()}, is_active={session.is_active}")
-            logger.info(f"[RESERVE] Reservation IDs: {[r.id for r in reservations]}")
             return reservations, all_updates
             
         except IntegrityError as e:
-            logger.error(f"[RESERVE] IntegrityError occurred: {e}. Rolling back.")
             session.rollback()
-            logger.info(f"[RESERVE] After rollback in IntegrityError. Session state: in_transaction={session.in_transaction()}")
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Seats are no longer available due to concurrent booking"
             )
         except Exception as e:
-            logger.error(f"[RESERVE] Exception occurred: {type(e).__name__}: {e}. Rolling back.")
             session.rollback()
-            logger.info(f"[RESERVE] After rollback in Exception. Session state: in_transaction={session.in_transaction()}")
             raise
     
     @staticmethod

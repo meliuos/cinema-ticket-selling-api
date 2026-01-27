@@ -8,7 +8,7 @@ from datetime import datetime
 from app.config import settings
 from app.database import get_session
 from app.models.review import Review, ReviewReactionModel
-from app.models.movie import Movie
+from app.models.movie import Movie, MovieState
 from app.models.user import User
 from app.schemas.review import (
     ReviewCreate,

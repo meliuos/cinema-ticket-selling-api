@@ -42,9 +42,6 @@ class ConnectionManager:
         self.screening_rooms[screening_id].append((websocket, user_id))
         self.connection_mapping[websocket] = (screening_id, user_id)
         
-        logger.info(f"User {user_id} connected to screening {screening_id}. "
-                   f"Room now has {len(self.screening_rooms[screening_id])} connections")
-        
         # Send initial connection confirmation with user_id
         await self.send_to_connection(websocket, {
             "type": "connection_confirmed",
@@ -69,8 +66,6 @@ class ConnectionManager:
                     (ws, uid) for ws, uid in self.screening_rooms[screening_id] 
                     if ws != websocket
                 ]
-                logger.info(f"User {user_id} disconnected from screening {screening_id}. "
-                          f"Room now has {len(self.screening_rooms[screening_id])} connections")
                 
                 if not self.screening_rooms[screening_id]:
                     del self.screening_rooms[screening_id]
@@ -88,7 +83,6 @@ class ConnectionManager:
         try:
             await websocket.send_json(message)
         except Exception as e:
-            logger.warning(f"Failed to send message to connection: {e}")
             # Connection might be dead, disconnect it
             self.disconnect(websocket)
     
@@ -113,8 +107,6 @@ class ConnectionManager:
         # Get list of connections
         connections = self.screening_rooms[screening_id].copy()
         
-        logger.info(f"Broadcasting to {len(connections)} connections in screening {screening_id}: {message['type']}")
-        
         # Send to all connections with user-specific info
         dead_connections = []
         for websocket, conn_user_id in connections:
@@ -137,7 +129,6 @@ class ConnectionManager:
             try:
                 await websocket.send_json(user_message)
             except Exception as e:
-                logger.warning(f"Failed to send to connection, marking for removal: {e}")
                 dead_connections.append(websocket)
         
         # Clean up dead connections
@@ -190,11 +181,7 @@ class ConnectionManager:
             seat_updates: List of seat update dictionaries
         """
         if not seat_updates:
-            logger.warning(f"No seat updates to broadcast for screening {screening_id}")
             return
-            
-        logger.info(f"Broadcasting {len(seat_updates)} seat updates to screening {screening_id}")
-        
         message = {
             "type": "bulk_seat_update",
             "updates": seat_updates,
