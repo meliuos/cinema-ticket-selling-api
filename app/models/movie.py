@@ -2,6 +2,13 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, date
 from sqlmodel import SQLModel, Field, Column
 from sqlalchemy import JSON
+from enum import Enum
+
+class MovieState(str, Enum):
+    """Enum for movie states."""
+    COMING_SOON = "COMING_SOON"
+    SHOWING = "SHOWING" 
+    ENDED = "ENDED"
 
 
 class Movie(SQLModel, table=True):
@@ -14,6 +21,7 @@ class Movie(SQLModel, table=True):
     duration_minutes: int = Field(gt=0)
     genre: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))  
     rating: Optional[str] = Field(default=None, max_length=10)  # e.g., "PG-13", "R"
+    state: MovieState = Field(default=MovieState.SHOWING)
     
     cast: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))  # List of actor names
     director: Optional[str] = Field(default=None, max_length=255)

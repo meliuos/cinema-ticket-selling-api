@@ -31,7 +31,7 @@ def create_seats_bulk(
     return seats
 
 
-@router.get("/rooms/{room_id}/seats/", response_model=List[SeatRead])
+@router.get("/rooms/{room_id}/seats", response_model=List[SeatRead])
 def list_room_seats(room_id: int, session: Session = Depends(get_session)):
     """List all seats in a room."""
     seats = session.exec(select(Seat).where(Seat.room_id == room_id)).all()

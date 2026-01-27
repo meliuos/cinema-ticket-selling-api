@@ -8,7 +8,7 @@ from datetime import datetime, date
 
 from app.config import settings
 from app.database import get_session
-from app.models.movie import Movie
+from app.models.movie import Movie, MovieState
 from app.models.cinema import Room, Seat
 from app.models.screening import Screening
 from app.models.user import User
@@ -38,6 +38,13 @@ def create_screening(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Movie with id {screening.movie_id} not found"
+        )
+    
+    # Block screening creation for coming soon movies 
+    if movie.state == MovieState.COMING_SOON:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot create screenings for coming soon movies"
         )
     
     # Verify room exists
@@ -124,7 +131,7 @@ def get_screening(screening_id: int, session: Session = Depends(get_session)):
         movie_dict['genre'] = [movie_dict['genre']] if movie_dict['genre'] else None
     
     # Add cast details to movie
-    movie_dict['cast'] = casts
+    movie_dict['cast'] = [cast.actor_name for cast in casts]
     
     # Add cinema to room
     room_dict['cinema'] = cinema_dict

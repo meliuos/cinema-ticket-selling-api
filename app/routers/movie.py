@@ -1,18 +1,22 @@
 """Movie routes."""
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlmodel import Session, select, or_
+from sqlmodel import Session, select, delete, or_
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from datetime import datetime, date
 
 from app.config import settings
 from app.database import get_session
-from app.models.movie import Movie
+from app.models.movie import Movie, MovieState
 from app.models.screening import Screening
 from app.models.cinema import Room
 from app.models.user import User
 from app.models.cast import Cast
+from app.models.ticket import Ticket
+from app.models.seat_reservation import SeatReservation
+from app.models.favorite import Favorite
+from app.models.review import Review, ReviewReactionModel
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
 from app.schemas.screening import MovieShowtimeRead
 from app.schemas.cast import CastRead
@@ -50,10 +54,16 @@ def create_movie(
 def list_movies(
     skip: int = 0,
     limit: int = 100,
+    include_ended: bool = Query(False, description="Include movies that have ended"),
     session: Session = Depends(get_session)
 ):
-    """List all movies with cast details."""
-    movies = session.exec(select(Movie).offset(skip).limit(limit)).all()
+    """List all movies with cast details. By default, excludes ended movies."""
+    query = select(Movie)
+    
+    if not include_ended:
+        query = query.where(Movie.state != MovieState.ENDED)
+    
+    movies = session.exec(query.offset(skip).limit(limit)).all()
     
     result = []
     for movie in movies:
@@ -63,7 +73,74 @@ def list_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = casts
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        result.append(movie_dict)
+    
+    return result
+
+
+@router.get("/coming-soon", response_model=List[MovieRead])
+def list_coming_soon_movies(
+    skip: int = 0,
+    limit: int = 100,
+    session: Session = Depends(get_session)
+):
+    """List movies that are coming soon (state = COMING_SOON)."""
+    movies = session.exec(
+        select(Movie)
+        .where(Movie.state == MovieState.COMING_SOON)
+        .order_by(Movie.release_date.asc())
+        .offset(skip)
+        .limit(limit)
+    ).all()
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        result.append(movie_dict)
+    
+    return result
+
+
+@router.get("/trending", response_model=List[MovieRead])
+def list_trending_movies(
+    skip: int = 0,
+    limit: int = 50,
+    session: Session = Depends(get_session)
+):
+    """List trending movies based on ticket sales (most sold tickets first)."""
+    from sqlalchemy import func
+    
+    # Get movies ordered by ticket sales count (only showing movies)
+    trending_movies = session.exec(
+        select(Movie, func.count(Ticket.id).label('ticket_count'))
+        .join(Screening, Movie.id == Screening.movie_id)
+        .join(Ticket, Screening.id == Ticket.screening_id)
+        .where(
+            Ticket.status.in_(["confirmed", "booked"]),  # Only count sold tickets
+            Movie.state == MovieState.SHOWING  
+        )
+        .group_by(Movie.id)
+        .order_by(func.count(Ticket.id).desc())
+        .offset(skip)
+        .limit(limit)
+    ).all()
+    
+    result = []
+    for movie, ticket_count in trending_movies:
+        # Get cast details for this movie
+        statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -99,7 +176,7 @@ def search_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = casts
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -160,7 +237,7 @@ def filter_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = casts
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -250,7 +327,7 @@ def advanced_search_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = casts
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -272,7 +349,7 @@ def get_movie(movie_id: int, session: Session = Depends(get_session)):
     
     # Convert movie to dict and add cast details
     movie_dict = normalize_movie_genre(movie)
-    movie_dict['cast'] = casts
+    movie_dict['cast'] = [cast.actor_name for cast in casts]
     
     return movie_dict
 
@@ -350,6 +427,16 @@ def update_movie(
     
     # Update only provided fields
     movie_data = movie_update.model_dump(exclude_unset=True)
+    
+    # Validate state transitions if state is being updated
+    if 'state' in movie_data and movie_data['state'] != db_movie.state:
+        state_order = {MovieState.COMING_SOON: 0, MovieState.SHOWING: 1, MovieState.ENDED: 2}
+        if state_order[movie_data['state']] < state_order[db_movie.state]:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid state transition: Cannot change from {db_movie.state} to {movie_data['state']}"
+            )
+    
     for key, value in movie_data.items():
         setattr(db_movie, key, value)
     
@@ -374,6 +461,35 @@ def delete_movie(
             detail=f"Movie with id {movie_id} not found"
         )
     
+    # Delete all associated data in correct 
+    # 1. Delete review reactions for reviews of this movie
+    session.exec(delete(ReviewReactionModel).where(ReviewReactionModel.review_id.in_(
+        select(Review.id).where(Review.movie_id == movie_id)
+    )))
+    
+    # 2. Delete reviews for this movie
+    session.exec(delete(Review).where(Review.movie_id == movie_id))
+    
+    # 3. Delete favorites for this movie
+    session.exec(delete(Favorite).where(Favorite.movie_id == movie_id))
+    
+    # 4. Delete cast for this movie
+    session.exec(delete(Cast).where(Cast.movie_id == movie_id))
+    
+    # 5. Delete seat reservations for screenings of this movie
+    session.exec(delete(SeatReservation).where(SeatReservation.screening_id.in_(
+        select(Screening.id).where(Screening.movie_id == movie_id)
+    )))
+    
+    # 6. Delete tickets for screenings of this movie
+    session.exec(delete(Ticket).where(Ticket.screening_id.in_(
+        select(Screening.id).where(Screening.movie_id == movie_id)
+    )))
+    
+    # 7. Delete screenings for this movie
+    session.exec(delete(Screening).where(Screening.movie_id == movie_id))
+    
+    # 8. Finally delete the movie
     session.delete(movie)
     session.commit()
     return None
