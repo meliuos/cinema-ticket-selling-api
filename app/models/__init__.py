@@ -10,6 +10,7 @@ from app.models.review import Review
 from app.models.favorite import Favorite
 from app.models.search_history import SearchHistory
 from app.models.token_blacklist import TokenBlacklist
+from app.models.seat_reservation import SeatReservation
 
 __all__ = [
     "User",
@@ -23,4 +24,5 @@ __all__ = [
     "Favorite",
     "SearchHistory",
     "TokenBlacklist",
+    "SeatReservation",
 ]
