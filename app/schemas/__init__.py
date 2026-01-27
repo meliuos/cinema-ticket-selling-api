@@ -7,7 +7,7 @@ from app.schemas.cinema import (
     SeatCreate, SeatRead, SeatBulkCreate
 )
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
-from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadDetailed, MovieShowtimeRead
+from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadDetailed, MovieShowtimesRead
 from app.schemas.ticket import TicketCreate, TicketRead
 from app.schemas.cast import CastCreate, CastRead, CastUpdate
 

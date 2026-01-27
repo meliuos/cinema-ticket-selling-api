@@ -18,7 +18,7 @@ from app.models.seat_reservation import SeatReservation
 from app.models.favorite import Favorite
 from app.models.review import Review, ReviewReactionModel
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
-from app.schemas.screening import MovieShowtimeRead
+from app.schemas.screening import MovieShowtimesRead
 from app.schemas.cast import CastRead
 from app.services.auth import get_current_admin_user
 
@@ -368,7 +368,7 @@ def get_movie_cast(movie_id: int, session: Session = Depends(get_session)):
     return casts
 
 
-@router.get("/{movie_id}/showtimes", response_model=List[MovieShowtimeRead])
+@router.get("/{movie_id}/showtimes", response_model=List[MovieShowtimesRead])
 def get_movie_showtimes(
     movie_id: int,
     date: Optional[date] = Query(None, description="Filter by date (YYYY-MM-DD)"),
