@@ -242,3 +242,30 @@ async def get_current_admin_user(current_user: User = Depends(get_current_active
             detail="Not enough permissions. Admin access required."
         )
     return current_user
+
+
+async def get_current_user_from_token(token: str, session: Session) -> User | None:
+    """
+    Helper for WebSocket auth where token comes from query param.
+    Returns None if token is invalid.
+    """
+    from jose import JWTError, jwt
+    from fastapi import HTTPException
+    from fastapi import status as http_status
+    from sqlmodel import select
+
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email: str | None = payload.get("sub")
+        jti: str | None = payload.get("jti")
+        if not email or not jti:
+            return None
+        if is_token_blacklisted(session, jti):
+            return None
+    except JWTError:
+        return None
+    except Exception:
+        return None
+
+    user = session.exec(select(User).where(User.email == email)).first()
+    return user

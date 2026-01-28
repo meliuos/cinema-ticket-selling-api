@@ -7,6 +7,8 @@ from app.routers.movie import router as movie_router
 from app.routers.screening import router as screening_router
 from app.routers.showtime import router as showtime_router
 from app.routers.ticket import router as ticket_router
+from app.routers.seat_reservation import router as seat_reservation_router
+from app.routers.websocket import router as websocket_router
 from app.routers.user import router as user_router
 from app.routers.review import router as review_router
 from app.routers.favorite import router as favorite_router
@@ -22,6 +24,8 @@ __all__ = [
     "screening_router",
     "showtime_router",
     "ticket_router",
+    "seat_reservation_router",
+    "websocket_router",
     "user_router",
     "review_router",
     "favorite_router",

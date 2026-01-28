@@ -1,19 +1,19 @@
-"""init
+"""empty message
 
-Revision ID: 493843a62466
+Revision ID: 72066e768c1e
 Revises: 
-Create Date: 2025-12-02 19:59:07.604687
+Create Date: 2026-01-28 18:24:50.456799
 
 """
 from typing import Sequence, Union
-import sqlmodel
 
 from alembic import op
 import sqlalchemy as sa
+import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '493843a62466'
+revision: str = '72066e768c1e'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -81,6 +81,21 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
+    op.create_table('cast',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('character_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('role', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('movie_id', sa.Integer(), nullable=False),
+    sa.Column('actor_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('profile_image_url', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('is_lead', sa.Boolean(), nullable=False),
+    sa.Column('order', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['movie_id'], ['movie.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_cast_movie_id'), 'cast', ['movie_id'], unique=False)
     op.create_table('favorite',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -193,6 +208,8 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_favorite_user_id'), table_name='favorite')
     op.drop_index(op.f('ix_favorite_cinema_id'), table_name='favorite')
     op.drop_table('favorite')
+    op.drop_index(op.f('ix_cast_movie_id'), table_name='cast')
+    op.drop_table('cast')
     op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table('user')
     op.drop_table('movie')

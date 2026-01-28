@@ -10,6 +10,8 @@ from app.routers import (
     auth_router,
     cinema_router,
     seat_router,
+    seat_reservation_router,
+    websocket_router,
     movie_router,
     screening_router,
     showtime_router,
@@ -77,6 +79,8 @@ app.include_router(auth_router)
 app.include_router(favorite_router)  # Must be before cinema_router to match /cinemas/favorites before /cinemas/{cinema_id}
 app.include_router(cinema_router)
 app.include_router(seat_router)
+app.include_router(seat_reservation_router)
+app.include_router(websocket_router)
 app.include_router(recommendation_router)  # Must be before movie_router to match /movies/recommended before /movies/{movie_id}
 app.include_router(movie_router)
 app.include_router(screening_router)

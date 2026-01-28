@@ -40,3 +40,14 @@ class TicketConfirmPayment(SQLModel):
     """Schema for confirming payment."""
     payment_method: str = Field(description="Payment method used")
     transaction_id: Optional[str] = Field(None, description="External transaction ID")
+
+
+class BookFromReservationRequest(SQLModel):
+    """Book tickets from active seat reservations (after payment)."""
+    reservation_ids: List[int]
+    payment_id: str
+
+
+class BookFromReservationResponse(SQLModel):
+    """Response containing created tickets."""
+    tickets: List[TicketRead]
