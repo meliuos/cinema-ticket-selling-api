@@ -666,7 +666,7 @@ ws.onmessage = (event) => {
 
 **GET** `/api/v1/movies/recommended` - Get Recommended Movies ✅  
 **POST** `/api/v1/movies/` - Create Movie 🔐  
-**GET** `/api/v1/movies/` - List Movies ❌  
+**GET** `/api/v1/movies/` - List Movies with Filtering & Sorting ✅  
 **GET** `/api/v1/movies/coming-soon` - Get Coming Soon Movies ❌  
 **GET** `/api/v1/movies/trending` - Get Trending Movies ❌  
 **GET** `/api/v1/movies/search` - Search Movies ❌  
@@ -676,7 +676,77 @@ ws.onmessage = (event) => {
 **PATCH** `/api/v1/movies/{movie_id}` - Update Movie 🔐  
 **DELETE** `/api/v1/movies/{movie_id}` - Delete Movie 🔐  
 **GET** `/api/v1/movies/{movie_id}/cast` - Get Movie Cast (Detailed) ❌  
-**GET** `/api/v1/movies/{movie_id}/showtimes` - Get Movie Showtimes ❌
+**GET** `/api/v1/movies/{movie_id}/showtimes` - Get Movie Showtimes ✅
+
+### **GET** `/api/v1/movies/` - List Movies with Filtering & Sorting
+
+**Status:** ✅ **Implemented**
+
+**Description:** Get a list of movies with advanced filtering and sorting options.
+
+**Query Parameters:**
+
+- `state` (optional): Filter by movie state
+  - `SHOWING` - Currently showing movies
+  - `COMING_SOON` - Upcoming movies
+  - `ENDED` - Movies that have ended
+- `sort_by` (optional): Sort results
+  - `trending` - Sort by ticket sales (most popular first)
+  - `release_date` - Sort by release date (ascending)
+  - Default: Sort by creation date (newest first)
+- `skip` (optional): Number of results to skip (default: 0)
+- `limit` (optional): Maximum number of results (default: 100)
+- `include_ended` (optional): Include ended movies when no state filter is applied (default: false)
+
+**Examples:**
+
+```javascript
+// Get currently showing movies
+GET /api/v1/movies?state=SHOWING
+
+// Get trending movies (currently showing by default)
+GET /api/v1/movies?sort_by=trending
+
+// Get trending movies currently showing
+GET /api/v1/movies?state=SHOWING&sort_by=trending
+
+// Get coming soon movies sorted by release date
+GET /api/v1/movies?state=COMING_SOON&sort_by=release_date
+
+// Get all movies including ended ones
+GET /api/v1/movies?include_ended=true
+```
+
+**Response:**
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Avengers: Endgame",
+    "description": "After the devastating events of Avengers: Infinity War...",
+    "duration_minutes": 181,
+    "genre": ["Action", "Adventure", "Drama"],
+    "rating": "PG-13",
+    "state": "SHOWING",
+    "cast": ["Robert Downey Jr.", "Chris Evans", "Scarlett Johansson"],
+    "director": "Anthony Russo",
+    "release_date": "2019-04-26",
+    "country": "USA",
+    "language": "English",
+    "budget": 356000000,
+    "revenue": 2797800564,
+    "production_company": "Marvel Studios",
+    "distributor": "Walt Disney Studios Motion Pictures",
+    "image_url": "https://example.com/avengers-endgame.jpg",
+    "trailer_url": "https://example.com/avengers-trailer.mp4",
+    "awards": ["Academy Award for Best Visual Effects"],
+    "details": {},
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z"
+  }
+]
+```
 
 ---
 

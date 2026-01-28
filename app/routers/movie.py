@@ -54,14 +54,61 @@ def create_movie(
 def list_movies(
     skip: int = 0,
     limit: int = 100,
-    include_ended: bool = Query(False, description="Include movies that have ended"),
+    state: Optional[MovieState] = Query(None, description="Filter by movie state (SHOWING, COMING_SOON, ENDED)"),
+    sort_by: Optional[str] = Query(None, description="Sort by: 'trending' (ticket sales), 'release_date', or default (created_at)"),
+    include_ended: bool = Query(False, description="Include movies that have ended (ignored if state is specified)"),
     session: Session = Depends(get_session)
 ):
-    """List all movies with cast details. By default, excludes ended movies."""
+    """
+    List all movies with cast details. 
+    
+    - Filter by state: ?state=SHOWING or ?state=COMING_SOON or ?state=ENDED
+    - Sort by trending: ?sort_by=trending (most sold tickets first)
+    - Sort by release date: ?sort_by=release_date
+    - Combine: ?state=SHOWING&sort_by=trending for trending movies currently showing
+    """
+    from sqlalchemy import func
+    
+    # Handle trending sort separately (requires joins)
+    if sort_by == "trending":
+        trending_movies = session.exec(
+            select(Movie, func.count(Ticket.id).label('ticket_count'))
+            .join(Screening, Movie.id == Screening.movie_id)
+            .join(Ticket, Screening.id == Ticket.screening_id)
+            .where(
+                Ticket.status.in_(["confirmed", "booked"]),
+                Movie.state == (state if state else MovieState.SHOWING)
+            )
+            .group_by(Movie.id)
+            .order_by(func.count(Ticket.id).desc())
+            .offset(skip)
+            .limit(limit)
+        ).all()
+        
+        result = []
+        for movie, ticket_count in trending_movies:
+            statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+            casts = session.exec(statement).all()
+            movie_dict = normalize_movie_genre(movie)
+            movie_dict['cast'] = [cast.actor_name for cast in casts]
+            result.append(movie_dict)
+        
+        return result
+    
+    # Standard query
     query = select(Movie)
     
-    if not include_ended:
+    # Apply state filter
+    if state:
+        query = query.where(Movie.state == state)
+    elif not include_ended:
         query = query.where(Movie.state != MovieState.ENDED)
+    
+    # Apply sorting
+    if sort_by == "release_date":
+        query = query.order_by(Movie.release_date.asc())
+    else:
+        query = query.order_by(Movie.created_at.desc())
     
     movies = session.exec(query.offset(skip).limit(limit)).all()
     
