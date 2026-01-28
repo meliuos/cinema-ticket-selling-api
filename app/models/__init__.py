@@ -2,7 +2,7 @@
 
 from app.models.user import User
 from app.models.cinema import Cinema, Room, Seat
-from app.models.movie import Movie
+from app.models.movie import Movie, MovieState
 from app.models.screening import Screening
 from app.models.ticket import Ticket
 from app.models.cast import Cast
@@ -18,6 +18,7 @@ __all__ = [
     "Room",
     "Seat",
     "Movie",
+    "MovieState",
     "Screening",
     "Ticket",
     "Review",
