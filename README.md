@@ -236,6 +236,8 @@ Interactive API documentation is automatically available:
 
 - `POST /api/v1/movies/` - Create movie
 - `GET /api/v1/movies/` - List movies
+- `GET /api/v1/movies/coming-soon` - Get coming soon movies
+- `GET /api/v1/movies/trending` - Get trending movies (by ticket sales)
 - `GET /api/v1/movies/{id}` - Get movie details
 
 ### Screenings

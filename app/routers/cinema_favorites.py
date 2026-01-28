@@ -1,4 +1,4 @@
-"""Favorite routes for user's favorite cinemas."""
+"""Cinema favorite routes for user's favorite cinemas."""
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
@@ -13,7 +13,7 @@ from app.schemas.favorite import FavoriteRead
 from app.schemas.cinema import CinemaRead
 from app.services.auth import get_current_active_user
 
-router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/cinemas", tags=["Favorites"])
+router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/cinemas", tags=["Cinema Favorites"])
 
 
 @router.post("/{cinema_id}/favorite", response_model=FavoriteRead, status_code=status.HTTP_201_CREATED)
@@ -105,7 +105,7 @@ def remove_cinema_from_favorites(
     return None
 
 
-@router.get("/favorites", response_model=List[CinemaRead], tags=["Favorites"])
+@router.get("/favorites", response_model=List[CinemaRead], tags=["Cinema Favorites"])
 def get_user_favorite_cinemas(
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_session)
@@ -113,17 +113,20 @@ def get_user_favorite_cinemas(
     """Get all favorite cinemas for the current user."""
     # Get user's favorite cinema IDs
     favorites = session.exec(
-        select(Favorite).where(Favorite.user_id == current_user.id)
+        select(Favorite).where(
+            Favorite.user_id == current_user.id,
+            Favorite.cinema_id.isnot(None)
+        )
     ).all()
-    
+
     cinema_ids = [fav.cinema_id for fav in favorites]
-    
+
     if not cinema_ids:
         return []
-    
+
     # Get the actual cinemas
     cinemas = session.exec(
         select(Cinema).where(Cinema.id.in_(cinema_ids))
     ).all()
-    
+
     return cinemas

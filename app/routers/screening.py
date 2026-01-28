@@ -3,16 +3,18 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select
 from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from datetime import datetime, date
 
 from app.config import settings
 from app.database import get_session
-from app.models.movie import Movie
+from app.models.movie import Movie, MovieState
 from app.models.cinema import Room, Seat
 from app.models.screening import Screening
 from app.models.user import User
-from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadDetailed, ScreeningReadEnhanced
+from app.models.cast import Cast
+from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadDetailed
 from app.schemas.cinema import SeatRead
 from app.services.cinema import get_available_seats
 from app.services.auth import get_current_admin_user
@@ -37,6 +39,13 @@ def create_screening(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Movie with id {screening.movie_id} not found"
+        )
+    
+    # Block screening creation for coming soon movies 
+    if movie.state == MovieState.COMING_SOON:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot create screenings for coming soon movies"
         )
     
     # Verify room exists
@@ -93,40 +102,49 @@ def list_screenings(
     return screenings
 
 
-@router.get("/{screening_id}", response_model=ScreeningReadEnhanced)
+@router.get("/{screening_id}", response_model=ScreeningReadDetailed)
 def get_screening(screening_id: int, session: Session = Depends(get_session)):
     """Get a specific screening by ID."""
     screening = session.exec(
         select(Screening)
+        .where(Screening.id == screening_id)
         .options(
             selectinload(Screening.movie),
-            selectinload(Screening.room).selectinload(Room.cinema),
+            selectinload(Screening.room).selectinload(Room.cinema)
         )
-        .where(Screening.id == screening_id)
     ).first()
+    
     if not screening:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Screening with id {screening_id} not found"
         )
     
-    # Get available seats count
-    available_seats = get_available_seats(session, screening_id)
-    available_seats_count = len(available_seats)
+    # Get cast details for the movie
+    cast_statement = select(Cast).where(Cast.movie_id == screening.movie_id).order_by(Cast.order)
+    casts = session.exec(cast_statement).all()
     
-    # Extract date from screening_time
-    screening_date = screening.screening_time.date()
+    # Convert to dict and normalize
+    screening_dict = screening.model_dump()
+    movie_dict = screening.movie.model_dump()
+    room_dict = screening.room.model_dump()
+    cinema_dict = screening.room.cinema.model_dump() if screening.room.cinema else None
     
-    return ScreeningReadEnhanced(
-        id=screening.id,
-        movie_id=screening.movie_id,
-        room_name=screening.room.name,
-        screening_time=screening.screening_time,
-        screening_date=screening_date,
-        price=screening.price,
-        available_seats_count=available_seats_count,
-        created_at=screening.created_at
-    )
+    # Normalize genre
+    if isinstance(movie_dict.get('genre'), str):
+        movie_dict['genre'] = [movie_dict['genre']] if movie_dict['genre'] else None
+    
+    # Add cast details to movie
+    movie_dict['cast'] = [cast.actor_name for cast in casts]
+    
+    # Add cinema to room
+    room_dict['cinema'] = cinema_dict
+    
+    # Build final response
+    screening_dict['movie'] = movie_dict
+    screening_dict['room'] = room_dict
+    
+    return screening_dict
 
 
 @router.get("/{screening_id}/available-seats", response_model=List[SeatRead])

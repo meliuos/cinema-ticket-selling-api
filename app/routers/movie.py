@@ -1,18 +1,24 @@
 """Movie routes."""
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlmodel import Session, select, or_
+from sqlmodel import Session, select, delete, or_
+from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from datetime import datetime, date
 
 from app.config import settings
 from app.database import get_session
-from app.models.movie import Movie
+from app.models.movie import Movie, MovieState
 from app.models.screening import Screening
+from app.models.cinema import Room
 from app.models.user import User
 from app.models.cast import Cast
+from app.models.ticket import Ticket
+from app.models.seat_reservation import SeatReservation
+from app.models.favorite import Favorite
+from app.models.review import Review, ReviewReactionModel
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
-from app.schemas.screening import ScreeningRead
+from app.schemas.screening import ScreeningReadDetailed
 from app.schemas.cast import CastRead
 from app.services.auth import get_current_admin_user
 
@@ -48,12 +54,143 @@ def create_movie(
 def list_movies(
     skip: int = 0,
     limit: int = 100,
+    state: Optional[MovieState] = Query(None, description="Filter by movie state (SHOWING, COMING_SOON, ENDED)"),
+    sort_by: Optional[str] = Query(None, description="Sort by: 'trending' (ticket sales), 'release_date', or default (created_at)"),
+    include_ended: bool = Query(False, description="Include movies that have ended (ignored if state is specified)"),
     session: Session = Depends(get_session)
 ):
-    """List all movies."""
-    movies = session.exec(select(Movie).offset(skip).limit(limit)).all()
-    # Normalize genre fields for backward compatibility
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    """
+    List all movies with cast details. 
+    
+    - Filter by state: ?state=SHOWING or ?state=COMING_SOON or ?state=ENDED
+    - Sort by trending: ?sort_by=trending (most sold tickets first)
+    - Sort by release date: ?sort_by=release_date
+    - Combine: ?state=SHOWING&sort_by=trending for trending movies currently showing
+    """
+    from sqlalchemy import func
+    
+    # Handle trending sort separately (requires joins)
+    if sort_by == "trending":
+        trending_movies = session.exec(
+            select(Movie, func.count(Ticket.id).label('ticket_count'))
+            .join(Screening, Movie.id == Screening.movie_id)
+            .join(Ticket, Screening.id == Ticket.screening_id)
+            .where(
+                Ticket.status.in_(["confirmed", "booked"]),
+                Movie.state == (state if state else MovieState.SHOWING)
+            )
+            .group_by(Movie.id)
+            .order_by(func.count(Ticket.id).desc())
+            .offset(skip)
+            .limit(limit)
+        ).all()
+        
+        result = []
+        for movie, ticket_count in trending_movies:
+            statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+            casts = session.exec(statement).all()
+            movie_dict = normalize_movie_genre(movie)
+            movie_dict['cast'] = [cast.actor_name for cast in casts]
+            result.append(movie_dict)
+        
+        return result
+    
+    # Standard query
+    query = select(Movie)
+    
+    # Apply state filter
+    if state:
+        query = query.where(Movie.state == state)
+    elif not include_ended:
+        query = query.where(Movie.state != MovieState.ENDED)
+    
+    # Apply sorting
+    if sort_by == "release_date":
+        query = query.order_by(Movie.release_date.asc())
+    else:
+        query = query.order_by(Movie.created_at.desc())
+    
+    movies = session.exec(query.offset(skip).limit(limit)).all()
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        result.append(movie_dict)
+    
+    return result
+
+
+@router.get("/coming-soon", response_model=List[MovieRead])
+def list_coming_soon_movies(
+    skip: int = 0,
+    limit: int = 100,
+    session: Session = Depends(get_session)
+):
+    """List movies that are coming soon (state = COMING_SOON)."""
+    movies = session.exec(
+        select(Movie)
+        .where(Movie.state == MovieState.COMING_SOON)
+        .order_by(Movie.release_date.asc())
+        .offset(skip)
+        .limit(limit)
+    ).all()
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        result.append(movie_dict)
+    
+    return result
+
+
+@router.get("/trending", response_model=List[MovieRead])
+def list_trending_movies(
+    skip: int = 0,
+    limit: int = 50,
+    session: Session = Depends(get_session)
+):
+    """List trending movies based on ticket sales (most sold tickets first)."""
+    from sqlalchemy import func
+    
+    # Get movies ordered by ticket sales count (only showing movies)
+    trending_movies = session.exec(
+        select(Movie, func.count(Ticket.id).label('ticket_count'))
+        .join(Screening, Movie.id == Screening.movie_id)
+        .join(Ticket, Screening.id == Ticket.screening_id)
+        .where(
+            Ticket.status.in_(["confirmed", "booked"]),  # Only count sold tickets
+            Movie.state == MovieState.SHOWING  
+        )
+        .group_by(Movie.id)
+        .order_by(func.count(Ticket.id).desc())
+        .offset(skip)
+        .limit(limit)
+    ).all()
+    
+    result = []
+    for movie, ticket_count in trending_movies:
+        # Get cast details for this movie
+        statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        result.append(movie_dict)
+    
+    return result
 
 
 @router.get("/search", response_model=List[MovieRead])
@@ -77,8 +214,19 @@ def search_movies(
     ).offset(skip).limit(limit)
 
     movies = session.exec(statement).all()
-    # Normalize genre fields for backward compatibility
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        cast_statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(cast_statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        result.append(movie_dict)
+    
+    return result
 
 
 @router.get("/filter", response_model=List[MovieRead])
@@ -127,8 +275,19 @@ def filter_movies(
     query = query.order_by(Movie.release_date.desc())
 
     movies = session.exec(query.offset(skip).limit(limit)).all()
-    # Normalize genre fields for backward compatibility
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        cast_statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(cast_statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        result.append(movie_dict)
+    
+    return result
 
 
 @router.get("/advanced-search", response_model=List[MovieRead])
@@ -206,20 +365,40 @@ def advanced_search_movies(
         query = query.order_by(Movie.release_date.desc())
 
     movies = session.exec(query.offset(skip).limit(limit)).all()
-    # Normalize genre fields for backward compatibility
-    return [MovieRead(**normalize_movie_genre(movie)) for movie in movies]
+    
+    result = []
+    for movie in movies:
+        # Get cast details for this movie
+        cast_statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
+        casts = session.exec(cast_statement).all()
+        
+        # Normalize movie and add cast
+        movie_dict = normalize_movie_genre(movie)
+        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        result.append(movie_dict)
+    
+    return result
 
 
 @router.get("/{movie_id}", response_model=MovieRead)
 def get_movie(movie_id: int, session: Session = Depends(get_session)):
-    """Get a specific movie by ID."""
+    """Get a specific movie by ID with cast details."""
     movie = session.get(Movie, movie_id)
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Movie with id {movie_id} not found"
         )
-    return normalize_movie_genre(movie)
+    
+    # Get cast details
+    statement = select(Cast).where(Cast.movie_id == movie_id).order_by(Cast.order)
+    casts = session.exec(statement).all()
+    
+    # Convert movie to dict and add cast details
+    movie_dict = normalize_movie_genre(movie)
+    movie_dict['cast'] = [cast.actor_name for cast in casts]
+    
+    return movie_dict
 
 
 @router.get("/{movie_id}/cast", response_model=List[CastRead])
@@ -236,7 +415,7 @@ def get_movie_cast(movie_id: int, session: Session = Depends(get_session)):
     return casts
 
 
-@router.get("/{movie_id}/showtimes", response_model=List[ScreeningRead])
+@router.get("/{movie_id}/showtimes", response_model=List[ScreeningReadDetailed])
 def get_movie_showtimes(
     movie_id: int,
     date: Optional[date] = Query(None, description="Filter by date (YYYY-MM-DD)"),
@@ -244,7 +423,7 @@ def get_movie_showtimes(
     limit: int = 100,
     session: Session = Depends(get_session)
 ):
-    """Get all showtimes for a specific movie, optionally filtered by date."""
+    """Get all future showtimes for a specific movie, optionally filtered by date."""
     # Check if movie exists
     movie = session.get(Movie, movie_id)
     if not movie:
@@ -253,8 +432,14 @@ def get_movie_showtimes(
             detail=f"Movie with id {movie_id} not found"
         )
     
-    # Build query
-    query = select(Screening).where(Screening.movie_id == movie_id)
+    # Build query with relationships loaded, only future screenings
+    now = datetime.utcnow()
+    query = select(Screening).where(
+        Screening.movie_id == movie_id,
+        Screening.screening_time > now
+    ).options(
+        selectinload(Screening.room).selectinload(Room.cinema)
+    )
     
     if date:
         # Filter by date
@@ -289,6 +474,16 @@ def update_movie(
     
     # Update only provided fields
     movie_data = movie_update.model_dump(exclude_unset=True)
+    
+    # Validate state transitions if state is being updated
+    if 'state' in movie_data and movie_data['state'] != db_movie.state:
+        state_order = {MovieState.COMING_SOON: 0, MovieState.SHOWING: 1, MovieState.ENDED: 2}
+        if state_order[movie_data['state']] < state_order[db_movie.state]:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid state transition: Cannot change from {db_movie.state} to {movie_data['state']}"
+            )
+    
     for key, value in movie_data.items():
         setattr(db_movie, key, value)
     
@@ -313,6 +508,35 @@ def delete_movie(
             detail=f"Movie with id {movie_id} not found"
         )
     
+    # Delete all associated data in correct 
+    # 1. Delete review reactions for reviews of this movie
+    session.exec(delete(ReviewReactionModel).where(ReviewReactionModel.review_id.in_(
+        select(Review.id).where(Review.movie_id == movie_id)
+    )))
+    
+    # 2. Delete reviews for this movie
+    session.exec(delete(Review).where(Review.movie_id == movie_id))
+    
+    # 3. Delete favorites for this movie
+    session.exec(delete(Favorite).where(Favorite.movie_id == movie_id))
+    
+    # 4. Delete cast for this movie
+    session.exec(delete(Cast).where(Cast.movie_id == movie_id))
+    
+    # 5. Delete seat reservations for screenings of this movie
+    session.exec(delete(SeatReservation).where(SeatReservation.screening_id.in_(
+        select(Screening.id).where(Screening.movie_id == movie_id)
+    )))
+    
+    # 6. Delete tickets for screenings of this movie
+    session.exec(delete(Ticket).where(Ticket.screening_id.in_(
+        select(Screening.id).where(Screening.movie_id == movie_id)
+    )))
+    
+    # 7. Delete screenings for this movie
+    session.exec(delete(Screening).where(Screening.movie_id == movie_id))
+    
+    # 8. Finally delete the movie
     session.delete(movie)
     session.commit()
     return None

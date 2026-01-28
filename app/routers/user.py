@@ -160,31 +160,67 @@ async def update_user_preferences(
 
 @router.put("/me/profile-picture")
 async def upload_profile_picture(
-    file: UploadFile = File(...),
+    profile_picture: UploadFile = File(...),
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_session)
 ):
     """Upload/update user profile picture."""
+    # Check if file was provided
+    if not profile_picture or not profile_picture.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No file provided"
+        )
+
     # Validate file type
+    if not profile_picture.content_type or not profile_picture.content_type.startswith('image/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File must be an image. Got content type: {profile_picture.content_type}"
+        )
+
+    # Validate file extension
     allowed_extensions = {".jpg", ".jpeg", ".png", ".gif"}
-    file_extension = os.path.splitext(file.filename)[1].lower()
+    file_extension = os.path.splitext(profile_picture.filename)[1].lower()
+
+    if not file_extension:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File must have an extension (.jpg, .jpeg, .png, .gif)"
+        )
 
     if file_extension not in allowed_extensions:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only image files (.jpg, .jpeg, .png, .gif) are allowed"
+            detail=f"Only image files (.jpg, .jpeg, .png, .gif) are allowed. Got: {file_extension}"
         )
 
-    # Validate file size (max 5MB)
+    # Validate file size (max 5MB) - read in chunks to avoid memory issues
     file_size = 0
-    content = await file.read()
-    file_size = len(content)
+    content_chunks = []
+    chunk_size = 8192  # 8KB chunks
+    
+    while True:
+        chunk = await profile_picture.read(chunk_size)
+        if not chunk:
+            break
+        content_chunks.append(chunk)
+        file_size += len(chunk)
+        
+        if file_size > 5 * 1024 * 1024:  # 5MB
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File size must be less than 5MB"
+            )
 
-    if file_size > 5 * 1024 * 1024:  # 5MB
+    if file_size == 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File size must be less than 5MB"
+            detail="File is empty"
         )
+
+    # Combine chunks back into content
+    content = b''.join(content_chunks)
 
     # Create uploads directory if it doesn't exist
     upload_dir = os.path.join("uploads", "profile_pictures")
@@ -199,8 +235,16 @@ async def upload_profile_picture(
     with open(file_path, "wb") as f:
         f.write(content)
 
+    # Verify file was saved
+    if not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to save file"
+        )
+
     # Update user profile picture URL
-    current_user.profile_picture_url = f"https://localhost:8000/uploads/profile_pictures/{filename}"
+    # Use full URL for client access
+    current_user.profile_picture_url = f"{settings.BASE_URL}/uploads/profile_pictures/{filename}"
     current_user.updated_at = datetime.utcnow()
     session.add(current_user)
     session.commit()
@@ -219,11 +263,18 @@ async def update_profile_picture_url(
     session: Session = Depends(get_session)
 ):
     """Update user profile picture URL with an absolute URL."""
-    # Basic validation for URL format
-    if not profile_picture_url.startswith("https://"):
+    # Detect local file paths and provide helpful error
+    if any(profile_picture_url.startswith(prefix) for prefix in ["C:\\", "D:\\", "/", "~/"]) or "\\" in profile_picture_url[:10]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Profile picture URL must be an absolute HTTPS URL"
+            detail="Local file paths are not supported. To upload a file from your PC, use the PUT /api/v1/users/me/profile-picture endpoint with multipart/form-data instead."
+        )
+    
+    # Basic validation for URL format - accept both HTTP and HTTPS
+    if not (profile_picture_url.startswith("https://") or profile_picture_url.startswith("http://")):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Profile picture URL must be an absolute HTTP or HTTPS URL"
         )
 
     # Update user profile picture URL
