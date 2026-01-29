@@ -1,6 +1,6 @@
 """Movie routes."""
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from sqlmodel import Session, select, delete, or_
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
@@ -20,7 +20,9 @@ from app.models.review import Review, ReviewReactionModel
 from app.schemas.movie import MovieCreate, MovieRead, MovieUpdate
 from app.schemas.screening import ScreeningReadDetailed
 from app.schemas.cast import CastRead
-from app.services.auth import get_current_admin_user
+from app.schemas.movie_notification import MovieNotificationResponse
+from app.services.auth import get_current_admin_user, get_current_active_user
+from app.services.notification import NotificationService
 
 def normalize_movie_genre(movie: Movie) -> dict:
     """Normalize movie data, converting genre string to list if needed."""
@@ -423,7 +425,12 @@ def get_movie_showtimes(
     limit: int = 100,
     session: Session = Depends(get_session)
 ):
-    """Get all future showtimes for a specific movie, optionally filtered by date."""
+    """Get all future showtimes for a specific movie, optionally filtered by date.
+    
+    IMPORTANT: Only returns screenings that have NOT yet started.
+    Screenings that are currently happening or have already passed are excluded,
+    even if they are scheduled for today.
+    """
     # Check if movie exists
     movie = session.get(Movie, movie_id)
     if not movie:
@@ -432,11 +439,11 @@ def get_movie_showtimes(
             detail=f"Movie with id {movie_id} not found"
         )
     
-    # Build query with relationships loaded, only future screenings
-    now = datetime.utcnow()
+    # Build query with relationships loaded, only FUTURE screenings (not started yet)
+    current_time = datetime.utcnow()
     query = select(Screening).where(
         Screening.movie_id == movie_id,
-        Screening.screening_time > now
+        Screening.screening_time > current_time  # Strictly future - excludes past and current screenings
     ).options(
         selectinload(Screening.room).selectinload(Room.cinema)
     )
@@ -458,9 +465,10 @@ def get_movie_showtimes(
 
 
 @router.patch("/{movie_id}", response_model=MovieRead)
-def update_movie(
+async def update_movie(
     movie_id: int,
     movie_update: MovieUpdate,
+    background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
     current_admin: User = Depends(get_current_admin_user)
 ):
@@ -471,6 +479,9 @@ def update_movie(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Movie with id {movie_id} not found"
         )
+    
+    # Track old state for notification trigger
+    old_state = db_movie.state
     
     # Update only provided fields
     movie_data = movie_update.model_dump(exclude_unset=True)
@@ -491,6 +502,15 @@ def update_movie(
     session.add(db_movie)
     session.commit()
     session.refresh(db_movie)
+    
+    # 🎯 Trigger notifications if movie became available
+    if old_state == MovieState.COMING_SOON and db_movie.state == MovieState.SHOWING:
+        background_tasks.add_task(
+            NotificationService.notify_movie_available,
+            session,
+            movie_id
+        )
+    
     return normalize_movie_genre(db_movie)
 
 
@@ -540,3 +560,82 @@ def delete_movie(
     session.delete(movie)
     session.commit()
     return None
+
+
+# ==================== NOTIFICATION ENDPOINTS ====================
+
+@router.post(
+    "/{movie_id}/notify",
+    response_model=MovieNotificationResponse,
+    status_code=status.HTTP_200_OK
+)
+def subscribe_to_movie_notifications(
+    movie_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Subscribe to notifications for when a coming soon movie becomes available.
+    
+    - **movie_id**: ID of the movie to subscribe to
+    - Returns subscription status and message
+    - Only works for COMING_SOON movies
+    - Idempotent - calling multiple times won't create duplicates
+    """
+    success, message = NotificationService.subscribe_to_movie(
+        db=session,
+        user_id=current_user.id,
+        movie_id=movie_id
+    )
+    
+    if not success and "not found" in message.lower():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=message
+        )
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=message
+        )
+    
+    return MovieNotificationResponse(
+        subscribed=True,
+        message=message
+    )
+
+
+@router.delete(
+    "/{movie_id}/notify",
+    response_model=MovieNotificationResponse,
+    status_code=status.HTTP_200_OK
+)
+def unsubscribe_from_movie_notifications(
+    movie_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Unsubscribe from notifications for a movie.
+    
+    - **movie_id**: ID of the movie to unsubscribe from
+    - Returns unsubscription status and message
+    """
+    success, message = NotificationService.unsubscribe_from_movie(
+        db=session,
+        user_id=current_user.id,
+        movie_id=movie_id
+    )
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=message
+        )
+    
+    return MovieNotificationResponse(
+        subscribed=False,
+        message=message
+    )
+

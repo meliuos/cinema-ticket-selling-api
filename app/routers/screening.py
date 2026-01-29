@@ -1,6 +1,6 @@
 """Screening routes."""
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from sqlmodel import Session, select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm import selectinload
@@ -18,6 +18,7 @@ from app.schemas.screening import ScreeningCreate, ScreeningRead, ScreeningReadD
 from app.schemas.cinema import SeatRead
 from app.services.cinema import get_available_seats
 from app.services.auth import get_current_admin_user
+from app.services.notification import NotificationService
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/screenings", tags=["Screenings"])
 
@@ -27,8 +28,9 @@ router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/screenings", tags=["Screeni
     response_model=ScreeningRead,
     status_code=status.HTTP_201_CREATED
 )
-def create_screening(
+async def create_screening(
     screening: ScreeningCreate,
+    background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
     current_admin: User = Depends(get_current_admin_user)
 ):
@@ -41,12 +43,19 @@ def create_screening(
             detail=f"Movie with id {screening.movie_id} not found"
         )
     
-    # Block screening creation for coming soon movies 
-    if movie.state == MovieState.COMING_SOON:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot create screenings for coming soon movies"
-        )
+    # Track if this is the first screening for a COMING_SOON movie
+    was_coming_soon = movie.state == MovieState.COMING_SOON
+    
+    # Check if this is the first screening for this movie
+    existing_screenings = session.exec(
+        select(Screening).where(Screening.movie_id == screening.movie_id)
+    ).first()
+    is_first_screening = existing_screenings is None
+    
+    # If it's a COMING_SOON movie and first screening, auto-change to SHOWING
+    if was_coming_soon and is_first_screening:
+        movie.state = MovieState.SHOWING
+        session.add(movie)
     
     # Verify room exists
     room = session.get(Room, screening.room_id)
@@ -60,6 +69,15 @@ def create_screening(
     session.add(db_screening)
     session.commit()
     session.refresh(db_screening)
+    
+    # 🎯 Trigger notifications if this was the first screening for a COMING_SOON movie
+    if was_coming_soon and is_first_screening:
+        background_tasks.add_task(
+            NotificationService.notify_movie_available,
+            session,
+            screening.movie_id
+        )
+    
     return db_screening
 
 

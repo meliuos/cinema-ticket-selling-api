@@ -31,6 +31,8 @@ from app.routers import (
     cast_router,
     payment_router,
 )
+from app.routers.email_test import router as email_test_router
+from app.routers.contact import router as contact_router
 origins = [
     
    "http://localhost:4200",
@@ -148,4 +150,5 @@ app.include_router(review_router)
 app.include_router(user_features_router)
 app.include_router(admin_router)
 app.include_router(cast_router)
-
+app.include_router(email_test_router)
+app.include_router(contact_router)

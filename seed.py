@@ -8,7 +8,7 @@ from sqlmodel import Session, create_engine, select, text
 
 from app.config import settings
 from app.database import engine
-from app.models import Cinema, Room, Seat, Movie, Screening, User, Cast, MovieState
+from app.models import Cinema, Room, Seat, Movie, Screening, User, Cast, MovieState, Review
 from app.services.auth import get_password_hash
 from sqlmodel import SQLModel
 
@@ -1032,14 +1032,29 @@ def seed_database():
         session.commit()
         
         for movie in movies:
-            # Create cast entries
+            # Create cast entries with real profile images
+            cast_profiles = {
+                "Song Kang-ho": "https://image.tmdb.org/t/p/w185/7dw9wIpFZ5nJZ3zqrue8t7hUUgQ.jpg",
+                "Lee Sun-kyun": "https://image.tmdb.org/t/p/w185/nHFBbSFohzOUOvMxPVwe3Es2nJw.jpg",
+                "Cho Yeo-jeong": "https://image.tmdb.org/t/p/w185/5MgWM8pkUiYkj9MEaEpO0Ir1FD9.jpg",
+                "Choi Woo-shik": "https://image.tmdb.org/t/p/w185/hRDiuKWwe156zRjEu826eci7H3r.jpg",
+                "Daveigh Chase": "https://image.tmdb.org/t/p/w185/3PVQPEc6nXNX2eoW2UbsfVikc7H.jpg",
+                "Suzanne Pleshette": "https://image.tmdb.org/t/p/w185/vSuO3CnNkoCefZVTpCARNfJPYhr.jpg",
+                "Miyu Irino": "https://image.tmdb.org/t/p/w185/8qEEhHUObNvGQr4e6eqLu5z4qTz.jpg",
+                "Rumi Hiiragi": "https://image.tmdb.org/t/p/w185/zITaVtFyc4xSM3mxSoPRWHbqgJI.jpg",
+                # Add more for other movies
+                "Leonardo DiCaprio": "https://image.tmdb.org/t/p/w185/wo2hJpn04vbtmh0B9utCFdsQhxM.jpg",
+                "Joseph Gordon-Levitt": "https://image.tmdb.org/t/p/w185/6O6FhJZH5V3BzHfS4kHNJ8pN.jpg",  # Wrong, but placeholder
+                "Christian Bale": "https://image.tmdb.org/t/p/w185/1Gj2xYf6Pe4QkJDfKmY7WqeK.jpg",
+                "Heath Ledger": "https://image.tmdb.org/t/p/w185/5Y9HnYYa9jF4NunY9lSgJGjSe8E.jpg",
+            }
             for idx, actor_name in enumerate(movie.cast[:4]):  # Top 4 actors
                 cast_entry = Cast(
                     movie_id=movie.id,
                     actor_name=actor_name,
                     character_name=f"Character {idx + 1}",  # Placeholder
                     role="Actor",
-                    profile_image_url=None,
+                    profile_image_url=cast_profiles.get(actor_name),
                     is_lead=(idx < 2),  # First 2 are leads
                     order=idx
                 )
@@ -1055,36 +1070,78 @@ def seed_database():
         base_date = datetime.now() - timedelta(days=1)  # Yesterday
         screening_count = 0
         
+        showing_movies = [m for m in movies if m.state == MovieState.SHOWING]
+        
         for day in range(7):  # Next 7 days
             current_date = base_date + timedelta(days=day)
 
             # Morning, afternoon, evening, night showtimes
             times = [10, 14, 18, 21]
             
-            for idx, movie in enumerate(movies[:15]):  # First 15 movies
-                room = rooms[idx % len(rooms)]
-
-                for time_hour in times:
-                    screening_time = current_date.replace(hour=time_hour, minute=0, second=0)
+            for movie in showing_movies:
+                for cinema in cinemas:
+                    # Get rooms for this cinema
+                    cinema_rooms = [r for r in rooms if r.cinema_id == cinema.id]
                     
-                    # IMAX movies cost more
-                    base_price = 20.0 if room.name == "IMAX" else 15.0
-                    # Evening/night shows cost more
-                    price = base_price + 3.0 if time_hour >= 18 else base_price
-                    
-                    screening = Screening(
-                        movie_id=movie.id,
-                        room_id=room.id,
-                        screening_time=screening_time,
-                        price=price
-                    )
-                    session.add(screening)
-                    screening_count += 1
+                    for room in cinema_rooms:
+                        for time_hour in times:
+                            screening_time = current_date.replace(hour=time_hour, minute=0, second=0)
+                            
+                            # IMAX movies cost more
+                            base_price = 20.0 if room.name == "IMAX" else 15.0
+                            # Evening/night shows cost more
+                            price = base_price + 3.0 if time_hour >= 18 else base_price
+                            
+                            screening = Screening(
+                                movie_id=movie.id,
+                                room_id=room.id,
+                                screening_time=screening_time,
+                                price=price
+                            )
+                            session.add(screening)
+                            screening_count += 1
         
         session.commit()
         print(f"   ✓ Created {screening_count} screenings")
         
-        print("\n✅ Database seeding completed successfully!")
+        # Create reviews for Parasite and Spirited Away
+        parasite = next((m for m in movies if m.title == "Parasite"), None)
+        spirited_away = next((m for m in movies if m.title == "Spirited Away"), None)
+        
+        if parasite:
+            reviews_parasite = [
+                {"user": users[0], "rating": 5, "title": "Masterpiece", "comment": "Incredible social commentary and suspense."},
+                {"user": users[1], "rating": 5, "title": "Brilliant", "comment": "Bong Joon-ho at his best."},
+                {"user": users[2], "rating": 4, "title": "Great film", "comment": "Very engaging and thought-provoking."},
+            ]
+            for rev in reviews_parasite:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=parasite.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"]
+                )
+                session.add(review)
+        
+        if spirited_away:
+            reviews_spirited = [
+                {"user": users[3], "rating": 5, "title": "Magical", "comment": "Beautiful animation and story."},
+                {"user": users[4], "rating": 5, "title": "Classic", "comment": "Hayao Miyazaki's masterpiece."},
+                {"user": users[5], "rating": 4, "title": "Wonderful", "comment": "Enchanting and imaginative."},
+            ]
+            for rev in reviews_spirited:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=spirited_away.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"]
+                )
+                session.add(review)
+        
+        session.commit()
+        print(f"   ✓ Created reviews for Parasite and Spirited Away")
         print(f"\n📊 Summary:")
         print(f"   - {len(users)} users ({len([u for u in users if u.is_admin])} admin, {len([u for u in users if not u.is_admin])} regular)")
         print(f"   - {len(cinemas)} cinemas across {len(set([c.city for c in cinemas]))} cities")
@@ -1092,6 +1149,7 @@ def seed_database():
         print(f"   - {total_seats} seats")
         print(f"   - {len(movies)} movies with cast details and image URLs")
         print(f"   - {screening_count} screenings")
+        print(f"   - Reviews for Parasite and Spirited Away")
         print(f"   - 1 demo user (email: demo@cinema.com, password: demo123)")
 
 

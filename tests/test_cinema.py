@@ -239,7 +239,7 @@ def test_get_cinema_showtimes(client: TestClient, test_cinema, test_screening):
     data = response.json()
     assert isinstance(data, list)
     assert len(data) >= 1
-    assert any(s["id"] == test_screening.id for s in data)
+    assert any(any(st["id"] == test_screening.id for st in s["showtimes"]) for s in data)
 
 
 def test_get_cinema_showtimes_with_date(client: TestClient, test_cinema, test_screening):
