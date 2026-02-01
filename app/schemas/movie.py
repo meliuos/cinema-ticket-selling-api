@@ -20,7 +20,7 @@ class MovieBase(SQLModel):
     state: MovieState = Field(default=MovieState.SHOWING)
     
     # Cast & Crew
-    cast: Optional[List[str]] = None
+    cast: Optional[List[Dict[str, str]]] = None
     director: Optional[str] = Field(default=None, max_length=255)
     writers: Optional[List[str]] = None
     producers: Optional[List[str]] = None
@@ -94,7 +94,7 @@ class MovieRead(SQLModel):
     state: MovieState
     
     # Cast & Crew
-    cast: Optional[List[str]] = None
+    cast: Optional[List[Dict[str, str]]] = None
     director: Optional[str] = None
     writers: Optional[List[str]] = None
     producers: Optional[List[str]] = None

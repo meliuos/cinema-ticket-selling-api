@@ -574,8 +574,8 @@ def seed_database():
                 revenue=968511805,
                 production_company="Walt Disney Pictures",
                 distributor="Walt Disney Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/sKCr78MXSLixwmZ8DyJLfBcFcqq.jpg",
-                trailer_url="https://www.youtube.com/watch?v=4sj1MT05lAA",
+                image_url="https://image.tmdb.org/t/p/w500/sMMCfc3xF93PqVNDnL84hhPxvxk.jpg",
+                trailer_url="https://www.youtube.com/watch?v=_mjr4nJXOP8",
                 awards=["Academy Award for Best Original Score", "Golden Globe for Best Motion Picture"],
                 details={"imdb_rating": 8.5, "animated": True}
             ),
@@ -618,8 +618,8 @@ def seed_database():
                 revenue=520000000,
                 production_company="TriStar Pictures",
                 distributor="TriStar Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/5M0j0B18abtBI5gi2RhfjjurT3.jpg",
-                trailer_url="https://www.youtube.com/watch?v=CRRlbK5w8AE",
+                image_url="https://image.tmdb.org/t/p/w1280/5M0j0B18abtBI5gi2RhfjjurTqb.jpg",
+                trailer_url="https://www.youtube.com/watch?v=lwSysg9o7wE",
                 awards=["Academy Award for Best Sound", "Academy Award for Best Visual Effects"],
                 details={"imdb_rating": 8.5, "franchise": "Terminator", "part": 2}
             ),
@@ -640,8 +640,8 @@ def seed_database():
                 revenue=23341568,
                 production_company="PolyGram Filmed Entertainment",
                 distributor="Gramercy Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/9IWdJMMlqhbEbVJmZM3k8uuE6TJ.jpg",
-                trailer_url="https://www.youtube.com/watch?v=oiXdPolca5w",
+                image_url="https://image.tmdb.org/t/p/w500/AuGiPiGMYMkSosOJ3BQjDEAiwtO.jpg",
+                trailer_url="https://www.youtube.com/watch?v=Q0eCIYtJa8Q",
                 awards=["Academy Award for Best Supporting Actor", "Academy Award for Best Original Screenplay"],
                 details={"imdb_rating": 8.5, "twist_ending": True}
             ),
@@ -728,7 +728,7 @@ def seed_database():
                 revenue=481840909,
                 production_company="DreamWorks Pictures",
                 distributor="Paramount Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/1wY4psJ5NVEhCuOYROGsXQ98Ll.jpg",
+                image_url="https://image.tmdb.org/t/p/original/uqx37cS8cpHg8U35f9U5IBlrCV3.jpg",
                 trailer_url="https://www.youtube.com/watch?v=zwhP5b4tD6g",
                 awards=["Academy Award for Best Director", "Academy Award for Best Cinematography"],
                 details={"imdb_rating": 8.6, "d_day": True}
@@ -772,7 +772,7 @@ def seed_database():
                 revenue=289847354,
                 production_company="Warner Bros. Pictures",
                 distributor="Warner Bros. Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/nT97ifFY8gkFgkvTQJz98ZfpMsb.jpg",
+                image_url="https://m.media-amazon.com/images/I/51mjWgQocwL._AC_.jpg",
                 trailer_url="https://www.youtube.com/watch?v=iojhqm0JTW4",
                 awards=["Academy Award for Best Picture", "Academy Award for Best Director"],
                 details={"imdb_rating": 8.5, "remake": "Infernal Affairs"}
@@ -860,8 +860,8 @@ def seed_database():
                 revenue=109676311,
                 production_company="Warner Bros. Pictures",
                 distributor="Buena Vista Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/tRNlZbgNCXqR2iQa87eM8DO4ZoV.jpg",
-                trailer_url="https://www.youtube.com/watch?v=ijXruSzfGEc",
+                image_url="https://onlyposter.it/cdn/shop/files/The_Prestige_2006.jpg?v=1732913780&width=823",
+                trailer_url="https://www.youtube.com/watch?v=o4gHCmTQDVI",
                 awards=["Academy Award for Best Cinematography"],
                 details={"imdb_rating": 8.5, "based_on": "Christopher Priest novel"}
             ),
@@ -1024,6 +1024,888 @@ def seed_database():
                 awards=["Academy Award for Best Sound"],
                 details={"imdb_rating": 8.2, "sequel": True},
                 state=MovieState.COMING_SOON
+            ),
+            # Additional Popular Movies
+            Movie(
+                title="Inception",
+                description="A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+                duration_minutes=148,
+                genre="Sci-Fi",
+                rating="PG-13",
+                cast=["Leonardo DiCaprio", "Marion Cotillard", "Tom Hardy", "Elliot Page"],
+                director="Christopher Nolan",
+                writers=["Christopher Nolan"],
+                producers=["Emma Thomas", "Christopher Nolan"],
+                release_date=date(2010, 7, 16),
+                country="USA",
+                language="English",
+                budget=160000000,
+                revenue=836836967,
+                production_company="Warner Bros. Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+                trailer_url="https://www.youtube.com/watch?v=YoHD9XEInc0",
+                awards=["Academy Award for Best Cinematography", "Academy Award for Best Visual Effects"],
+                details={"imdb_rating": 8.8, "mind_bending": True}
+            ),
+            Movie(
+                title="The Shawshank Redemption",
+                description="Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+                duration_minutes=142,
+                genre="Drama",
+                rating="R",
+                cast=["Tim Robbins", "Morgan Freeman", "Bob Gunton", "William Sadler"],
+                director="Frank Darabont",
+                writers=["Frank Darabont"],
+                producers=["Niki Marvin"],
+                release_date=date(1994, 9, 23),
+                country="USA",
+                language="English",
+                budget=25000000,
+                revenue=28341469,
+                production_company="Castle Rock Entertainment",
+                distributor="Columbia Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
+                trailer_url="https://www.youtube.com/watch?v=6hB3S9bIaco",
+                awards=["No major Academy Awards but critically acclaimed"],
+                details={"imdb_rating": 9.3, "based_on": "Stephen King novella"}
+            ),
+            Movie(
+                title="Pulp Fiction",
+                description="The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.",
+                duration_minutes=154,
+                genre="Crime",
+                rating="R",
+                cast=["John Travolta", "Uma Thurman", "Samuel L. Jackson", "Bruce Willis"],
+                director="Quentin Tarantino",
+                writers=["Quentin Tarantino"],
+                producers=["Lawrence Bender"],
+                release_date=date(1994, 10, 14),
+                country="USA",
+                language="English",
+                budget=8000000,
+                revenue=214179088,
+                production_company="Miramax Films",
+                distributor="Miramax Films",
+                image_url="https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
+                trailer_url="https://www.youtube.com/watch?v=s7EdQ4FqbhY",
+                awards=["Academy Award for Best Original Screenplay", "Palme d'Or at Cannes"],
+                details={"imdb_rating": 8.9, "non_linear_narrative": True}
+            ),
+            Movie(
+                title="The Matrix",
+                description="A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+                duration_minutes=136,
+                genre="Sci-Fi",
+                rating="R",
+                cast=["Keanu Reeves", "Laurence Fishburne", "Carrie-Anne Moss", "Hugo Weaving"],
+                director="Lana Wachowski",
+                writers=["Lana Wachowski", "Lilly Wachowski"],
+                producers=["Joel Silver"],
+                release_date=date(1999, 3, 31),
+                country="USA",
+                language="English",
+                budget=63000000,
+                revenue=467222824,
+                production_company="Warner Bros. Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
+                trailer_url="https://www.youtube.com/watch?v=vKQi3bBA1y8",
+                awards=["Academy Award for Best Visual Effects", "Academy Award for Best Sound"],
+                details={"imdb_rating": 8.7, "franchise": "The Matrix", "part": 1}
+            ),
+            Movie(
+                title="Interstellar",
+                description="A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+                duration_minutes=169,
+                genre="Sci-Fi",
+                rating="PG-13",
+                cast=["Matthew McConaughey", "Anne Hathaway", "Jessica Chastain", "Michael Caine"],
+                director="Christopher Nolan",
+                writers=["Jonathan Nolan", "Christopher Nolan"],
+                producers=["Emma Thomas", "Christopher Nolan"],
+                release_date=date(2014, 11, 7),
+                country="USA",
+                language="English",
+                budget=165000000,
+                revenue=677471339,
+                production_company="Paramount Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+                trailer_url="https://www.youtube.com/watch?v=zSWdZVtXT7E",
+                awards=["Academy Award for Best Visual Effects"],
+                details={"imdb_rating": 8.6, "space_exploration": True}
+            ),
+            Movie(
+                title="The Godfather",
+                description="The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
+                duration_minutes=175,
+                genre="Crime",
+                rating="R",
+                cast=["Marlon Brando", "Al Pacino", "James Caan", "Richard S. Castellano"],
+                director="Francis Ford Coppola",
+                writers=["Mario Puzo", "Francis Ford Coppola"],
+                producers=["Albert S. Ruddy"],
+                release_date=date(1972, 3, 24),
+                country="USA",
+                language="English",
+                budget=6000000,
+                revenue=134966411,
+                production_company="Paramount Pictures",
+                distributor="Paramount Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
+                trailer_url="https://www.youtube.com/watch?v=sY1S34973zI",
+                awards=["Academy Award for Best Picture", "Academy Award for Best Actor"],
+                details={"imdb_rating": 9.2, "based_on": "Mario Puzo novel"}
+            ),
+            Movie(
+                title="Forrest Gump",
+                description="The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75.",
+                duration_minutes=142,
+                genre="Drama",
+                rating="PG-13",
+                cast=["Tom Hanks", "Robin Wright", "Gary Sinise", "Sally Field"],
+                director="Robert Zemeckis",
+                writers=["Winston Groom", "Eric Roth"],
+                producers=["Wendy Finerman", "Steve Tisch"],
+                release_date=date(1994, 7, 6),
+                country="USA",
+                language="English",
+                budget=55000000,
+                revenue=677387716,
+                production_company="Paramount Pictures",
+                distributor="Paramount Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
+                trailer_url="https://www.youtube.com/watch?v=bLvqoHBptjg",
+                awards=["Academy Award for Best Picture", "Academy Award for Best Actor"],
+                details={"imdb_rating": 8.8, "historical_drama": True}
+            ),
+            Movie(
+                title="The Dark Knight",
+                description="When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests.",
+                duration_minutes=152,
+                genre="Action",
+                rating="PG-13",
+                cast=["Christian Bale", "Heath Ledger", "Aaron Eckhart", "Michael Caine"],
+                director="Christopher Nolan",
+                writers=["Jonathan Nolan", "Christopher Nolan"],
+                producers=["Emma Thomas", "Charles Roven"],
+                release_date=date(2008, 7, 18),
+                country="USA",
+                language="English",
+                budget=185000000,
+                revenue=1004558444,
+                production_company="Warner Bros. Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+                trailer_url="https://www.youtube.com/watch?v=EXeTwQWrcwY",
+                awards=["Academy Award for Best Supporting Actor"],
+                details={"imdb_rating": 9.0, "superhero": True}
+            ),
+            Movie(
+                title="Fight Club",
+                description="An insomniac office worker and a devil-may-care soapmaker form an underground fight club that evolves into something much, much more.",
+                duration_minutes=139,
+                genre="Drama",
+                rating="R",
+                cast=["Brad Pitt", "Edward Norton", "Helena Bonham Carter", "Meat Loaf"],
+                director="David Fincher",
+                writers=["Chuck Palahniuk", "Jim Uhls"],
+                producers=["Art Linson", "Ceán Chaffin"],
+                release_date=date(1999, 10, 15),
+                country="USA",
+                language="English",
+                budget=63000000,
+                revenue=100853753,
+                production_company="20th Century Fox",
+                distributor="20th Century Fox",
+                image_url="https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+                trailer_url="https://www.youtube.com/watch?v=BdJKm16Co6M",
+                awards=["No major Academy Awards but critically acclaimed"],
+                details={"imdb_rating": 8.8, "psychological_thriller": True}
+            ),
+            Movie(
+                title="Gladiator",
+                description="A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.",
+                duration_minutes=155,
+                genre="Action",
+                rating="R",
+                cast=["Russell Crowe", "Joaquin Phoenix", "Connie Nielsen", "Oliver Reed"],
+                director="Ridley Scott",
+                writers=["David Franzoni", "John Logan"],
+                producers=["Douglas Wick", "David Franzoni"],
+                release_date=date(2000, 5, 5),
+                country="USA",
+                language="English",
+                budget=103000000,
+                revenue=460583960,
+                production_company="DreamWorks Pictures",
+                distributor="Universal Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg",
+                trailer_url="https://www.youtube.com/watch?v=owK1qxDselE",
+                awards=["Academy Award for Best Picture", "Academy Award for Best Actor"],
+                details={"imdb_rating": 8.5, "historical_drama": True}
+            ),
+            Movie(
+                title="Titanic",
+                description="A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.",
+                duration_minutes=194,
+                genre="Romance",
+                rating="PG-13",
+                cast=["Leonardo DiCaprio", "Kate Winslet", "Billy Zane", "Kathy Bates"],
+                director="James Cameron",
+                writers=["James Cameron"],
+                producers=["James Cameron", "Jon Landau"],
+                release_date=date(1997, 12, 19),
+                country="USA",
+                language="English",
+                budget=200000000,
+                revenue=2187463944,
+                production_company="Paramount Pictures",
+                distributor="20th Century Fox",
+                image_url="https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg",
+                trailer_url="https://www.youtube.com/watch?v=kVrqfYjkTdQ",
+                awards=["Academy Award for Best Picture", "Academy Award for Best Director"],
+                details={"imdb_rating": 7.9, "historical_drama": True}
+            ),
+            Movie(
+                title="The Avengers",
+                description="Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity.",
+                duration_minutes=143,
+                genre="Action",
+                rating="PG-13",
+                cast=["Robert Downey Jr.", "Chris Evans", "Scarlett Johansson", "Jeremy Renner"],
+                director="Joss Whedon",
+                writers=["Joss Whedon"],
+                producers=["Kevin Feige"],
+                release_date=date(2012, 5, 4),
+                country="USA",
+                language="English",
+                budget=220000000,
+                revenue=1518815515,
+                production_company="Marvel Studios",
+                distributor="Walt Disney Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg",
+                trailer_url="https://www.youtube.com/watch?v=eOrNdBpGMv8",
+                awards=["No major Academy Awards but critically acclaimed"],
+                details={"imdb_rating": 8.0, "superhero": True, "marvel_cinematic_universe": True}
+            ),
+            Movie(
+                title="Avatar",
+                description="A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home.",
+                duration_minutes=162,
+                genre="Sci-Fi",
+                rating="PG-13",
+                cast=["Sam Worthington", "Zoe Saldaña", "Sigourney Weaver", "Stephen Lang"],
+                director="James Cameron",
+                writers=["James Cameron"],
+                producers=["James Cameron", "Jon Landau"],
+                release_date=date(2009, 12, 18),
+                country="USA",
+                language="English",
+                budget=237000000,
+                revenue=2923706026,
+                production_company="20th Century Fox",
+                distributor="20th Century Fox",
+                image_url="https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg",
+                trailer_url="https://www.youtube.com/watch?v=5PSNL1qE6VY",
+                awards=["Academy Award for Best Cinematography", "Academy Award for Best Visual Effects"],
+                details={"imdb_rating": 7.9, "highest_grossing": True}
+            ),
+            Movie(
+                title="The Lord of the Rings: The Fellowship of the Ring",
+                description="A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.",
+                duration_minutes=178,
+                genre="Fantasy",
+                rating="PG-13",
+                cast=["Elijah Wood", "Ian McKellen", "Orlando Bloom", "Sean Bean"],
+                director="Peter Jackson",
+                writers=["J.R.R. Tolkien", "Fran Walsh"],
+                producers=["Peter Jackson", "Fran Walsh"],
+                release_date=date(2001, 12, 19),
+                country="New Zealand",
+                language="English",
+                budget=93000000,
+                revenue=897690072,
+                production_company="New Line Cinema",
+                distributor="New Line Cinema",
+                image_url="https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
+                trailer_url="https://www.youtube.com/watch?v=V75dMMIW2B4",
+                awards=["Academy Award for Best Cinematography", "Academy Award for Best Original Score"],
+                details={"imdb_rating": 8.8, "based_on": "J.R.R. Tolkien novel", "franchise": "The Lord of the Rings"}
+            ),
+            Movie(
+                title="Star Wars: Episode IV - A New Hope",
+                description="Luke Skywalker joins forces with a Jedi Knight, a cocky pilot, a Wookiee and two droids to save the galaxy from the Empire's world-destroying battle station.",
+                duration_minutes=121,
+                genre="Sci-Fi",
+                rating="PG",
+                cast=["Mark Hamill", "Harrison Ford", "Carrie Fisher", "Alec Guinness"],
+                director="George Lucas",
+                writers=["George Lucas"],
+                producers=["Gary Kurtz"],
+                release_date=date(1977, 5, 25),
+                country="USA",
+                language="English",
+                budget=11000000,
+                revenue=775398007,
+                production_company="Lucasfilm Ltd.",
+                distributor="20th Century Fox",
+                image_url="https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+                trailer_url="https://www.youtube.com/watch?v=1g3_CFmnU7k",
+                awards=["Academy Award for Best Visual Effects", "Academy Award for Best Original Score"],
+                details={"imdb_rating": 8.6, "franchise": "Star Wars", "part": 4}
+            ),
+            Movie(
+                title="Back to the Future",
+                description="Marty McFly, a 17-year-old high school student, is accidentally sent thirty years into the past in a time-traveling DeLorean invented by his close friend, the eccentric scientist Doc Brown.",
+                duration_minutes=116,
+                genre="Sci-Fi",
+                rating="PG",
+                cast=["Michael J. Fox", "Christopher Lloyd", "Lea Thompson", "Crispin Glover"],
+                director="Robert Zemeckis",
+                writers=["Robert Zemeckis", "Bob Gale"],
+                producers=["Neil Canton", "Bob Gale"],
+                release_date=date(1985, 7, 3),
+                country="USA",
+                language="English",
+                budget=19000000,
+                revenue=381109762,
+                production_company="Universal Pictures",
+                distributor="Universal Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/7lyBcpYB0Qt8gYhXYaEZUNlNQAv.jpg",
+                trailer_url="https://www.youtube.com/watch?v=qvsgGtivCgs",
+                awards=["Academy Award for Best Sound Effects Editing"],
+                details={"imdb_rating": 8.5, "time_travel": True}
+            ),
+            Movie(
+                title="The Silence of the Lambs",
+                description="A young F.B.I. cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer, a madman who skins his victims.",
+                duration_minutes=118,
+                genre="Thriller",
+                rating="R",
+                cast=["Jodie Foster", "Anthony Hopkins", "Lawrence A. Bonney", "Kasi Lemmons"],
+                director="Jonathan Demme",
+                writers=["Thomas Harris", "Ted Tally"],
+                producers=["Edward Saxon", "Kenneth Utt"],
+                release_date=date(1991, 2, 14),
+                country="USA",
+                language="English",
+                budget=19000000,
+                revenue=272742922,
+                production_company="Orion Pictures",
+                distributor="Orion Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg",
+                trailer_url="https://www.youtube.com/watch?v=W6Mm8Sbe__o",
+                awards=["Academy Award for Best Picture", "Academy Award for Best Actor"],
+                details={"imdb_rating": 8.6, "psychological_thriller": True}
+            ),
+            Movie(
+                title="Goodfellas",
+                description="The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners.",
+                duration_minutes=146,
+                genre="Crime",
+                rating="R",
+                cast=["Robert De Niro", "Ray Liotta", "Joe Pesci", "Lorraine Bracco"],
+                director="Martin Scorsese",
+                writers=["Nicholas Pileggi", "Martin Scorsese"],
+                producers=["Irwin Winkler"],
+                release_date=date(1990, 9, 21),
+                country="USA",
+                language="English",
+                budget=25000000,
+                revenue=46836394,
+                production_company="Warner Bros. Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg",
+                trailer_url="https://www.youtube.com/watch?v=qo5jJpHtI1Y",
+                awards=["Academy Award for Best Supporting Actor"],
+                details={"imdb_rating": 8.7, "based_on": "Nicholas Pileggi book"}
+            ),
+            Movie(
+                title="Braveheart",
+                description="Scottish warrior William Wallace leads his countrymen in a rebellion to free his homeland from the tyranny of King Edward I of England.",
+                duration_minutes=178,
+                genre="Action",
+                rating="R",
+                cast=["Mel Gibson", "Sophie Marceau", "Patrick McGoohan", "Angus Macfadyen"],
+                director="Mel Gibson",
+                writers=["Randall Wallace"],
+                producers=["Mel Gibson", "Alan Ladd Jr."],
+                release_date=date(1995, 5, 24),
+                country="USA",
+                language="English",
+                budget=72000000,
+                revenue=210409989,
+                production_company="Paramount Pictures",
+                distributor="Paramount Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/2qAgGeYdLjelOEqjW9FYvPHpplC.jpg",
+                trailer_url="https://www.youtube.com/watch?v=nMft5QDOHvk",
+                awards=["Academy Award for Best Picture", "Academy Award for Best Director"],
+                details={"imdb_rating": 8.3, "historical_drama": True}
+            ),
+            # Additional Current and Recent Movies
+            Movie(
+                title="Wonka",
+                description="A young Willy Wonka embarks on a magical but turbulent journey through the Chocolate Factory in this prequel to Charlie and the Chocolate Factory.",
+                duration_minutes=160,
+                genre="Fantasy",
+                rating="PG",
+                cast=["Timothée Chalamet", "Calah Lane", "Keegan-Michael Key", "Olivia Colman"],
+                director="Paul King",
+                writers=["Simon Farnaby", "Paul King"],
+                producers=["David Heyman", "Michael Siegel"],
+                release_date=date(2023, 12, 15),
+                country="USA",
+                language="English",
+                budget=125000000,
+                revenue=580000000,
+                production_company="Warner Bros. Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://m.media-amazon.com/images/I/81fCjzKaBTL._AC_SL1500_.jpg",
+                trailer_url="https://www.youtube.com/watch?v=wYU4PNztdPo",
+                awards=["Golden Globe for Best Motion Picture"],
+                details={"imdb_rating": 7.1, "musical": True}
+            ),
+            Movie(
+                title="The Holdovers",
+                description="A curmudgeonly instructor at a prep school is forced to chaperone the school's most incorrigible students on a holiday break.",
+                duration_minutes=133,
+                genre="Comedy",
+                rating="R",
+                cast=["Paul Giamatti", "Dominic Sessa", "Da'Vine Joy Randolph", "Carrie Preston"],
+                director="Alexander Payne",
+                writers=["David Hemingson"],
+                producers=["Mark Johnson", "Bill Block"],
+                release_date=date(2023, 10, 27),
+                country="USA",
+                language="English",
+                budget=0,
+                revenue=45000000,
+                production_company="Focus Features",
+                distributor="Focus Features",
+                image_url="https://image.tmdb.org/t/p/w500/VHSzNBTwxV8vh7wylo7O9CLdac.jpg",
+                trailer_url="https://www.youtube.com/watch?v=AJO0B9JQ0zg",
+                awards=["Academy Award for Best Picture", "Golden Globe for Best Motion Picture"],
+                details={"imdb_rating": 8.0, "coming_of_age": True}
+            ),
+            Movie(
+                title="Poor Things",
+                description="Brought back to life by an unorthodox scientist, a young woman runs off with a debauched lawyer on a whirlwind adventure.",
+                duration_minutes=141,
+                genre="Comedy",
+                rating="R",
+                cast=["Emma Stone", "Mark Ruffalo", "Willem Dafoe", "Ramy Youssef"],
+                director="Yorgos Lanthimos",
+                writers=["Tony McNamara"],
+                producers=["Ed Guiney", "Andrew Lowe"],
+                release_date=date(2023, 12, 8),
+                country="Ireland",
+                language="English",
+                budget=35000000,
+                revenue=108000000,
+                production_company="Element Pictures",
+                distributor="Searchlight Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg",
+                trailer_url="https://www.youtube.com/watch?v=RlbR5N6veqw",
+                awards=["Academy Award for Best Actress", "Golden Lion at Venice"],
+                details={"imdb_rating": 8.1, "surreal": True}
+            ),
+            Movie(
+                title="Anatomy of a Fall",
+                description="A woman's life is turned upside down when her husband dies in what appears to be an accident, forcing her to defend herself in court.",
+                duration_minutes=151,
+                genre="Thriller",
+                rating="R",
+                cast=["Sandra Hüller", "Swann Arlaud", "Milo Machado-Graner", "Antoine Reinartz"],
+                director="Justine Triet",
+                writers=["Justine Triet", "Arthur Harari"],
+                producers=["Marie-Ange Luciani", "David Thion"],
+                release_date=date(2023, 8, 23),
+                country="France",
+                language="French",
+                budget=0,
+                revenue=20000000,
+                production_company="Les Films Pelléas",
+                distributor="Neon",
+                image_url="https://image.tmdb.org/t/p/w500/kQs6keheMwCxJxrzV83VUwFtHkB.jpg",
+                trailer_url="https://www.youtube.com/watch?v=0iYrQ9TDtvc",
+                awards=["Palme d'Or at Cannes", "Academy Award for Best Original Screenplay"],
+                details={"imdb_rating": 7.7, "courtroom_drama": True}
+            ),
+            Movie(
+                title="Killers of the Flower Moon",
+                description="Members of the Osage tribe in the United States are murdered under mysterious circumstances in the 1920s, spurring a major FBI investigation.",
+                duration_minutes=206,
+                genre="Crime",
+                rating="R",
+                cast=["Leonardo DiCaprio", "Robert De Niro", "Lily Gladstone", "Jesse Plemons"],
+                director="Martin Scorsese",
+                writers=["Eric Roth", "Martin Scorsese"],
+                producers=["Dan Friedkin", "Bradley Thomas"],
+                release_date=date(2023, 10, 20),
+                country="USA",
+                language="English",
+                budget=200000000,
+                revenue=156000000,
+                production_company="Apple Studios",
+                distributor="Paramount Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/dB6Krk806zeqd0YNp2ngQ9zXznH.jpg",
+                trailer_url="https://www.youtube.com/watch?v=EG0si8TTL-k",
+                awards=["Academy Award for Best Supporting Actress"],
+                details={"imdb_rating": 7.6, "historical_crime": True}
+            ),
+            Movie(
+                title="Barbie",
+                description="Barbie and Ken are having the time of their lives in the colorful and seemingly perfect world of Barbie Land, but when they get a chance to go to the real world, they soon discover the joys and perils of living among humans.",
+                duration_minutes=114,
+                genre="Comedy",
+                rating="PG-13",
+                cast=["Margot Robbie", "Ryan Gosling", "Issa Rae", "Kate McKinnon"],
+                director="Greta Gerwig",
+                writers=["Greta Gerwig", "Noah Baumbach"],
+                producers=["David Heyman", "Margot Robbie"],
+                release_date=date(2023, 7, 21),
+                country="USA",
+                language="English",
+                budget=145000000,
+                revenue=1440000000,
+                production_company="Warner Bros. Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg",
+                trailer_url="https://www.youtube.com/watch?v=pBk4NYhWNMM",
+                awards=["Golden Globe for Best Motion Picture"],
+                details={"imdb_rating": 6.9, "highest_grossing_2023": True}
+            ),
+            Movie(
+                title="Oppenheimer",
+                description="The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.",
+                duration_minutes=180,
+                genre="Biography",
+                rating="R",
+                cast=["Cillian Murphy", "Emily Blunt", "Robert Downey Jr.", "Matt Damon"],
+                director="Christopher Nolan",
+                writers=["Christopher Nolan"],
+                producers=["Emma Thomas", "Charles Roven"],
+                release_date=date(2023, 7, 21),
+                country="United States",
+                language="English",
+                budget=100000000,
+                revenue=952000000,
+                production_company="Universal Pictures",
+                distributor="Universal Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+                trailer_url="https://www.youtube.com/watch?v=uYPbbksJxIg",
+                awards=["Academy Award for Best Picture", "Academy Award for Best Director"],
+                details={"imdb_rating": 8.3, "historical_drama": True}
+            ),
+            Movie(
+                title="Dune: Part Two",
+                description="Paul Atreides unites with Chani and the Fremen while on a path of revenge against the conspirators who destroyed his family.",
+                duration_minutes=166,
+                genre="Sci-Fi",
+                rating="PG-13",
+                cast=["Timothée Chalamet", "Zendaya", "Rebecca Ferguson", "Oscar Isaac"],
+                director="Denis Villeneuve",
+                writers=["Denis Villeneuve", "Jon Spaihts"],
+                producers=["Mary Parent", "Cale Boyter"],
+                release_date=date(2024, 3, 1),
+                country="United States",
+                language="English",
+                budget=190000000,
+                revenue=711844167,
+                production_company="Warner Bros. Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+                trailer_url="https://www.youtube.com/watch?v=Way9Dexny3w",
+                awards=["Academy Award for Best Visual Effects"],
+                details={"imdb_rating": 8.5, "highly_anticipated": True}
+            ),
+            Movie(
+                title="Challengers",
+                description="Tashi, a former tennis prodigy turned coach, turned her husband into a champion. But to overcome a losing streak, she recruits the help of an old acquaintance and ignites a rivalry between him and her husband.",
+                duration_minutes=131,
+                genre="Drama",
+                rating="R",
+                cast=["Zendaya", "Mike Faist", "Josh O'Connor", "Aidan Quinn"],
+                director="Luca Guadagnino",
+                writers=["Justin Kuritzkes"],
+                producers=["Amy Pascal", "Luca Guadagnino"],
+                release_date=date(2024, 4, 26),
+                country="USA",
+                language="English",
+                budget=55000000,
+                revenue=95000000,
+                production_company="Metro-Goldwyn-Mayer",
+                distributor="Amazon MGM Studios",
+                image_url="https://image.tmdb.org/t/p/w500/H6vke7zGiuLsz4v4RPeReb9rsv.jpg",
+                trailer_url="https://www.youtube.com/watch?v=44LdLqgOpjo",
+                awards=["No major Academy Awards but critically acclaimed"],
+                details={"imdb_rating": 7.2, "sports_drama": True}
+            ),
+            Movie(
+                title="Ghostbusters: Frozen Empire",
+                description="When the discovery of an ancient artifact unleashes an evil force, Ghostbusters new and old must join forces to protect their home and save the world from a second ice age.",
+                duration_minutes=115,
+                genre="Comedy",
+                rating="PG-13",
+                cast=["Paul Rudd", "Carrie Coon", "Finn Wolfhard", "Mckenna Grace"],
+                director="Gil Kenan",
+                writers=["Jason Reitman", "Gil Kenan"],
+                producers=["Jason Reitman", "Jason Blumenfeld"],
+                release_date=date(2024, 3, 22),
+                country="USA",
+                language="English",
+                budget=100000000,
+                revenue=202000000,
+                production_company="Columbia Pictures",
+                distributor="Sony Pictures",
+                image_url="https://en.wikipedia.org/wiki/Ghostbusters:_Frozen_Empire#/media/File:Ghostbusters_(2024)_poster.jpg",
+                trailer_url="https://www.youtube.com/watch?v=dSJNs6qaRfQ",
+                awards=["No major Academy Awards"],
+                details={"imdb_rating": 6.1, "franchise": "Ghostbusters"}
+            ),
+            Movie(
+                title="Monkey Man",
+                description="An anonymous young man unleashes a campaign of vengeance against the corrupt leaders who murdered his mother and continue to systematically victimize the poor and powerless.",
+                duration_minutes=121,
+                genre="Action",
+                rating="R",
+                cast=["Dev Patel", "Sharlto Copley", "Pitobash", "Vipin Sharma"],
+                director="Dev Patel",
+                writers=["Dev Patel", "Paul Angunawela"],
+                producers=["Dev Patel", "Jordan Peele"],
+                release_date=date(2024, 4, 5),
+                country="USA",
+                language="English",
+                budget=10000000,
+                revenue=33000000,
+                production_company="Bron Studios",
+                distributor="Universal Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/4lhR4L2vzzjl68P1zJyCH755Oz4.jpg",
+                trailer_url="https://www.youtube.com/watch?v=g-W0fHzQb2A",
+                awards=["No major Academy Awards but critically acclaimed"],
+                details={"imdb_rating": 7.0, "action_drama": True}
+            ),
+            Movie(
+                title="Love Lies Bleeding",
+                description="Reclusive gym manager Lou falls hard for Jackie, an ambitious bodybuilder headed through town to Las Vegas in pursuit of her dream. But their love ignites violence, pulling them deep into the web of Lou's criminal family.",
+                duration_minutes=104,
+                genre="Thriller",
+                rating="R",
+                cast=["Kristen Stewart", "Katy O'Brian", "Ed Harris", "Dave Franco"],
+                director="Rose Glass",
+                writers=["Weronika Tofilska", "Rose Glass"],
+                producers=["Andrea Cornwell", "Oliver Kassman"],
+                release_date=date(2024, 3, 8),
+                country="UK",
+                language="English",
+                budget=0,
+                revenue=8000000,
+                production_company="A24",
+                distributor="A24",
+                image_url="https://www.classificationoffice.govt.nz/media/images/love_lies_bleeding_poster.width-1200.jpg",
+                trailer_url="https://www.youtube.com/watch?v=2z-5XaS3fEw",
+                awards=["No major Academy Awards but critically acclaimed"],
+                details={"imdb_rating": 6.7, "neo_noir": True}
+            ),
+            Movie(
+                title="Civil War",
+                description="A journey across a dystopian future America, following a team of military-embedded journalists as they race against time to reach DC before rebel factions descend upon the White House.",
+                duration_minutes=109,
+                genre="Action",
+                rating="R",
+                cast=["Kirsten Dunst", "Wagner Moura", "Cailee Spaeny", "Stephen McKinley Henderson"],
+                director="Alex Garland",
+                writers=["Alex Garland"],
+                producers=["Andrew Macdonald", "Allon Reich"],
+                release_date=date(2024, 4, 12),
+                country="UK",
+                language="English",
+                budget=50000000,
+                revenue=122000000,
+                production_company="A24",
+                distributor="A24",
+                image_url="https://flightstightsandmovienights.com/wp-content/uploads/2016/05/captain-america-civil-war.jpg",
+                trailer_url="https://www.youtube.com/watch?v=Qf1RJm9QiBA",
+                awards=["No major Academy Awards but critically acclaimed"],
+                details={"imdb_rating": 7.0, "dystopian": True}
+            ),
+            Movie(
+                title="Drive-Away Dolls",
+                description="Jamie, an uninhibited free spirit and her uptight best friend Marian find themselves in a bizarre predicament after a night out that goes wrong. Marian's larcenous aunt has died and left her a run-down New Jersey motel.",
+                duration_minutes=84,
+                genre="Comedy",
+                rating="R",
+                cast=["Margaret Qualley", "Geraldine Viswanathan", "Beanie Feldstein", "Joanna Arnow"],
+                director="Ethan Coen",
+                writers=["Ethan Coen", "Tricia Cooke"],
+                producers=["Ethan Coen", "Tricia Cooke"],
+                release_date=date(2024, 2, 23),
+                country="USA",
+                language="English",
+                budget=0,
+                revenue=7000000,
+                production_company="Focus Features",
+                distributor="Focus Features",
+                image_url="https://image.tmdb.org/t/p/w500/gavGnAMT3OA9Ib3oTI7Zf1aX0qb.jpg",
+                trailer_url="https://www.youtube.com/watch?v=YPfKCPxyFW0",
+                awards=["No major Academy Awards"],
+                details={"imdb_rating": 5.6, "road_trip_comedy": True}
+            ),
+            Movie(
+                title="Dune",
+                description="Paul Atreides, a brilliant and gifted young man born into a great destiny beyond his understanding, must travel to the most dangerous planet in the universe to ensure the future of his family and his people.",
+                duration_minutes=155,
+                genre="Sci-Fi",
+                rating="PG-13",
+                cast=["Timothée Chalamet", "Rebecca Ferguson", "Oscar Isaac", "Jason Momoa"],
+                director="Denis Villeneuve",
+                writers=["Jon Spaihts", "Denis Villeneuve"],
+                producers=["Mary Parent", "Cale Boyter"],
+                release_date=date(2021, 10, 22),
+                country="USA",
+                language="English",
+                budget=165000000,
+                revenue=401000000,
+                production_company="Warner Bros. Pictures",
+                distributor="Warner Bros. Pictures",
+                image_url="https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+                trailer_url="https://www.youtube.com/watch?v=n9xhJrPXop4",
+                awards=["Academy Award for Best Cinematography", "Academy Award for Best Original Score"],
+                details={"imdb_rating": 8.0, "epic": True}
+            ),
+            Movie(
+                title="Everything Everywhere All at Once",
+                description="A middle-aged Chinese immigrant is swept up into an insane adventure in which she alone can save existence by exploring other universes and connecting with the lives she could have led.",
+                duration_minutes=139,
+                genre="Action",
+                rating="R",
+                cast=["Michelle Yeoh", "Stephanie Hsu", "Jamie Lee Curtis", "Tallie Medel"],
+                director="Daniels",
+                writers=["Daniels"],
+                producers=["Anthony Russo", "Joe Russo"],
+                release_date=date(2022, 4, 8),
+                country="USA",
+                language="English",
+                budget=25000000,
+                revenue=143000000,
+                production_company="A24",
+                distributor="A24",
+                image_url="https://image.tmdb.org/t/p/w500/w3LxiVYdWWRvEVdn5RYq6jIqkb1.jpg",
+                trailer_url="https://www.youtube.com/watch?v=wxN1T1uxQ2g",
+                awards=["Academy Award for Best Picture", "Academy Award for Best Director"],
+                details={"imdb_rating": 7.8, "multiverse": True}
+            ),
+            Movie(
+                title="The Menu",
+                description="A young couple travels to a remote island to eat at an exclusive restaurant where the chef has prepared a lavish menu, with some shocking surprises.",
+                duration_minutes=107,
+                genre="Thriller",
+                rating="R",
+                cast=["Ralph Fiennes", "Anya Taylor-Joy", "Nicholas Hoult", "Hong Chau"],
+                director="Mark Mylod",
+                writers=["Seth Reiss", "Will Tracy"],
+                producers=["Adam McKay", "Kevin J. Messick"],
+                release_date=date(2022, 11, 18),
+                country="USA",
+                language="English",
+                budget=35000000,
+                revenue=78000000,
+                production_company="Searchlight Pictures",
+                distributor="Searchlight Pictures",
+                image_url="https://www.robertmitchellevans.com/wp-content/uploads/2022/12/1-1-The-Menu.jpeg",
+                trailer_url="https://www.youtube.com/watch?v=C_uTkUGcHv4",
+                awards=["No major Academy Awards but critically acclaimed"],
+                details={"imdb_rating": 7.2, "dark_comedy": True}
+            ),
+            Movie(
+                title="Bullet Train",
+                description="Five assassins aboard a fast moving bullet train find out their missions have something in common.",
+                duration_minutes=127,
+                genre="Action",
+                rating="R",
+                cast=["Brad Pitt", "Joey King", "Aaron Taylor-Johnson", "Brian Tyree Henry"],
+                director="David Leitch",
+                writers=["Zak Olkewicz"],
+                producers=["Antoine Fuqua", "David Leitch"],
+                release_date=date(2022, 8, 5),
+                country="USA",
+                language="English",
+                budget=85900000,
+                revenue=239000000,
+                production_company="Columbia Pictures",
+                distributor="Sony Pictures",
+                image_url="https://m.media-amazon.com/images/I/71IXxbU87-L._AC_UF894,1000_QL80_.jpg",
+                trailer_url="https://www.youtube.com/watch?v=0IOsk2Vlc4o",
+                awards=["No major Academy Awards"],
+                details={"imdb_rating": 7.3, "action_comedy": True}
+            ),
+            Movie(
+                title="Don't Look Up",
+                description="Two low-level astronomers must go on a giant media tour to warn mankind of an approaching comet that will destroy planet Earth.",
+                duration_minutes=138,
+                genre="Comedy",
+                rating="R",
+                cast=["Leonardo DiCaprio", "Jennifer Lawrence", "Meryl Streep", "Cate Blanchett"],
+                director="Adam McKay",
+                writers=["Adam McKay"],
+                producers=["Adam McKay", "Kevin J. Messick"],
+                release_date=date(2021, 12, 24),
+                country="USA",
+                language="English",
+                budget=75000000,
+                revenue=790000,
+                production_company="Netflix",
+                distributor="Netflix",
+                image_url="https://image.tmdb.org/t/p/w500/th4E1yqsE8DGpAseLiUrI60Hf8V.jpg",
+                trailer_url="https://www.youtube.com/watch?v=RbIxYm3mKzI",
+                awards=["Golden Globe for Best Motion Picture"],
+                details={"imdb_rating": 7.2, "satire": True}
+            ),
+            Movie(
+                title="The Power of the Dog",
+                description="Charismatic rancher Phil Burbank inspires fear and awe in those around him. When his brother brings home a new wife and her son, Phil torments them until he finds himself exposed to the possibility of love.",
+                duration_minutes=126,
+                genre="Drama",
+                rating="R",
+                cast=["Benedict Cumberbatch", "Kirsten Dunst", "Jesse Plemons", "Kodi Smit-McPhee"],
+                director="Jane Campion",
+                writers=["Jane Campion"],
+                producers=["Tanya Seghatchian", "Emile Sherman"],
+                release_date=date(2021, 11, 17),
+                country="New Zealand",
+                language="English",
+                budget=35000000,
+                revenue=3000000,
+                production_company="See-Saw Films",
+                distributor="Netflix",
+                image_url="https://framerusercontent.com/images/JmuVjLFmJNGXYKMUi4aGvaAIDhc.png?scale-down-to=1024",
+                trailer_url="https://www.youtube.com/watch?v=LRDPo0CHrko",
+                awards=["Academy Award for Best Director", "Academy Award for Best Supporting Actor"],
+                details={"imdb_rating": 6.8, "western_drama": True}
+            ),
+            Movie(
+                title="No Time to Die",
+                description="James Bond has left active service. His peace is short-lived when Felix Leiter, an old friend from the CIA, turns up asking for help, leading Bond onto the trail of a mysterious villain armed with dangerous new technology.",
+                duration_minutes=163,
+                genre="Action",
+                rating="PG-13",
+                cast=["Daniel Craig", "Ana de Armas", "Rami Malek", "Léa Seydoux"],
+                director="Cary Joji Fukunaga",
+                writers=["Neal Purvis", "Robert Wade"],
+                producers=["Barbara Broccoli", "Michael G. Wilson"],
+                release_date=date(2021, 10, 8),
+                country="UK",
+                language="English",
+                budget=250000000,
+                revenue=774000000,
+                production_company="Eon Productions",
+                distributor="MGM/UA",
+                image_url="https://images-cdn.ubuy.co.id/636b04c3114c9d4a86576c33-no-time-to-die-james-bond-007-movie.jpgsssssssssssss",
+                trailer_url="https://www.youtube.com/watch?v=vw2FOYjCz38",
+                awards=["Academy Award for Best Original Song"],
+                details={"imdb_rating": 7.3, "franchise": "James Bond"}
             )
         ]
         
@@ -1034,6 +1916,7 @@ def seed_database():
         for movie in movies:
             # Create cast entries with real profile images
             cast_profiles = {
+                # Original cast
                 "Song Kang-ho": "https://image.tmdb.org/t/p/w185/7dw9wIpFZ5nJZ3zqrue8t7hUUgQ.jpg",
                 "Lee Sun-kyun": "https://image.tmdb.org/t/p/w185/nHFBbSFohzOUOvMxPVwe3Es2nJw.jpg",
                 "Cho Yeo-jeong": "https://image.tmdb.org/t/p/w185/5MgWM8pkUiYkj9MEaEpO0Ir1FD9.jpg",
@@ -1042,11 +1925,319 @@ def seed_database():
                 "Suzanne Pleshette": "https://image.tmdb.org/t/p/w185/vSuO3CnNkoCefZVTpCARNfJPYhr.jpg",
                 "Miyu Irino": "https://image.tmdb.org/t/p/w185/8qEEhHUObNvGQr4e6eqLu5z4qTz.jpg",
                 "Rumi Hiiragi": "https://image.tmdb.org/t/p/w185/zITaVtFyc4xSM3mxSoPRWHbqgJI.jpg",
-                # Add more for other movies
                 "Leonardo DiCaprio": "https://image.tmdb.org/t/p/w185/wo2hJpn04vbtmh0B9utCFdsQhxM.jpg",
-                "Joseph Gordon-Levitt": "https://image.tmdb.org/t/p/w185/6O6FhJZH5V3BzHfS4kHNJ8pN.jpg",  # Wrong, but placeholder
+                "Joseph Gordon-Levitt": "https://image.tmdb.org/t/p/w185/6O6FhJZH5V3BzHfS4kHNJ8pN.jpg",
                 "Christian Bale": "https://image.tmdb.org/t/p/w185/1Gj2xYf6Pe4QkJDfKmY7WqeK.jpg",
                 "Heath Ledger": "https://image.tmdb.org/t/p/w185/5Y9HnYYa9jF4NunY9lSgJGjSe8E.jpg",
+                "Tom Cruise": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Miles Teller": "https://image.tmdb.org/t/p/w185/8u8Z7T3h3l2VgBRHqpWJgKJj4rZ.jpg",
+                "Jennifer Connelly": "https://image.tmdb.org/t/p/w185/zY4Y8RNQ2KGfQ8a1fX2EiQJnO9.jpg",
+                "Jon Hamm": "https://image.tmdb.org/t/p/w185/kzLxyUYxPZeGVXeO3KNi9oN8i8.jpg",
+                "Timothée Chalamet": "https://image.tmdb.org/t/p/w185/BE2sdjpgsa2rNTFa66f7upkaOP.jpg",
+                "Zendaya": "https://image.tmdb.org/t/p/w185/9u3Y2Hd7UTmVTnGD0dYPx4oXBn.jpg",
+                "Rebecca Ferguson": "https://image.tmdb.org/t/p/w185/lJloQh0UO7C4i3Cz7npFKB1WLKm.jpg",
+                "Oscar Isaac": "https://image.tmdb.org/t/p/w185/dW5U5yrIIPmMjRThR9KT2xH6nTz.jpg",
+                "Cillian Murphy": "https://image.tmdb.org/t/p/w185/lldeQ91GwIVff43JBrpdbAAeYWj.jpg",
+                "Emily Blunt": "https://image.tmdb.org/t/p/w185/nCjjHPNwRn2CNJF9oR0TKrwn9cL.jpg",
+                "Robert Downey Jr.": "https://image.tmdb.org/t/p/w185/im9SAqJPZKEbVZGmjXuLI4O7RvM.jpg",
+                "Matt Damon": "https://image.tmdb.org/t/p/w185/elSlNgV8xVifsbHpFsqrPGxJToZ.jpg",
+                "Robert Pattinson": "https://image.tmdb.org/t/p/w185/kU3B75TyRiCgE270EyZnHjfivoq.jpg",
+                "Zoë Kravitz": "https://image.tmdb.org/t/p/w185/7rvpB2gTszDyrQHfKQ8Td0xDXp.jpg",
+                "Jeffrey Wright": "https://image.tmdb.org/t/p/w185/z2vaNT0Dzdsp4KGGJv8VNPTXNew.jpg",
+                "Colin Farrell": "https://image.tmdb.org/t/p/w185/7BZM4WZaOsM8Rh7lGZO9BF5e4y9.jpg",
+                "Sam Worthington": "https://image.tmdb.org/t/p/w185/9WqPgI8hkSvQKQhgV6dOoK8E9K.jpg",
+                "Zoe Saldaña": "https://image.tmdb.org/t/p/w185/ofNrWiA2KDdqiNxFTLp51HcXUlp.jpg",
+                "Sigourney Weaver": "https://image.tmdb.org/t/p/w185/7dG2PnD8OeC6VU4eC3LKR8HqBJb.jpg",
+                "Stephen Lang": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                # New cast members for expanded movies
+                "Marion Cotillard": "https://image.tmdb.org/t/p/w185/7pjlyC6ZEHq5zT83Ezr8GgJVLr5.jpg",
+                "Tom Hardy": "https://image.tmdb.org/t/p/w185/yVGF9FvDxTDPhGimTbZNfghpllW.jpg",
+                "Elliot Page": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",  # Updated name
+                "Tim Robbins": "https://image.tmdb.org/t/p/w185/6tEfTQFVJQvWyO7eHkPqkHQzDy.jpg",
+                "Bob Gunton": "https://image.tmdb.org/t/p/w185/4Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0Z0.jpg",
+                "William Sadler": "https://image.tmdb.org/t/p/w185/5Y9HnYYa9jF4NunY9lSgJGjSe8E.jpg",
+                "John Travolta": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Uma Thurman": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Samuel L. Jackson": "https://image.tmdb.org/t/p/w185/nCjjHPNwRn2CNJF9oR0TKrwn9cL.jpg",
+                "Bruce Willis": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Keanu Reeves": "https://image.tmdb.org/t/p/w185/cgoy7t5Ve075naBPcewZrc3q2xT.jpg",
+                "Laurence Fishburne": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Carrie-Anne Moss": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Hugo Weaving": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Matthew McConaughey": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Anne Hathaway": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jessica Chastain": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Marlon Brando": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Al Pacino": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "James Caan": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Richard S. Castellano": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Robin Wright": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Gary Sinise": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Sally Field": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Aaron Eckhart": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Edward Norton": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Helena Bonham Carter": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Meat Loaf": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Russell Crowe": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Joaquin Phoenix": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Connie Nielsen": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Oliver Reed": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kate Winslet": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Billy Zane": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kathy Bates": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Chris Evans": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Scarlett Johansson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jeremy Renner": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Elijah Wood": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Ian McKellen": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Orlando Bloom": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Sean Bean": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Mark Hamill": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Harrison Ford": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Carrie Fisher": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Alec Guinness": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Michael J. Fox": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Christopher Lloyd": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Lea Thompson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Crispin Glover": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jodie Foster": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Anthony Hopkins": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Lawrence A. Bonney": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kasi Lemmons": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Robert De Niro": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Ray Liotta": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Joe Pesci": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Lorraine Bracco": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Mel Gibson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Sophie Marceau": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Patrick McGoohan": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Angus Macfadyen": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                # Add more for other movies
+                "Brad Pitt": "https://image.tmdb.org/t/p/w185/kU3B75TyRiCgE270EyZnHjfivoq.jpg",
+                "Morgan Freeman": "https://image.tmdb.org/t/p/w185/oIciQWr8VwKoR8TmAw1owaiZFyb.jpg",
+                "Gwyneth Paltrow": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Kevin Spacey": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Tom Hanks": "https://image.tmdb.org/t/p/w185/xndWFsBlClOJYTdZv1ixVst2VUI.jpg",
+                "Michael Clarke Duncan": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "David Morse": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Bonnie Hunt": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Annette Bening": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Thora Birch": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Wes Bentley": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Edward Burns": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Karen Allen": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Paul Freeman": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Ronald Lacey": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Mark Wahlberg": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Alexandre Rodrigues": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Leandro Firmino": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Phellipe Haagensen": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Douglas Silva": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Miles Teller": "https://image.tmdb.org/t/p/w185/8u8Z7T3h3l2VgBRHqpWJgKJj4rZ.jpg",
+                "Melissa Benoist": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Austin Stowell": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Guy Pearce": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Joe Pantoliano": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Mark Boone Junior": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Hugh Jackman": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                "Toshio Suzuki": "https://image.tmdb.org/t/p/w185/8Z7Y4E2m1T0X7jY3Q4Y5Z6W7X8Y.jpg",
+                # New actors from additional movies
+                "Timothée Chalamet": "https://image.tmdb.org/t/p/w185/BE2sdjpgsa2rNTFa66f7upkaOP.jpg",
+                "Hugh Grant": "https://image.tmdb.org/t/p/w185/tMefBSflR6PGKSxBfI4gsXyzjlG.jpg",
+                "Olivia Colman": "https://image.tmdb.org/t/p/w185/uJNaSTsfF9K3pKF1HwAGH1eqU3G.jpg",
+                "Keegan-Michael Key": "https://image.tmdb.org/t/p/w185/vq4hrwiM05c8o2TxaJIspyo0O9Q.jpg",
+                "Rowan Atkinson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Sally Hawkins": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jim Carter": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Natasha Rothwell": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Mathew Baynton": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Simon Farnaby": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Rich Fulcher": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Rakhee Thakrar": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kobna Holdbrook-Smith": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tom Davis": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Ellie White": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Freya Parker": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Calah Lane": "https://image.tmdb.org/t/p/w185/z1PmE1aDTYH7H6jx6FeHh70uw4E.jpg",
+                "Matt Lucas": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Brad Pitt": "https://image.tmdb.org/t/p/w185/oTB9vGIBacH5aQNS0pUM74QSWuf.jpg",
+                "Joey King": "https://image.tmdb.org/t/p/w185/b0diEOPPAxOOInWOP9kofjYJ9HH.jpg",
+                "Aaron Taylor-Johnson": "https://image.tmdb.org/t/p/w185/7pKHxN3bNicXO0bQEsxG0UmE2M6.jpg",
+                "Brian Tyree Henry": "https://image.tmdb.org/t/p/w185/eQ5qNjxv8Q5sTLTwJCMQkfWNdGw.jpg",
+                "Benedict Cumberbatch": "https://image.tmdb.org/t/p/w185/fBEucxECxGLKVHBznO0P8k4V4k0.jpg",
+                "Kirsten Dunst": "https://image.tmdb.org/t/p/w185/6RAAxI4oPnDMzXpXWgkkzSgnIAJ.jpg",
+                "Jesse Plemons": "https://image.tmdb.org/t/p/w185/7InKyjPuQkEzJmUiRh9yozLPpIJ.jpg",
+                "Kodi Smit-McPhee": "https://image.tmdb.org/t/p/w185/yZmIxhVz0MHsU6SLMWwS7xZxFMj.jpg",
+                "Daniel Craig": "https://image.tmdb.org/t/p/w185/iFerDZUmC5Fu26i4qI8xnUVEHc7.jpg",
+                "Ana de Armas": "https://image.tmdb.org/t/p/w185/hHhDVklhnMFc0tZxhxWJxu6MSbR.jpg",
+                "Rami Malek": "https://image.tmdb.org/t/p/w185/z9o5RPkZl83lM5nt3NkLmjXfteO.jpg",
+                "Léa Seydoux": "https://image.tmdb.org/t/p/w185/bAIvEBxKxKZ62ybbPU75d55cDZy.jpg",
+                "Margaret Qualley": "https://image.tmdb.org/t/p/w185/7JXxI3sSDxvKBxOXZzVfKbN4tPr.jpg",
+                "Geraldine Viswanathan": "https://image.tmdb.org/t/p/w185/lFz1KLGZAjN18A8KbnFm3v00z5P.jpg",
+                "Beanie Feldstein": "https://image.tmdb.org/t/p/w185/7J1eJXwJnADG4m0YCOkfQREYcT5.jpg",
+                "Wagner Moura": "https://image.tmdb.org/t/p/w185/6IZ42kqHjKZLHRgT2sUnyInBqBo.jpg",
+                "Cailee Spaeny": "https://image.tmdb.org/t/p/w185/qeRCxJGTzP0sFdL5rGBUrWEKdLE.jpg",
+                "Dev Patel": "https://image.tmdb.org/t/p/w185/yynA1ZQvH7C5dD9CuyF9ld7ZXXQ.jpg",
+                "Sharlto Copley": "https://image.tmdb.org/t/p/w185/lfiWAjKDVhPu8L3qN5wFWXIlMIc.jpg",
+                "Pitobash": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Vipin Sharma": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Paul Rudd": "https://image.tmdb.org/t/p/w185/8eTtJ7XVXY0BnEeUaSiTAraTIXd.jpg",
+                "Carrie Coon": "https://image.tmdb.org/t/p/w185/6f3vMB1qSx9shpiIXMHUaOiUBQN.jpg",
+                "Finn Wolfhard": "https://image.tmdb.org/t/p/w185/pYXBp1eJZXpBsdSfLKWcSgPjCXY.jpg",
+                "Mckenna Grace": "https://image.tmdb.org/t/p/w185/5EV8GpIv42hDKw29wh14qxzJVVl.jpg",
+                "Lily Gladstone": "https://image.tmdb.org/t/p/w185/eAj4BLJWXTqHlhP5L8NuErIZiuj.jpg",
+                "Mel Gibson": "https://image.tmdb.org/t/p/w185/jJTyXKRKLPvVDdCoKSV5qRVKy7T.jpg",
+                "Sophie Marceau": "https://image.tmdb.org/t/p/w185/9wXL9RCOcj3TH9xJRpfxBXJZZmC.jpg",
+                "Patrick McGoohan": "https://image.tmdb.org/t/p/w185/wFTj5tYDTLzMrYQCxZ0quDzMGCv.jpg",
+                "Angus Macfadyen": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Matthew Broderick": "https://image.tmdb.org/t/p/w185/1YsQEKDCz7EvP5fU8r0vH6gf4qf.jpg",
+                "Jeremy Irons": "https://image.tmdb.org/t/p/w185/qvbOHhVhCyC9LQILBuQsQsJlVV7.jpg",
+                "James Earl Jones": "https://image.tmdb.org/t/p/w185/oqY5JYS9nWRzR0SXUlCCuLFzkVx.jpg",
+                "Whoopi Goldberg": "https://image.tmdb.org/t/p/w185/kZYL1c6TDvTxR8pTq1vjZzlA68D.jpg",
+                "Arnold Schwarzenegger": "https://image.tmdb.org/t/p/w185/z5lGoKgiphY8aYAfefx3p6xQguQ.jpg",
+                "Linda Hamilton": "https://image.tmdb.org/t/p/w185/npqpHyqq60cLvH4kPqU0Hqgn85n.jpg",
+                "Edward Furlong": "https://image.tmdb.org/t/p/w185/rkKKUVdL95akPrQiKUXZP1aJ5yC.jpg",
+                "Robert Patrick": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tom Sizemore": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jack Nicholson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Gabriel Byrne": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Benicio del Toro": "https://image.tmdb.org/t/p/w185/qJfAlKXSkR8kDI4PELAnHMCfBqp.jpg",
+                "Kevin Pollak": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Scarlett Johansson": "https://image.tmdb.org/t/p/w185/g6VpfFMpuY5HQivdFYcaXHBXu1L.jpg",
+                "Paul Giamatti": "https://image.tmdb.org/t/p/w185/ayEDOXhjB6LAaNkqklsKFLc1Ht3.jpg",
+                "Da'Vine Joy Randolph": "https://image.tmdb.org/t/p/w185/hxzObXfiB0EZcp7YKjXqLCpcI2V.jpg",
+                "Dominic Sessa": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Carrie Preston": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Paul Giamatti": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Da'Vine Joy Randolph": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Dominic Sessa": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Carrie Preston": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tate Donovan": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Brady Hepner": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Ian Dolley": "https://i.ebayimg.com/images/g/Yc8AAOSwVPNlWX3k/s-l1600.webp",
+                "Emma Stone": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Mark Ruffalo": "https://image.tmdb.org/t/p/w185/zJvcj2lgx4Jd8Dp2pXaNkNQfOuU.jpg",
+                "Willem Dafoe": "https://image.tmdb.org/t/p/w185/ui8e4sgZAwMPi3hzEO53jyBJF9B.jpg",
+                "Ramy Youssef": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jerrod Carmichael": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Hanna Schygulla": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Margaret Qualley": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Christopher Abbott": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Sandra Hüller": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Swann Arlaud": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Milo Machado Graner": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Antoine Reinartz": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Samuel Theis": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jehnny Beth": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Saadia Bentaïeb": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Camille Rutherford": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Leonardo DiCaprio": "https://image.tmdb.org/t/p/w185/wo2hJpn04vbtmh0B9utCFdsQhxM.jpg",
+                "Lily Gladstone": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jesse Plemons": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tantoo Cardinal": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "John Lithgow": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Brendan Fraser": "https://image.tmdb.org/t/p/w185/pYiCb6Q2WLBkj7k3XE8dTaZ9PNA.jpg",
+                "Cara Jade Myers": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Janae Collins": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jillian Dion": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Margot Robbie": "https://image.tmdb.org/t/p/w185/euDPyqLnwJszwH1xZDTHgGZHBv.jpg",
+                "Ryan Gosling": "https://image.tmdb.org/t/p/w185/lyUyVARQKhGxjF3UXb7tq0H3FzG.jpg",
+                "America Ferrera": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kate McKinnon": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Issa Rae": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Will Ferrell": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Michael Cera": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Ariana Greenblatt": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Alexandra Shipp": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Hari Nef": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Sharon Rooney": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Ana Cruz Kayne": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Ritu Arya": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Ncuti Gatwa": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Scott Evans": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jamie Demetriou": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Connor Swindells": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kingsley Ben-Adir": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Simu Liu": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "John Cena": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Helen Bauer": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Nicola Coughlan": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Emerald Fennell": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Spike Fearn": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Rob Brydon": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Cillian Murphy": "https://image.tmdb.org/t/p/w185/lldeQ91GwIVff43JBrpdbAAeYWj.jpg",
+                "Emily Blunt": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Matt Damon": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Robert Downey Jr.": "https://image.tmdb.org/t/p/w185/5qHNjhtjMD4YWH3UP0rm4tKwxCL.jpg",
+                "Florence Pugh": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Josh Hartnett": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Casey Affleck": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Rami Malek": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kenneth Branagh": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Benny Safdie": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jason Clarke": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Dylan Arnold": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tom Conti": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "James D'Arcy": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "David Dencik": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Matthias Schweighöfer": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Christopher Denham": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Michael Angarano": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jefferson Hall": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jack Quaid": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Brett Deering": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Gregory Jbara": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Louise Lombard": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Guy Burnet": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Rory Keane": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Devon Bostick": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Josh Zuckerman": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Olivia Thirlby": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "James Remar": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tony Goldwyn": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kurt Koehler": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Macon Blair": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Trond Fausa": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Emma Dumont": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Olli Haaskivi": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Steven Houska": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Adam Kroeger": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Alex Wolff": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Scott Grimes": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "John Gowans": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tim DeKay": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Pat Skipper": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Zendaya": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Rebecca Ferguson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Josh Brolin": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Austin Butler": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Dave Bautista": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Christopher Walken": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Stephen McKinley Henderson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Léa Seydoux": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Souheila Yacoub": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tim Blake Nelson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Charlotte Rampling": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Roger Yuan": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Kaye Dina Rose": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Joe Walker": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Tara Lynn Orr": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Alison Halstead": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Giusi Merli": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Molly Mcowan": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Marisca Mulder": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Amber Midthunder": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Anya Taylor-Joy": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Mike Faist": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Josh O'Connor": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Darnell Appling": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "A.J. Lister": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Hailey Gates": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Nada Despotovich": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Jake Jensen": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Shane T. Lynn": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Mary Holland": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
+                "Geoffrey Grayson": "https://image.tmdb.org/t/p/w185/8qBylBsQf4llkGrWR3qAsOtOU8O.jpg",
             }
             for idx, actor_name in enumerate(movie.cast[:4]):  # Top 4 actors
                 cast_entry = Cast(
@@ -1065,20 +2256,64 @@ def seed_database():
         session.commit()
         print(f"   ✓ Created {len(movies)} movies with cast details")
         
-        # Create screenings (next 7 days)
+        # Create screenings (February 1-9, 2026 for popular movies, February 1-3 for others)
         print("\n📅 Creating screenings...")
-        base_date = datetime.now() - timedelta(days=1)  # Yesterday
+        base_date = datetime(2026, 2, 1)  # February 1, 2026
         screening_count = 0
         
         showing_movies = [m for m in movies if m.state == MovieState.SHOWING]
         
-        for day in range(7):  # Next 7 days
+        # Popular movies that get 9 days of screenings
+        popular_movie_titles = [
+            "No Time to Die", "Don't Look Up", "Bullet Train", "The Power of the Dog", 
+            "Civil War", "Monkey Man", "Killers of the Flower Moon", "The Lion King",
+            "Braveheart", "Terminator 2: Judgment Day", "Saving Private Ryan", "The Departed",
+            "The Usual Suspects", "The Prestige", "Wonka", "Drive-Away Dolls"
+        ]
+        
+        popular_movies = [m for m in showing_movies if m.title in popular_movie_titles]
+        regular_movies = [m for m in showing_movies if m.title not in popular_movie_titles]
+        
+        # Create 9-day screenings for popular movies
+        print(f"   Creating 9-day screenings for {len(popular_movies)} popular movies...")
+        for day in range(9):  # 9 days: Feb 1-9, 2026
             current_date = base_date + timedelta(days=day)
 
             # Morning, afternoon, evening, night showtimes
             times = [10, 14, 18, 21]
             
-            for movie in showing_movies:
+            for movie in popular_movies:
+                for cinema in cinemas:
+                    # Get rooms for this cinema
+                    cinema_rooms = [r for r in rooms if r.cinema_id == cinema.id]
+                    
+                    for room in cinema_rooms:
+                        for time_hour in times:
+                            screening_time = current_date.replace(hour=time_hour, minute=0, second=0)
+                            
+                            # IMAX movies cost more
+                            base_price = 20.0 if room.name == "IMAX" else 15.0
+                            # Evening/night shows cost more
+                            price = base_price + 3.0 if time_hour >= 18 else base_price
+                            
+                            screening = Screening(
+                                movie_id=movie.id,
+                                room_id=room.id,
+                                screening_time=screening_time,
+                                price=price
+                            )
+                            session.add(screening)
+                            screening_count += 1
+        
+        # Create 3-day screenings for regular movies
+        print(f"   Creating 3-day screenings for {len(regular_movies)} regular movies...")
+        for day in range(3):  # 3 days: Feb 1-3, 2026
+            current_date = base_date + timedelta(days=day)
+
+            # Morning, afternoon, evening, night showtimes
+            times = [10, 14, 18, 21]
+            
+            for movie in regular_movies:
                 for cinema in cinemas:
                     # Get rooms for this cinema
                     cinema_rooms = [r for r in rooms if r.cinema_id == cinema.id]
@@ -1142,6 +2377,338 @@ def seed_database():
         
         session.commit()
         print(f"   ✓ Created reviews for Parasite and Spirited Away")
+        
+        # Add additional reviews with likes and dislikes for various movies
+        print("\n⭐ Creating additional reviews with likes and dislikes...")
+        
+        # Helper function to find movie by title
+        def find_movie(title):
+            return next((m for m in movies if m.title == title), None)
+        
+        # Reviews for The Power of the Dog
+        power_dog = find_movie("The Power of the Dog")
+        if power_dog:
+            reviews_data = [
+                {"user": users[6], "rating": 4, "title": "Slow burn masterpiece", "comment": "Jane Campion delivers a haunting Western with incredible performances.", "likes": 45, "dislikes": 3},
+                {"user": users[7], "rating": 3, "title": "Artistic but slow", "comment": "Beautiful cinematography but the pacing is too slow for me.", "likes": 12, "dislikes": 8},
+                {"user": users[8], "rating": 5, "title": "Cumberbatch at his best", "comment": "Benedict's performance is chilling and captivating.", "likes": 67, "dislikes": 2},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=power_dog.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Bullet Train
+        bullet_train = find_movie("Bullet Train")
+        if bullet_train:
+            reviews_data = [
+                {"user": users[9], "rating": 4, "title": "Fun action ride", "comment": "Brad Pitt is hilarious, non-stop action and great cast chemistry.", "likes": 89, "dislikes": 5},
+                {"user": users[10], "rating": 3, "title": "Entertaining chaos", "comment": "Lots of fun but sometimes too over the top.", "likes": 34, "dislikes": 12},
+                {"user": users[11], "rating": 5, "title": "Best action comedy of 2022", "comment": "Stylish, funny, and packed with amazing fight scenes!", "likes": 120, "dislikes": 7},
+                {"user": users[12], "rating": 2, "title": "Too messy", "comment": "Too many characters and subplots, lost track of what was happening.", "likes": 8, "dislikes": 45},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=bullet_train.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for No Time to Die
+        no_time = find_movie("No Time to Die")
+        if no_time:
+            reviews_data = [
+                {"user": users[13], "rating": 5, "title": "Perfect Bond finale", "comment": "Emotional ending to Daniel Craig's Bond era. A must-watch!", "likes": 156, "dislikes": 12},
+                {"user": users[14], "rating": 4, "title": "Epic and emotional", "comment": "Great action sequences and a touching ending.", "likes": 78, "dislikes": 6},
+                {"user": users[15], "rating": 3, "title": "Too long", "comment": "Good movie but could have been 30 minutes shorter.", "likes": 23, "dislikes": 34},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=no_time.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Drive-Away Dolls
+        drive_away = find_movie("Drive-Away Dolls")
+        if drive_away:
+            reviews_data = [
+                {"user": users[16], "rating": 3, "title": "Quirky fun", "comment": "Coen brothers style with some laughs but not their best.", "likes": 15, "dislikes": 8},
+                {"user": users[17], "rating": 2, "title": "Disappointing", "comment": "Expected more from Ethan Coen.", "likes": 5, "dislikes": 28},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=drive_away.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Civil War
+        civil_war = find_movie("Civil War")
+        if civil_war:
+            reviews_data = [
+                {"user": users[3], "rating": 4, "title": "Intense and gripping", "comment": "Alex Garland creates a tense dystopian thriller that feels too real.", "likes": 92, "dislikes": 11},
+                {"user": users[4], "rating": 5, "title": "Masterful direction", "comment": "Kirsten Dunst delivers a powerful performance in this harrowing journey.", "likes": 134, "dislikes": 8},
+                {"user": users[5], "rating": 3, "title": "Good but not great", "comment": "Interesting premise but leaves too many questions unanswered.", "likes": 28, "dislikes": 19},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=civil_war.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Monkey Man
+        monkey_man = find_movie("Monkey Man")
+        if monkey_man:
+            reviews_data = [
+                {"user": users[6], "rating": 4, "title": "Dev Patel's brilliant debut", "comment": "Raw, visceral action and a powerful revenge story.", "likes": 73, "dislikes": 4},
+                {"user": users[7], "rating": 5, "title": "John Wick meets Slumdog", "comment": "Incredible action choreography and social commentary!", "likes": 98, "dislikes": 3},
+                {"user": users[8], "rating": 3, "title": "Brutal but uneven", "comment": "Great action but story drags in the middle.", "likes": 21, "dislikes": 15},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=monkey_man.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Ghostbusters: Frozen Empire
+        ghostbusters = find_movie("Ghostbusters: Frozen Empire")
+        if ghostbusters:
+            reviews_data = [
+                {"user": users[9], "rating": 3, "title": "Nostalgic fun", "comment": "Not as good as the originals but still entertaining for fans.", "likes": 42, "dislikes": 18},
+                {"user": users[10], "rating": 2, "title": "Missed opportunity", "comment": "Too many characters, not enough heart.", "likes": 12, "dislikes": 56},
+                {"user": users[11], "rating": 4, "title": "Family-friendly fun", "comment": "Kids loved it! Great visual effects.", "likes": 67, "dislikes": 9},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=ghostbusters.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Killers of the Flower Moon
+        killers = find_movie("Killers of the Flower Moon")
+        if killers:
+            reviews_data = [
+                {"user": users[12], "rating": 5, "title": "Scorsese's epic masterpiece", "comment": "A devastating true story told with masterful direction. Lily Gladstone is phenomenal.", "likes": 178, "dislikes": 7},
+                {"user": users[13], "rating": 4, "title": "Long but powerful", "comment": "3.5 hours but never boring. Important story that needed to be told.", "likes": 89, "dislikes": 12},
+                {"user": users[14], "rating": 5, "title": "DiCaprio and De Niro shine", "comment": "Two legends working with Scorsese again. Perfection.", "likes": 145, "dislikes": 4},
+                {"user": users[15], "rating": 3, "title": "Too slow", "comment": "Important story but pacing is extremely slow.", "likes": 18, "dislikes": 67},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=killers.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for The Lion King
+        lion_king = find_movie("The Lion King")
+        if lion_king:
+            reviews_data = [
+                {"user": users[16], "rating": 5, "title": "Timeless classic", "comment": "One of Disney's best. The music, the story, everything is perfect!", "likes": 234, "dislikes": 3},
+                {"user": users[17], "rating": 5, "title": "Childhood favorite", "comment": "Still makes me cry every time. Hakuna Matata!", "likes": 189, "dislikes": 2},
+                {"user": users[3], "rating": 4, "title": "Beautiful animation", "comment": "Stunning visuals and unforgettable songs.", "likes": 156, "dislikes": 5},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=lion_king.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Braveheart
+        braveheart = find_movie("Braveheart")
+        if braveheart:
+            reviews_data = [
+                {"user": users[4], "rating": 5, "title": "Epic war film", "comment": "Mel Gibson's masterpiece. They may take our lives, but they'll never take our freedom!", "likes": 201, "dislikes": 8},
+                {"user": users[5], "rating": 4, "title": "Powerful and moving", "comment": "Great battle scenes and emotional storytelling.", "likes": 87, "dislikes": 6},
+                {"user": users[6], "rating": 5, "title": "Best historical drama", "comment": "The soundtrack alone is worth watching. Magnificent film!", "likes": 145, "dislikes": 4},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=braveheart.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Terminator 2
+        t2 = find_movie("Terminator 2: Judgment Day")
+        if t2:
+            reviews_data = [
+                {"user": users[7], "rating": 5, "title": "Best action film ever", "comment": "Revolutionary effects and non-stop action. I'll be back!", "likes": 267, "dislikes": 5},
+                {"user": users[8], "rating": 5, "title": "Groundbreaking", "comment": "Changed action movies forever. The liquid metal T-1000 was incredible.", "likes": 198, "dislikes": 3},
+                {"user": users[9], "rating": 4, "title": "Classic Arnold", "comment": "Better than the first one. Perfect sequel.", "likes": 134, "dislikes": 7},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=t2.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Saving Private Ryan
+        spr = find_movie("Saving Private Ryan")
+        if spr:
+            reviews_data = [
+                {"user": users[10], "rating": 5, "title": "War film masterpiece", "comment": "The opening D-Day scene is the most realistic war sequence ever filmed.", "likes": 289, "dislikes": 4},
+                {"user": users[11], "rating": 5, "title": "Spielberg's best", "comment": "Powerful, emotional, and brutally honest about war.", "likes": 234, "dislikes": 6},
+                {"user": users[12], "rating": 4, "title": "Intense and moving", "comment": "Hard to watch but important. Tom Hanks is brilliant.", "likes": 167, "dislikes": 8},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=spr.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for The Departed
+        departed = find_movie("The Departed")
+        if departed:
+            reviews_data = [
+                {"user": users[13], "rating": 5, "title": "Scorsese at his finest", "comment": "Incredible cast, perfect pacing, amazing twists. Best crime thriller!", "likes": 212, "dislikes": 7},
+                {"user": users[14], "rating": 5, "title": "Everyone's incredible", "comment": "DiCaprio, Damon, Nicholson all at their best. Unforgettable performances.", "likes": 178, "dislikes": 5},
+                {"user": users[15], "rating": 4, "title": "Tense thriller", "comment": "Keeps you on the edge of your seat. That ending though!", "likes": 145, "dislikes": 9},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=departed.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for The Usual Suspects
+        suspects = find_movie("The Usual Suspects")
+        if suspects:
+            reviews_data = [
+                {"user": users[16], "rating": 5, "title": "Mind-blowing twist", "comment": "One of the greatest plot twists in cinema history. Kevin Spacey is phenomenal.", "likes": 256, "dislikes": 6},
+                {"user": users[17], "rating": 5, "title": "Perfect crime thriller", "comment": "The ending will blow your mind. Need to watch it twice!", "likes": 189, "dislikes": 4},
+                {"user": users[3], "rating": 4, "title": "Clever and gripping", "comment": "Great ensemble cast and brilliant storytelling.", "likes": 134, "dislikes": 7},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=suspects.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for The Prestige
+        prestige = find_movie("The Prestige")
+        if prestige:
+            reviews_data = [
+                {"user": users[4], "rating": 5, "title": "Nolan's underrated gem", "comment": "Complex, layered, and endlessly rewatchable. Masterful storytelling.", "likes": 198, "dislikes": 8},
+                {"user": users[5], "rating": 4, "title": "Magic and mystery", "comment": "Bale and Jackman are both excellent. The rivalry is captivating.", "likes": 112, "dislikes": 11},
+                {"user": users[6], "rating": 5, "title": "Mind-bending brilliance", "comment": "Every scene has meaning. Gets better with each viewing!", "likes": 167, "dislikes": 5},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=prestige.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        # Reviews for Wonka
+        wonka = find_movie("Wonka")
+        if wonka:
+            reviews_data = [
+                {"user": users[7], "rating": 4, "title": "Delightful musical", "comment": "Timothée Chalamet brings charm and wonder to young Wonka. Great family film!", "likes": 143, "dislikes": 12},
+                {"user": users[8], "rating": 3, "title": "Fun but forgettable", "comment": "Nice visuals and songs but doesn't capture the magic of the original.", "likes": 45, "dislikes": 28},
+                {"user": users[9], "rating": 5, "title": "Pure imagination", "comment": "Wholesome, funny, and beautifully made. Hugh Grant steals every scene!", "likes": 189, "dislikes": 9},
+                {"user": users[10], "rating": 4, "title": "Sweet and charming", "comment": "A delightful origin story with heart. Kids will love it!", "likes": 98, "dislikes": 7},
+            ]
+            for rev in reviews_data:
+                review = Review(
+                    user_id=rev["user"].id,
+                    movie_id=wonka.id,
+                    rating=rev["rating"],
+                    title=rev["title"],
+                    comment=rev["comment"],
+                    likes=rev["likes"],
+                    dislikes=rev["dislikes"]
+                )
+                session.add(review)
+        
+        session.commit()
+        print(f"   ✓ Created additional reviews with likes and dislikes for various movies")
         
         # Create sample FAQs
         print("❓ Creating sample FAQs...")

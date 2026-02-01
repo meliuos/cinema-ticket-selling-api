@@ -92,7 +92,7 @@ def list_movies(
             statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
             casts = session.exec(statement).all()
             movie_dict = normalize_movie_genre(movie)
-            movie_dict['cast'] = [cast.actor_name for cast in casts]
+            movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
             result.append(movie_dict)
         
         return result
@@ -122,7 +122,7 @@ def list_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -151,7 +151,7 @@ def list_coming_soon_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -189,7 +189,7 @@ def list_trending_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -225,7 +225,7 @@ def search_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -286,7 +286,7 @@ def filter_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -376,7 +376,7 @@ def advanced_search_movies(
         
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = [cast.actor_name for cast in casts]
+        movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
         result.append(movie_dict)
     
     return result
@@ -398,7 +398,7 @@ def get_movie(movie_id: int, session: Session = Depends(get_session)):
     
     # Convert movie to dict and add cast details
     movie_dict = normalize_movie_genre(movie)
-    movie_dict['cast'] = [cast.actor_name for cast in casts]
+    movie_dict['cast'] = [{'name': cast.actor_name, 'image_url': cast.profile_image_url} for cast in casts]
     
     return movie_dict
 
@@ -445,7 +445,8 @@ def get_movie_showtimes(
         Screening.movie_id == movie_id,
         Screening.screening_time > current_time  # Strictly future - excludes past and current screenings
     ).options(
-        selectinload(Screening.room).selectinload(Room.cinema)
+        selectinload(Screening.room).selectinload(Room.cinema),
+        selectinload(Screening.movie)
     )
     
     if date:
@@ -461,6 +462,24 @@ def get_movie_showtimes(
     query = query.order_by(Screening.screening_time)
     
     screenings = session.exec(query.offset(skip).limit(limit)).all()
+    
+    # Get unique movie IDs from screenings
+    movie_ids = list(set(s.movie_id for s in screenings))
+    
+    # Load casts for these movies
+    if movie_ids:
+        cast_statement = select(Cast).where(Cast.movie_id.in_(movie_ids)).order_by(Cast.order)
+        all_casts = session.exec(cast_statement).all()
+        casts_by_movie = {}
+        for cast in all_casts:
+            if cast.movie_id not in casts_by_movie:
+                casts_by_movie[cast.movie_id] = []
+            casts_by_movie[cast.movie_id].append({"name": cast.actor_name, "character": cast.character_name})
+        
+        # Set cast for each screening's movie
+        for screening in screenings:
+            screening.movie.cast = casts_by_movie.get(screening.movie_id, [])
+    
     return screenings
 
 

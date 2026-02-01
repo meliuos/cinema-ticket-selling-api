@@ -88,7 +88,7 @@ def list_screenings(
     cinema_id: Optional[int] = Query(None, description="Filter by cinema ID"),
     date: Optional[date] = Query(None, description="Filter by date (YYYY-MM-DD)"),
     skip: int = 0,
-    limit: int = 100,
+    limit: int = Query(1000, description="Number of screenings to return"),
     session: Session = Depends(get_session)
 ):
     """List screenings with optional filters."""
@@ -116,7 +116,25 @@ def list_screenings(
             Screening.screening_time <= end_of_day
         )
     
-    screenings = session.exec(query.offset(skip).limit(limit)).all()
+    screenings = session.exec(query.order_by(Screening.screening_time).offset(skip).limit(limit)).all()
+    
+    # Get unique movie IDs from screenings
+    movie_ids = list(set(s.movie_id for s in screenings))
+    
+    # Load casts for these movies
+    if movie_ids:
+        cast_statement = select(Cast).where(Cast.movie_id.in_(movie_ids)).order_by(Cast.order)
+        all_casts = session.exec(cast_statement).all()
+        casts_by_movie = {}
+        for cast in all_casts:
+            if cast.movie_id not in casts_by_movie:
+                casts_by_movie[cast.movie_id] = []
+            casts_by_movie[cast.movie_id].append({"name": cast.actor_name, "character": cast.character_name})
+        
+        # Set cast for each screening's movie
+        for screening in screenings:
+            screening.movie.cast = casts_by_movie.get(screening.movie_id, [])
+    
     return screenings
 
 
@@ -153,7 +171,7 @@ def get_screening(screening_id: int, session: Session = Depends(get_session)):
         movie_dict['genre'] = [movie_dict['genre']] if movie_dict['genre'] else None
     
     # Add cast details to movie
-    movie_dict['cast'] = [cast.actor_name for cast in casts]
+    movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
     
     # Add cinema to room
     room_dict['cinema'] = cinema_dict
