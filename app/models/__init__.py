@@ -12,6 +12,7 @@ from app.models.search_history import SearchHistory
 from app.models.token_blacklist import TokenBlacklist
 from app.models.seat_reservation import SeatReservation
 from app.models.movie_notification import MovieNotification
+from app.models.faq import FAQ
 
 __all__ = [
     "User",
@@ -28,4 +29,5 @@ __all__ = [
     "TokenBlacklist",
     "SeatReservation",
     "MovieNotification",
+    "FAQ",
 ]

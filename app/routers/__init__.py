@@ -17,6 +17,7 @@ from app.routers.user_features import router as user_features_router, movie_rout
 from app.routers.admin import router as admin_router
 from app.routers.cast import router as cast_router
 from app.routers.payment import router as payment_router
+from app.routers.faq import router as faq_router
 
 __all__ = [
     "auth_router",
@@ -37,5 +38,6 @@ __all__ = [
     "admin_router",
     "cast_router",
     "payment_router",
+    "faq_router",
 ]
 

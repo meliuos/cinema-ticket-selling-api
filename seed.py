@@ -8,7 +8,7 @@ from sqlmodel import Session, create_engine, select, text
 
 from app.config import settings
 from app.database import engine
-from app.models import Cinema, Room, Seat, Movie, Screening, User, Cast, MovieState, Review
+from app.models import Cinema, Room, Seat, Movie, Screening, User, Cast, MovieState, Review, FAQ
 from app.services.auth import get_password_hash
 from sqlmodel import SQLModel
 
@@ -21,7 +21,7 @@ def clear_database(session: Session):
     from sqlalchemy import text
     
     # Truncate all tables with CASCADE to handle dependencies
-    session.execute(text('TRUNCATE TABLE "user", movie, cinema, room, seat, screening, "cast", ticket, reviews, review_reactions, favorite, search_history, tokenblacklist CASCADE;'))
+    session.execute(text('TRUNCATE TABLE "user", movie, cinema, room, seat, screening, "cast", ticket, reviews, review_reactions, favorite, search_history, tokenblacklist, faq CASCADE;'))
     
     session.commit()
     print("   ✓ All existing data cleared")
@@ -1142,6 +1142,36 @@ def seed_database():
         
         session.commit()
         print(f"   ✓ Created reviews for Parasite and Spirited Away")
+        
+        # Create sample FAQs
+        print("❓ Creating sample FAQs...")
+        faqs = [
+            FAQ(
+                question="How do I create an account?",
+                answer="To create an account, click on the 'Sign Up' button in the top right corner of the homepage. Fill in your details including your full name, email address, and password. Make sure to use a strong password with at least 8 characters."
+            ),
+            FAQ(
+                question="How do I book movie tickets?",
+                answer="Browse our movie listings, select your preferred showtime, choose your seats, and complete the payment process. You will receive a confirmation email with your ticket details and QR code."
+            ),
+            FAQ(
+                question="Can I cancel my ticket booking?",
+                answer="Yes, you can cancel your ticket booking up to 2 hours before the showtime. Go to your booking history, select the ticket, and click 'Cancel'. Refunds will be processed according to our refund policy."
+            ),
+            FAQ(
+                question="What payment methods do you accept?",
+                answer="We accept major credit cards (Visa, MasterCard, American Express), PayPal, and digital wallets. All payments are processed securely through our encrypted payment gateway."
+            ),
+            FAQ(
+                question="How do I get to the cinema?",
+                answer="Each cinema location has detailed directions on our website. You can find parking information, public transport options, and walking directions from the cinema's detail page."
+            ),
+        ]
+        for faq in faqs:
+            session.add(faq)
+        session.commit()
+        print(f"   ✓ Created {len(faqs)} FAQs")
+        
         print(f"\n📊 Summary:")
         print(f"   - {len(users)} users ({len([u for u in users if u.is_admin])} admin, {len([u for u in users if not u.is_admin])} regular)")
         print(f"   - {len(cinemas)} cinemas across {len(set([c.city for c in cinemas]))} cities")

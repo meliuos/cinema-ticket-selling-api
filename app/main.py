@@ -30,6 +30,7 @@ from app.routers import (
     admin_router,
     cast_router,
     payment_router,
+    faq_router,
 )
 from app.routers.email_test import router as email_test_router
 from app.routers.contact import router as contact_router
@@ -152,3 +153,4 @@ app.include_router(admin_router)
 app.include_router(cast_router)
 app.include_router(email_test_router)
 app.include_router(contact_router)
+app.include_router(faq_router)
