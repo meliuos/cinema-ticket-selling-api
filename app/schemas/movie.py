@@ -57,11 +57,11 @@ class MovieUpdate(SQLModel):
     title: Optional[str] = Field(default=None, max_length=255)
     description: Optional[str] = Field(default=None, max_length=2000)
     duration_minutes: Optional[int] = Field(default=None, gt=0)
-    genre: Optional[str] = Field(default=None, max_length=100)
+    genre: Optional[List[str]] = Field(default=None)
     rating: Optional[str] = Field(default=None, max_length=10)
     state: Optional[MovieState] = None
     
-    cast: Optional[List[str]] = None
+    cast: Optional[List[Dict[str, str]]] = None
     director: Optional[str] = Field(default=None, max_length=255)
     writers: Optional[List[str]] = None
     producers: Optional[List[str]] = None
@@ -123,14 +123,6 @@ class MovieRead(SQLModel):
     # Timestamps
     created_at: datetime
     updated_at: datetime
-
-
-class MovieUpdate(MovieBase):
-    """Schema for updating a movie. All fields are optional."""
-    title: Optional[str] = Field(default=None, max_length=255)
-    description: Optional[str] = Field(default=None, max_length=2000)
-    duration_minutes: Optional[int] = Field(default=None, gt=0)
-    state: Optional[MovieState] = None
 
 
 class MovieListResponse(SQLModel):

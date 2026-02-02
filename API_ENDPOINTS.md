@@ -665,7 +665,7 @@ ws.onmessage = (event) => {
 ## Movies
 
 **GET** `/api/v1/movies/recommended` - Get Recommended Movies ✅  
-**POST** `/api/v1/movies/` - Create Movie 🔐  
+**POST** `/api/v1/movies/` - Create Movie ✅  
 **GET** `/api/v1/movies/` - List Movies with Filtering & Sorting ✅  
 **GET** `/api/v1/movies/coming-soon` - Get Coming Soon Movies ❌  
 **GET** `/api/v1/movies/trending` - Get Trending Movies ❌  

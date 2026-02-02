@@ -45,11 +45,40 @@ def create_movie(
     current_admin: User = Depends(get_current_admin_user)
 ):
     """Create a new movie with comprehensive details (admin only)."""
-    db_movie = Movie.model_validate(movie)
+    movie_data = movie.model_dump()
+    
+    # Extract cast data
+    cast_data = movie_data.pop('cast', None)
+    
+    # Create movie without cast
+    db_movie = Movie.model_validate(movie_data)
     session.add(db_movie)
     session.commit()
     session.refresh(db_movie)
-    return normalize_movie_genre(db_movie)
+    
+    # Create cast entries if provided
+    if cast_data:
+        for i, cast_member in enumerate(cast_data):
+            cast_entry = Cast(
+                movie_id=db_movie.id,
+                actor_name=cast_member['name'],
+                character_name=cast_member['name'],  # Use name as character name for now
+                role="Actor",
+                profile_image_url=cast_member.get('image_url', ''),
+                order=i
+            )
+            session.add(cast_entry)
+        session.commit()
+    
+    # Get cast details for response
+    statement = select(Cast).where(Cast.movie_id == db_movie.id).order_by(Cast.order)
+    casts = session.exec(statement).all()
+    
+    # Convert movie to dict and add cast details
+    movie_dict = normalize_movie_genre(db_movie)
+    movie_dict['cast'] = [{'name': cast.actor_name, 'image_url': cast.profile_image_url} for cast in casts]
+    
+    return movie_dict
 
 
 @router.get("/", response_model=List[MovieRead])
@@ -374,9 +403,15 @@ def advanced_search_movies(
         cast_statement = select(Cast).where(Cast.movie_id == movie.id).order_by(Cast.order)
         casts = session.exec(cast_statement).all()
         
+        # If no cast entries in Cast table, fall back to movie.cast
+        if not casts and movie.cast:
+            cast_list = [{"name": actor, "image_url": ""} for actor in movie.cast]
+        else:
+            cast_list = [{"name": cast.actor_name, "image_url": cast.profile_image_url} for cast in casts]
+        
         # Normalize movie and add cast
         movie_dict = normalize_movie_genre(movie)
-        movie_dict['cast'] = [{"name": cast.actor_name, "character": cast.character_name} for cast in casts]
+        movie_dict['cast'] = cast_list
         result.append(movie_dict)
     
     return result
@@ -396,9 +431,15 @@ def get_movie(movie_id: int, session: Session = Depends(get_session)):
     statement = select(Cast).where(Cast.movie_id == movie_id).order_by(Cast.order)
     casts = session.exec(statement).all()
     
+    # If no cast entries in Cast table, fall back to movie.cast
+    if not casts and movie.cast:
+        cast_list = [{"name": actor, "image_url": ""} for actor in movie.cast]
+    else:
+        cast_list = [{'name': cast.actor_name, 'image_url': cast.profile_image_url} for cast in casts]
+    
     # Convert movie to dict and add cast details
     movie_dict = normalize_movie_genre(movie)
-    movie_dict['cast'] = [{'name': cast.actor_name, 'image_url': cast.profile_image_url} for cast in casts]
+    movie_dict['cast'] = cast_list
     
     return movie_dict
 
@@ -505,6 +546,24 @@ async def update_movie(
     # Update only provided fields
     movie_data = movie_update.model_dump(exclude_unset=True)
     
+    # Handle cast update separately
+    if 'cast' in movie_data:
+        # Delete existing cast entries
+        session.exec(delete(Cast).where(Cast.movie_id == movie_id))
+        # Add new cast entries
+        for i, cast_member in enumerate(movie_data['cast']):
+            cast_entry = Cast(
+                movie_id=movie_id,
+                actor_name=cast_member['name'],
+                character_name=cast_member['name'],  # Use name as character name for now
+                role="Actor",
+                profile_image_url=cast_member.get('image_url', ''),
+                order=i
+            )
+            session.add(cast_entry)
+        # Remove cast from movie_data since it's handled separately
+        del movie_data['cast']
+    
     # Validate state transitions if state is being updated
     if 'state' in movie_data and movie_data['state'] != db_movie.state:
         state_order = {MovieState.COMING_SOON: 0, MovieState.SHOWING: 1, MovieState.ENDED: 2}
@@ -514,7 +573,9 @@ async def update_movie(
                 detail=f"Invalid state transition: Cannot change from {db_movie.state} to {movie_data['state']}"
             )
     
+    print(f"DEBUG: Updating movie fields: {movie_data}")  # Debug log
     for key, value in movie_data.items():
+        print(f"DEBUG: Setting {key} = {value}")  # Debug log
         setattr(db_movie, key, value)
     
     db_movie.updated_at = datetime.utcnow()
@@ -530,7 +591,15 @@ async def update_movie(
             movie_id
         )
     
-    return normalize_movie_genre(db_movie)
+    # Get updated cast details
+    statement = select(Cast).where(Cast.movie_id == movie_id).order_by(Cast.order)
+    casts = session.exec(statement).all()
+    
+    # Convert movie to dict and add cast details
+    movie_dict = normalize_movie_genre(db_movie)
+    movie_dict['cast'] = [{'name': cast.actor_name, 'image_url': cast.profile_image_url} for cast in casts]
+    
+    return movie_dict
 
 
 @router.delete("/{movie_id}", status_code=status.HTTP_204_NO_CONTENT)

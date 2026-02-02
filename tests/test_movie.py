@@ -34,7 +34,11 @@ def test_create_movie_with_enhanced_fields(client: TestClient, admin_headers):
             "duration_minutes": 150,
             "genre": ["Sci-Fi"],
             "rating": "R",
-            "cast": ["Actor A", "Actor B", "Actor C"],
+            "cast": [
+                {"name": "Actor A", "image_url": "https://example.com/actor_a.jpg"},
+                {"name": "Actor B", "image_url": "https://example.com/actor_b.jpg"},
+                {"name": "Actor C", "image_url": "https://example.com/actor_c.jpg"}
+            ],
             "director": "Famous Director",
             "writers": ["Writer X", "Writer Y"],
             "producers": ["Producer Z"],
@@ -55,7 +59,11 @@ def test_create_movie_with_enhanced_fields(client: TestClient, admin_headers):
     assert response.status_code == 201
     data = response.json()
     assert data["title"] == "Enhanced Movie"
-    assert data["cast"] == ["Actor A", "Actor B", "Actor C"]
+    assert data["cast"] == [
+        {"name": "Actor A", "image_url": "https://example.com/actor_a.jpg"},
+        {"name": "Actor B", "image_url": "https://example.com/actor_b.jpg"},
+        {"name": "Actor C", "image_url": "https://example.com/actor_c.jpg"}
+    ]
     assert data["director"] == "Famous Director"
     assert data["budget"] == 200000000
     assert data["image_url"] == "https://example.com/poster.jpg"
@@ -80,7 +88,7 @@ def test_get_movie(client: TestClient, test_movie):
     data = response.json()
     assert data["id"] == test_movie.id
     assert data["title"] == test_movie.title
-    assert data["cast"] == test_movie.cast
+    assert data["cast"] == [{"name": actor, "image_url": ""} for actor in test_movie.cast]
     assert data["director"] == test_movie.director
 
 
@@ -96,7 +104,10 @@ def test_update_movie(client: TestClient, test_movie, admin_headers):
         f"/api/v1/movies/{test_movie.id}",
         json={
             "title": "Updated Title",
-            "cast": ["New Actor 1", "New Actor 2"],
+            "cast": [
+                {"name": "New Actor 1", "image_url": "http://example.com/1.jpg"},
+                {"name": "New Actor 2", "image_url": "http://example.com/2.jpg"}
+            ],
             "budget": 2000000
         },
         headers=admin_headers
@@ -104,7 +115,10 @@ def test_update_movie(client: TestClient, test_movie, admin_headers):
     assert response.status_code == 200
     data = response.json()
     assert data["title"] == "Updated Title"
-    assert data["cast"] == ["New Actor 1", "New Actor 2"]
+    assert data["cast"] == [
+        {"name": "New Actor 1", "image_url": "http://example.com/1.jpg"},
+        {"name": "New Actor 2", "image_url": "http://example.com/2.jpg"}
+    ]
     assert data["budget"] == 2000000
     # Other fields should remain unchanged
     assert data["genre"] == [test_movie.genre]

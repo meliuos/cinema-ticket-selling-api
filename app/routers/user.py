@@ -10,7 +10,7 @@ from app.config import settings
 from app.database import get_session
 from app.models.user import User
 from app.schemas.user import UserRead, UserUpdate, UserPreferences, UserPreferencesUpdate, UserCreate
-from app.services.auth import get_current_active_user, get_current_admin_user, get_password_hash
+from app.services.auth import get_current_active_user, get_current_admin_user, get_current_user, get_password_hash
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/users", tags=["Users"])
 
@@ -292,7 +292,7 @@ async def update_profile_picture_url(
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_account(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
     """Delete current user account."""
