@@ -3,8 +3,9 @@
 from collections import defaultdict
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select, or_
+from sqlalchemy.orm import selectinload
 from typing import List, Optional
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from app.config import settings
 from app.database import get_session
@@ -17,6 +18,7 @@ from app.schemas.movie import MovieRead, MovieListResponse
 from app.routers.movie import normalize_movie_genre
 from app.schemas.screening import (
     MovieShowtimesRead,
+    ScreeningRead,
 )
 from app.services.auth import get_current_admin_user
 
@@ -208,7 +210,28 @@ def get_grouped_cinema_showtimes(
     date: Optional[date] = Query(None),
     session: Session = Depends(get_session),
 ):
-    query = select(Screening).join(Room).join(Movie).where(Room.cinema_id == cinema_id)
+    """Get grouped showtimes for all movies in a cinema.
+    
+    IMPORTANT: Only returns screenings that have NOT yet started.
+    Screenings that are currently happening or have already passed are excluded.
+    """
+    # Verify cinema exists
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found"
+        )
+    
+    # Always filter for future screenings only
+    current_time = datetime.utcnow()
+    query = select(Screening).join(Room).join(Movie).where(
+        Room.cinema_id == cinema_id,
+        Screening.screening_time > current_time
+    ).options(
+        selectinload(Screening.room).selectinload(Room.cinema)
+    )
+    
     if date:
         start = datetime.combine(date, datetime.min.time())
         end = datetime.combine(date, datetime.max.time())
@@ -228,9 +251,62 @@ def get_grouped_cinema_showtimes(
         grouped[movie_id]["price"] = s.price
         grouped[movie_id]["showtimes"].append({
             "id": s.id,
-            "screening_time": s.screening_time
+            "screening_time": s.screening_time,
+            "price": s.price,
+            "room": s.room
         })
     return list(grouped.values())
+
+
+@router.get(
+    "/cinemas/{cinema_id}/movies/{movie_id}/showtimes",
+    response_model=List[ScreeningRead],
+    tags=["Cinemas"],
+)
+def get_cinema_movie_showtimes(
+    cinema_id: int,
+    movie_id: int,
+    session: Session = Depends(get_session),
+):
+    """Get showtimes for a specific cinema and movie from today to the next 6 days.
+    
+    IMPORTANT: Only returns screenings that have NOT yet started.
+    Screenings that are currently happening or have already passed are excluded,
+    even if they are scheduled for today.
+    """
+    # Verify cinema exists
+    cinema = session.get(Cinema, cinema_id)
+    if not cinema:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cinema with id {cinema_id} not found"
+        )
+    
+    # Verify movie exists
+    movie = session.get(Movie, movie_id)
+    if not movie:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Movie with id {movie_id} not found"
+        )
+    
+    # Get showtimes from today to next 6 days, but only FUTURE screenings
+    current_time = datetime.utcnow()
+    today = date.today()
+    end_date = today + timedelta(days=6)
+    start_dt = datetime.combine(today, datetime.min.time())
+    end_dt = datetime.combine(end_date, datetime.max.time())
+    
+    query = select(Screening).join(Room).where(
+        Room.cinema_id == cinema_id,
+        Screening.movie_id == movie_id,
+        Screening.screening_time >= start_dt,
+        Screening.screening_time <= end_dt,
+        Screening.screening_time > current_time  
+    )
+    
+    screenings = session.exec(query).all()
+    return screenings
 
 
 # ============================================================================

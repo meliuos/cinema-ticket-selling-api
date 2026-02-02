@@ -7,14 +7,15 @@ from datetime import datetime
 
 from app.config import settings
 from app.database import get_session
-from app.models.review import Review
-from app.models.movie import Movie
+from app.models.review import Review, ReviewReactionModel
+from app.models.movie import Movie, MovieState
 from app.models.user import User
 from app.schemas.review import (
     ReviewCreate,
     ReviewRead,
     ReviewUpdate,
     ReviewReaction,
+    ReviewReactionResponse,
     ReviewSummary,
     ReviewListResponse
 )
@@ -323,14 +324,14 @@ async def delete_review(
     return None
 
 
-@router.post("/reviews/{review_id}/react", response_model=ReviewRead)
+@router.post("/reviews/{review_id}/react", response_model=ReviewReactionResponse)
 async def react_to_review(
     review_id: int,
     reaction: ReviewReaction,
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_session)
 ):
-    """Add a like or dislike reaction to a review."""
+    """Add a like or dislike reaction to a review. User can only react once (like OR dislike)."""
     review = session.get(Review, review_id)
     
     if not review or review.is_deleted:
@@ -346,11 +347,58 @@ async def react_to_review(
             detail="reaction_type must be 'like' or 'dislike'"
         )
     
-    # Update reaction count
-    if reaction.reaction_type == "like":
-        review.likes += 1
+    # Check if user already reacted to this review
+    existing_reaction = session.exec(
+        select(ReviewReactionModel).where(
+            ReviewReactionModel.user_id == current_user.id,
+            ReviewReactionModel.review_id == review_id
+        )
+    ).first()
+    
+    message = ""
+    
+    if existing_reaction:
+        # User already reacted
+        if existing_reaction.reaction_type == reaction.reaction_type:
+            # Same reaction - remove it (toggle off)
+            if existing_reaction.reaction_type == "like":
+                review.likes = max(0, review.likes - 1)
+            else:
+                review.dislikes = max(0, review.dislikes - 1)
+            
+            session.delete(existing_reaction)
+            message = f"Removed your {reaction.reaction_type}"
+            user_reaction = None
+        else:
+            # Different reaction - switch it
+            if existing_reaction.reaction_type == "like":
+                review.likes = max(0, review.likes - 1)
+                review.dislikes += 1
+            else:
+                review.dislikes = max(0, review.dislikes - 1)
+                review.likes += 1
+            
+            existing_reaction.reaction_type = reaction.reaction_type
+            existing_reaction.created_at = datetime.utcnow()
+            session.add(existing_reaction)
+            message = f"Changed your reaction to {reaction.reaction_type}"
+            user_reaction = reaction.reaction_type
     else:
-        review.dislikes += 1
+        # New reaction
+        new_reaction = ReviewReactionModel(
+            user_id=current_user.id,
+            review_id=review_id,
+            reaction_type=reaction.reaction_type
+        )
+        
+        if reaction.reaction_type == "like":
+            review.likes += 1
+        else:
+            review.dislikes += 1
+        
+        session.add(new_reaction)
+        message = f"Added {reaction.reaction_type} to review"
+        user_reaction = reaction.reaction_type
     
     review.updated_at = datetime.utcnow()
     session.add(review)
@@ -360,7 +408,7 @@ async def react_to_review(
     # Get user information for reviewer fields
     user = session.get(User, review.user_id)
     
-    return ReviewRead(
+    review_read = ReviewRead(
         id=review.id,
         user_id=review.user_id,
         movie_id=review.movie_id,
@@ -373,4 +421,10 @@ async def react_to_review(
         dislikes=review.dislikes,
         created_at=review.created_at,
         updated_at=review.updated_at
+    )
+    
+    return ReviewReactionResponse(
+        message=message,
+        review=review_read,
+        user_reaction=user_reaction
     )

@@ -26,12 +26,12 @@ def create_seats_bulk(
     session: Session = Depends(get_session),
     current_admin: User = Depends(get_current_admin_user)
 ):
-    """Bulk create seats for a room (e.g., 10 rows x 15 seats) (admin only)."""
+    """Bulk create seats for a room (always 7 rows x 10 seats) (admin only)."""
     seats = bulk_create_seats(session, room_id, data)
     return seats
 
 
-@router.get("/rooms/{room_id}/seats/", response_model=List[SeatRead])
+@router.get("/rooms/{room_id}/seats", response_model=List[SeatRead])
 def list_room_seats(room_id: int, session: Session = Depends(get_session)):
     """List all seats in a room."""
     seats = session.exec(select(Seat).where(Seat.room_id == room_id)).all()

@@ -11,7 +11,7 @@ from app.models.user import User
 from app.models.ticket import Ticket
 from app.schemas.ticket import TicketCreate, TicketRead, TicketStatusUpdate, TicketConfirmPayment
 from app.services.auth import get_current_active_user, get_current_admin_user
-from app.services.cinema import book_tickets, cancel_ticket
+from app.services.cinema import book_tickets, cancel_ticket, book_tickets_from_reservation
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/tickets", tags=["Tickets"])
 
@@ -26,12 +26,46 @@ async def book_tickets_endpoint(
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_session)
 ):
-    """Book tickets for a screening (requires authentication)."""
+    """
+    Book tickets for a screening (requires authentication).
+    
+    This endpoint now uses the reservation system for proper concurrency handling.
+    It will first reserve the seats, then immediately convert them to confirmed tickets.
+    """
     tickets = book_tickets(
         session=session,
         user_id=current_user.id,
         screening_id=booking.screening_id,
         seat_ids=booking.seat_ids
+    )
+    return tickets
+
+
+@router.post(
+    "/book-from-reservation",
+    response_model=List[TicketRead],
+    status_code=status.HTTP_201_CREATED
+)
+async def book_tickets_from_reservation_endpoint(
+    booking: TicketCreate,
+    current_user: User = Depends(get_current_active_user),
+    session: Session = Depends(get_session)
+):
+    """
+    Book tickets from existing seat reservations.
+    
+    This endpoint should be called after payment confirmation.
+    It converts active seat reservations into confirmed tickets.
+    
+    IDEMPOTENT: Include payment_id to prevent duplicate bookings from 
+    payment provider webhook retries.
+    """
+    tickets = book_tickets_from_reservation(
+        session=session,
+        user_id=current_user.id,
+        screening_id=booking.screening_id,
+        seat_ids=booking.seat_ids,
+        payment_id=booking.payment_id
     )
     return tickets
 

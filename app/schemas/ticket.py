@@ -16,7 +16,8 @@ class TicketBase(SQLModel):
 class TicketCreate(SQLModel):
     """Schema for creating a ticket (booking)."""
     screening_id: int
-    seat_ids: List[int]  # Can book multiple seats at once
+    seat_ids: List[int]  
+    payment_id: Optional[str] = None  
 
 
 class TicketRead(SQLModel):
@@ -28,6 +29,8 @@ class TicketRead(SQLModel):
     price: float
     status: str
     booked_at: datetime
+    confirmed_at: Optional[datetime] = None
+    payment_id: Optional[str] = None
     confirmed_at: Optional[datetime] = None
 
 

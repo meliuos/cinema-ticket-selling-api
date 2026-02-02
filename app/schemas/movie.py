@@ -6,6 +6,7 @@ from sqlmodel import SQLModel, Field
 from sqlalchemy import Column
 from sqlalchemy.types import JSON
 from typing import Union
+from app.models.movie import MovieState
 
 
 class MovieBase(SQLModel):
@@ -16,9 +17,10 @@ class MovieBase(SQLModel):
     duration_minutes: int = Field(gt=0)
     genre: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))
     rating: Optional[str] = Field(default=None, max_length=10)
+    state: MovieState = Field(default=MovieState.SHOWING)
     
     # Cast & Crew
-    cast: Optional[List[str]] = None
+    cast: Optional[List[Dict[str, str]]] = None
     director: Optional[str] = Field(default=None, max_length=255)
     writers: Optional[List[str]] = None
     producers: Optional[List[str]] = None
@@ -55,10 +57,11 @@ class MovieUpdate(SQLModel):
     title: Optional[str] = Field(default=None, max_length=255)
     description: Optional[str] = Field(default=None, max_length=2000)
     duration_minutes: Optional[int] = Field(default=None, gt=0)
-    genre: Optional[str] = Field(default=None, max_length=100)
+    genre: Optional[List[str]] = Field(default=None)
     rating: Optional[str] = Field(default=None, max_length=10)
+    state: Optional[MovieState] = None
     
-    cast: Optional[List[str]] = None
+    cast: Optional[List[Dict[str, str]]] = None
     director: Optional[str] = Field(default=None, max_length=255)
     writers: Optional[List[str]] = None
     producers: Optional[List[str]] = None
@@ -88,9 +91,10 @@ class MovieRead(SQLModel):
     duration_minutes: int
     genre: Optional[Union[str,List[str]]] = None  # Normalized to list
     rating: Optional[str] = None
+    state: MovieState
     
     # Cast & Crew
-    cast: Optional[List[str]] = None
+    cast: Optional[List[Dict[str, str]]] = None
     director: Optional[str] = None
     writers: Optional[List[str]] = None
     producers: Optional[List[str]] = None
@@ -122,6 +126,6 @@ class MovieRead(SQLModel):
 
 
 class MovieListResponse(SQLModel):
-    """Schema for movie list with total count."""
+    """Response schema for movie lists with pagination info."""
     movies: List[MovieRead]
     total: int

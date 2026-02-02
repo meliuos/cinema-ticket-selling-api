@@ -30,3 +30,26 @@ class Review(SQLModel, table=True):
     
     # Soft Delete
     is_deleted: bool = Field(default=False)
+
+
+class ReviewReactionModel(SQLModel, table=True):
+    """Model to track user reactions to reviews."""
+    __tablename__ = "review_reactions"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    # Foreign Keys
+    user_id: int = Field(foreign_key="user.id", index=True)
+    review_id: int = Field(foreign_key="reviews.id", index=True)
+    
+    # Reaction Type: 'like' or 'dislike'
+    reaction_type: str = Field(max_length=10)
+    
+    # Timestamp
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    class Config:
+        # Ensure unique constraint: one user can only have one reaction per review
+        indexes = [
+            {"fields": ["user_id", "review_id"], "unique": True}
+        ]

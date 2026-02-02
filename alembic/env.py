@@ -16,6 +16,7 @@ from app.models.cinema import Cinema, Room, Seat
 from app.models.movie import Movie
 from app.models.screening import Screening
 from app.models.ticket import Ticket
+from app.models.faq import FAQ
 
 # Import SQLModel for metadata
 from sqlmodel import SQLModel

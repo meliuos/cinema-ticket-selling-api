@@ -25,8 +25,16 @@ def list_showtimes(
     limit: int = 100,
     session: Session = Depends(get_session)
 ):
-    """List all showtimes with optional filters (alias for screenings)."""
+    """List all showtimes with optional filters (alias for screenings).
+    
+    Only returns screenings that have NOT yet started.
+    Screenings that are currently happening or have already passed are excluded.
+    """
     query = select(Screening)
+    
+    # Always filter for future screenings only
+    current_time = datetime.utcnow()
+    query = query.where(Screening.screening_time > current_time)
     
     if movie_id:
         query = query.where(Screening.movie_id == movie_id)

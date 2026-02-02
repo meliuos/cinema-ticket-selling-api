@@ -31,22 +31,12 @@ class ScreeningReadDetailed(SQLModel):
     room: RoomWithCinemaRead
 
 
-class ScreeningReadEnhanced(SQLModel):
-    """Enhanced schema for reading a screening with additional details."""
-    id: int
-    movie_id: int
-    room_name: str
-    screening_time: datetime
-    screening_date: date
-    price: float
-    available_seats_count: int
-    created_at: datetime
-
-
 class ShowtimeDetail(SQLModel):
-    """Schema for showtime detail with ID and time."""
+    """Schema for showtime details in movie showtimes."""
     id: int
     screening_time: datetime
+    price: float
+    room: RoomWithCinemaRead
 
 
 class MovieShowtimesRead(SQLModel):

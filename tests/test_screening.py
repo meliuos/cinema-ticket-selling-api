@@ -98,7 +98,17 @@ def test_get_screening(client: TestClient, test_screening):
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == test_screening.id
-    assert data["movie_id"] == test_screening.movie_id
+    assert data["screening_time"]
+    assert data["price"] == test_screening.price
+    # Check that movie details are included
+    assert "movie" in data
+    assert data["movie"]["id"] == test_screening.movie_id
+    assert "title" in data["movie"]
+    assert "description" in data["movie"]
+    # Check that room details are included
+    assert "room" in data
+    assert data["room"]["id"] == test_screening.room_id
+    assert "cinema" in data["room"]
 
 
 def test_get_nonexistent_screening(client: TestClient):

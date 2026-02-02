@@ -34,7 +34,11 @@ def test_create_movie_with_enhanced_fields(client: TestClient, admin_headers):
             "duration_minutes": 150,
             "genre": ["Sci-Fi"],
             "rating": "R",
-            "cast": ["Actor A", "Actor B", "Actor C"],
+            "cast": [
+                {"name": "Actor A", "image_url": "https://example.com/actor_a.jpg"},
+                {"name": "Actor B", "image_url": "https://example.com/actor_b.jpg"},
+                {"name": "Actor C", "image_url": "https://example.com/actor_c.jpg"}
+            ],
             "director": "Famous Director",
             "writers": ["Writer X", "Writer Y"],
             "producers": ["Producer Z"],
@@ -55,7 +59,11 @@ def test_create_movie_with_enhanced_fields(client: TestClient, admin_headers):
     assert response.status_code == 201
     data = response.json()
     assert data["title"] == "Enhanced Movie"
-    assert data["cast"] == ["Actor A", "Actor B", "Actor C"]
+    assert data["cast"] == [
+        {"name": "Actor A", "image_url": "https://example.com/actor_a.jpg"},
+        {"name": "Actor B", "image_url": "https://example.com/actor_b.jpg"},
+        {"name": "Actor C", "image_url": "https://example.com/actor_c.jpg"}
+    ]
     assert data["director"] == "Famous Director"
     assert data["budget"] == 200000000
     assert data["image_url"] == "https://example.com/poster.jpg"
@@ -80,7 +88,7 @@ def test_get_movie(client: TestClient, test_movie):
     data = response.json()
     assert data["id"] == test_movie.id
     assert data["title"] == test_movie.title
-    assert data["cast"] == test_movie.cast
+    assert data["cast"] == [{"name": actor, "image_url": ""} for actor in test_movie.cast]
     assert data["director"] == test_movie.director
 
 
@@ -96,7 +104,10 @@ def test_update_movie(client: TestClient, test_movie, admin_headers):
         f"/api/v1/movies/{test_movie.id}",
         json={
             "title": "Updated Title",
-            "cast": ["New Actor 1", "New Actor 2"],
+            "cast": [
+                {"name": "New Actor 1", "image_url": "http://example.com/1.jpg"},
+                {"name": "New Actor 2", "image_url": "http://example.com/2.jpg"}
+            ],
             "budget": 2000000
         },
         headers=admin_headers
@@ -104,7 +115,10 @@ def test_update_movie(client: TestClient, test_movie, admin_headers):
     assert response.status_code == 200
     data = response.json()
     assert data["title"] == "Updated Title"
-    assert data["cast"] == ["New Actor 1", "New Actor 2"]
+    assert data["cast"] == [
+        {"name": "New Actor 1", "image_url": "http://example.com/1.jpg"},
+        {"name": "New Actor 2", "image_url": "http://example.com/2.jpg"}
+    ]
     assert data["budget"] == 2000000
     # Other fields should remain unchanged
     assert data["genre"] == [test_movie.genre]
@@ -277,6 +291,15 @@ def test_get_movie_showtimes(client: TestClient, test_movie, test_screening):
     assert len(data) >= 1
     # Verify screening is in the list
     assert any(s["id"] == test_screening.id for s in data)
+    # Verify the new structure includes cinema details
+    for showtime in data:
+        assert "id" in showtime
+        assert "screening_time" in showtime
+        assert "price" in showtime
+        assert "room" in showtime
+        assert "cinema" in showtime["room"]
+        assert "name" in showtime["room"]["cinema"]
+        assert "city" in showtime["room"]["cinema"]
 
 
 def test_get_movie_showtimes_with_date_filter(client: TestClient, test_movie, test_screening):
@@ -289,15 +312,41 @@ def test_get_movie_showtimes_with_date_filter(client: TestClient, test_movie, te
     data = response.json()
     assert isinstance(data, list)
     assert len(data) >= 1
+    # Verify structure for date-filtered results
+    for showtime in data:
+        assert "id" in showtime
+        assert "screening_time" in showtime
+        assert "price" in showtime
+        assert "room" in showtime
+        assert "cinema" in showtime["room"]
 
 
-def test_get_movie_showtimes_wrong_date(client: TestClient, test_movie):
-    """Test getting movie showtimes for date with no screenings."""
-    response = client.get(f"/api/v1/movies/{test_movie.id}/showtimes?date=2030-12-31")
+def test_get_movie_showtimes_filters_past_screenings(client: TestClient, session, test_movie, test_room):
+    """Test that past screenings are filtered out."""
+    from datetime import datetime, timedelta, timezone
+    from app.models import Screening
+    
+    # Create a past screening
+    past_screening = Screening(
+        movie_id=test_movie.id,
+        room_id=test_room.id,
+        screening_time=datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=1),
+        price=15.0
+    )
+    session.add(past_screening)
+    session.commit()
+    
+    response = client.get(f"/api/v1/movies/{test_movie.id}/showtimes")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert len(data) == 0
+    # Past screening should not be included
+    assert not any(s["id"] == past_screening.id for s in data)
+    # Verify all returned screenings are in the future
+    current_time = datetime.now(timezone.utc).replace(tzinfo=None)
+    for showtime in data:
+        screening_time = datetime.fromisoformat(showtime["screening_time"].replace('Z', '+00:00'))
+        assert screening_time > current_time
 
 
 def test_get_movie_showtimes_no_screenings(client: TestClient, session):

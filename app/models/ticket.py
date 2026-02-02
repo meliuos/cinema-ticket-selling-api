@@ -13,7 +13,10 @@ class Ticket(SQLModel, table=True):
     status: str = Field(default="pending", max_length=50)  # pending, confirmed, cancelled
     booked_at: datetime = Field(default_factory=datetime.utcnow)
     confirmed_at: Optional[datetime] = None
+    payment_id: Optional[str] = Field(default=None, max_length=255)  # For idempotency
     
     class Config:
-        # Ensure one seat can only be booked once per screening
-        table_args = {"unique_together": [("screening_id", "seat_id")]}
+        indexes = [
+            {"fields": ["screening_id", "seat_id"], "unique": True},
+            {"fields": ["payment_id"], "unique": True}  
+        ]
