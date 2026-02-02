@@ -70,6 +70,17 @@ def seed_database():
         session.add(superuser_admin)
         users.append(superuser_admin)
         
+        # Create the admin
+        the_admin = User(
+            email="the.admin@cinema.com",
+            full_name="The Admin",
+            hashed_password=get_password_hash("admin"),
+            is_active=True,
+            is_admin=True
+        )
+        session.add(the_admin)
+        users.append(the_admin)
+        
         # Create additional users
         additional_users = [
             ("user1@cinema.com", "John Smith", "user123"),
@@ -110,21 +121,46 @@ def seed_database():
         # Create cinemas
         print("\n🎬 Creating cinemas...")
         cinemas = [
-            Cinema(name="Mega Cinema Tunis", address="123 Avenue Habib Bourguiba", city="Tunis"),
-            Cinema(name="Pathé Palace", address="456 Avenue de la Liberté", city="Tunis"),
-            Cinema(name="CinéMadart", address="789 Rue de Marseille", city="Tunis"),
-            Cinema(name="Le Colisée", address="321 Boulevard de la République", city="Sfax"),
-            Cinema(name="Ciné Jamil", address="654 Avenue Farhat Hached", city="Sousse"),
-            Cinema(name="Rialto Cinema", address="987 Rue de la Kasbah", city="Tunis"),
-            Cinema(name="Ciné Atlas", address="147 Boulevard 9 Avril", city="Tunis"),
-            Cinema(name="Le Palace", address="258 Rue de Rome", city="Monastir"),
-            Cinema(name="Ciné Rex", address="369 Avenue de France", city="Bizerte"),
-            Cinema(name="Majestic Cinema", address="741 Rue de l'Indépendance", city="Gabès"),
-            Cinema(name="Ciné Alhambra", address="852 Boulevard de l'Environnement", city="Ariana"),
-            Cinema(name="Le Royal", address="963 Avenue de la Victoire", city="Kairouan"),
-            Cinema(name="Ciné Étoile", address="159 Rue de la Révolution", city="Nabeul"),
-            Cinema(name="Palais du Cinéma", address="357 Boulevard de la Paix", city="Hammamet"),
-            Cinema(name="Ciné Moderne", address="468 Avenue de la Liberté", city="Mahdia")
+            Cinema(name="Mega Cinema Tunis", address="123 Avenue Habib Bourguiba", city="Tunis",
+                   amenities=["IMAX", "3D", "4DX", "Dolby Atmos", "VIP Seats", "Recliner Seats", "Multiple Screens", "Wheelchair Accessible", "Food Court", "Online Booking", "Parking", "Air Conditioning", "VIP Lounge"]),
+            Cinema(name="Pathé Palace", address="456 Avenue de la Liberté", city="Tunis",
+                   amenities=["3D", "Dolby Surround", "Premium Seats", "Comfortable Seats", "Multiple Screens", "Wheelchair Accessible", "Hearing Assistance", "Snack Bar", "Cafe", "Online Tickets", "Parking", "Air Conditioning"]),
+            Cinema(name="CinéMadart", address="789 Rue de Marseille", city="Tunis",
+                   amenities=["Digital Projection", "Standard Seats", "Wheelchair Accessible", "Concession Stand", "Online Booking", "Air Conditioning"]),
+            Cinema(name="Le Colisée", address="321 Boulevard de la République", city="Sfax",
+                   amenities=["3D", "Dolby Atmos", "Laser Projection", "VIP Seats", "Recliner Seats", "Multiple Screens", "Wheelchair Accessible", "Restaurant", "Alcohol Served", "Online Booking", "Parking", "Premium Sound"]),
+            Cinema(name="Ciné Jamil", address="654 Avenue Farhat Hached", city="Sousse",
+                   amenities=["3D", "Dolby Surround", "Premium Seats", "Multiple Screens", "Wheelchair Accessible", "Food Court", "Cafe", "Online Tickets", "Parking", "Air Conditioning"]),
+            Cinema(name="Rialto Cinema", address="987 Rue de la Kasbah", city="Tunis",
+                   amenities=["Digital Projection", "Comfortable Seats", "Standard Seats", "Snack Bar", "Online Booking", "Air Conditioning"]),
+            Cinema(name="Ciné Atlas", address="147 Boulevard 9 Avril", city="Tunis",
+                   amenities=["3D", "4DX", "Dolby Atmos", "Premium Seats", "Recliner Seats", "Multiple Screens", "Wheelchair Accessible", "Hearing Assistance", "Food Court", "Online Booking", "Online Tickets", "Parking", "Air Conditioning", "Premium Sound"]),
+            Cinema(name="Le Palace", address="258 Rue de Rome", city="Monastir",
+                   amenities=["3D", "Dolby Surround", "VIP Seats", "Premium Seats", "Multiple Screens", "Wheelchair Accessible", "Restaurant", "Cafe", "Alcohol Served", "Online Booking", "Parking", "Air Conditioning", "VIP Lounge"]),
+            Cinema(name="Ciné Rex", address="369 Avenue de France", city="Bizerte",
+                   amenities=["Digital Projection", "Standard Seats", "Comfortable Seats", "Concession Stand", "Snack Bar", "Online Tickets", "Air Conditioning"]),
+            Cinema(name="Majestic Cinema", address="741 Rue de l'Indépendance", city="Gabès",
+                   amenities=["3D", "Laser Projection", "Premium Seats", "Multiple Screens", "Wheelchair Accessible", "Food Court", "Online Booking", "Parking", "Air Conditioning"]),
+            Cinema(name="Ciné Alhambra", address="852 Boulevard de l'Environnement", city="Ariana",
+                   amenities=["IMAX", "3D", "Dolby Atmos", "VIP Seats", "Recliner Seats", "Multiple Screens", "Wheelchair Accessible", "Hearing Assistance", "Restaurant", "Cafe", "Online Booking", "Online Tickets", "Parking", "Air Conditioning", "Premium Sound"]),
+            Cinema(name="Le Royal", address="963 Avenue de la Victoire", city="Kairouan",
+                   amenities=["Digital Projection", "Comfortable Seats", "Standard Seats", "Snack Bar", "Online Booking", "Air Conditioning"]),
+            Cinema(name="Ciné Étoile", address="159 Rue de la Révolution", city="Nabeul",
+                   amenities=["3D", "Dolby Surround", "Premium Seats", "Multiple Screens", "Wheelchair Accessible", "Food Court", "Online Tickets", "Parking", "Air Conditioning"]),
+            Cinema(name="Palais du Cinéma", address="357 Boulevard de la Paix", city="Hammamet",
+                   amenities=["3D", "4DX", "Dolby Atmos", "VIP Seats", "Recliner Seats", "Multiple Screens", "Wheelchair Accessible", "Restaurant", "Alcohol Served", "Online Booking", "Parking", "Air Conditioning", "VIP Lounge"]),
+            Cinema(name="Ciné Moderne", address="468 Avenue de la Liberté", city="Mahdia",
+                   amenities=["Digital Projection", "Laser Projection", "Comfortable Seats", "Wheelchair Accessible", "Snack Bar", "Cafe", "Online Booking", "Air Conditioning"]),
+            Cinema(name="Ciné Luxor", address="512 Avenue Bourguiba", city="La Marsa",
+                   amenities=["IMAX", "3D", "Dolby Atmos", "Laser Projection", "VIP Seats", "Premium Seats", "Recliner Seats", "Multiple Screens", "Wheelchair Accessible", "Hearing Assistance", "Food Court", "Restaurant", "Alcohol Served", "Online Booking", "Online Tickets", "Parking", "Air Conditioning", "Premium Sound", "VIP Lounge"]),
+            Cinema(name="Star Cinema", address="678 Rue de Carthage", city="Carthage",
+                   amenities=["3D", "Dolby Surround", "Premium Seats", "Multiple Screens", "Wheelchair Accessible", "Food Court", "Cafe", "Online Booking", "Parking", "Air Conditioning"]),
+            Cinema(name="Le Grand Rex", address="890 Boulevard de la Corniche", city="Sousse",
+                   amenities=["IMAX", "3D", "4DX", "Dolby Atmos", "VIP Seats", "Recliner Seats", "Multiple Screens", "Wheelchair Accessible", "Restaurant", "Online Booking", "Online Tickets", "Parking", "Air Conditioning", "Premium Sound", "VIP Lounge"]),
+            Cinema(name="Ciné Carthage", address="234 Avenue Habib Thameur", city="Tunis",
+                   amenities=["3D", "Laser Projection", "Dolby Surround", "Premium Seats", "Comfortable Seats", "Multiple Screens", "Wheelchair Accessible", "Snack Bar", "Cafe", "Online Tickets", "Parking", "Air Conditioning"]),
+            Cinema(name="Empire Cinema", address="567 Rue Charles de Gaulle", city="Sfax",
+                   amenities=["3D", "4DX", "Dolby Atmos", "VIP Seats", "Premium Seats", "Recliner Seats", "Multiple Screens", "Wheelchair Accessible", "Food Court", "Restaurant", "Online Booking", "Parking", "Air Conditioning", "Premium Sound"])
         ]
         
         for cinema in cinemas:
@@ -534,50 +570,6 @@ def seed_database():
                 trailer_url="https://www.youtube.com/watch?v=qo5jJpHtI1Y",
                 awards=["Academy Award for Best Supporting Actor", "Golden Globe for Best Motion Picture"],
                 details={"imdb_rating": 8.7, "based_on": "Nicholas Pileggi book"}
-            ),
-            Movie(
-                title="Braveheart",
-                description="Scottish warrior William Wallace leads his countrymen in a rebellion to free his homeland from the tyranny of King Edward I of England.",
-                duration_minutes=178,
-                genre="Historical",
-                rating="R",
-                cast=["Mel Gibson", "Sophie Marceau", "Patrick McGoohan", "Angus Macfadyen"],
-                director="Mel Gibson",
-                writers=["Randall Wallace"],
-                producers=["Mel Gibson", "Alan Ladd Jr."],
-                release_date=date(1995, 5, 24),
-                country="USA",
-                language="English",
-                budget=72000000,
-                revenue=210409989,
-                production_company="Paramount Pictures",
-                distributor="Paramount Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/or1gBugWhfjHp9VUKJZfxbjQfTM.jpg",
-                trailer_url="https://www.youtube.com/watch?v=1NJO0jxBtMo",
-                awards=["Academy Award for Best Picture", "Academy Award for Best Director"],
-                details={"imdb_rating": 8.3, "historical_drama": True}
-            ),
-            Movie(
-                title="The Lion King",
-                description="Lion cub and future king Simba searches for his identity and learns about responsibility and courage.",
-                duration_minutes=88,
-                genre="Animation",
-                rating="G",
-                cast=["Matthew Broderick", "Jeremy Irons", "James Earl Jones", "Whoopi Goldberg"],
-                director="Roger Allers",
-                writers=["Irene Mecchi", "Jonathan Roberts", "Linda Woolverton"],
-                producers=["Don Hahn"],
-                release_date=date(1994, 6, 24),
-                country="USA",
-                language="English",
-                budget=45000000,
-                revenue=968511805,
-                production_company="Walt Disney Pictures",
-                distributor="Walt Disney Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/sMMCfc3xF93PqVNDnL84hhPxvxk.jpg",
-                trailer_url="https://www.youtube.com/watch?v=_mjr4nJXOP8",
-                awards=["Academy Award for Best Original Score", "Golden Globe for Best Motion Picture"],
-                details={"imdb_rating": 8.5, "animated": True}
             ),
             Movie(
                 title="Jurassic Park",
@@ -1534,28 +1526,6 @@ def seed_database():
                 details={"imdb_rating": 7.7, "courtroom_drama": True}
             ),
             Movie(
-                title="Killers of the Flower Moon",
-                description="Members of the Osage tribe in the United States are murdered under mysterious circumstances in the 1920s, spurring a major FBI investigation.",
-                duration_minutes=206,
-                genre="Crime",
-                rating="R",
-                cast=["Leonardo DiCaprio", "Robert De Niro", "Lily Gladstone", "Jesse Plemons"],
-                director="Martin Scorsese",
-                writers=["Eric Roth", "Martin Scorsese"],
-                producers=["Dan Friedkin", "Bradley Thomas"],
-                release_date=date(2023, 10, 20),
-                country="USA",
-                language="English",
-                budget=200000000,
-                revenue=156000000,
-                production_company="Apple Studios",
-                distributor="Paramount Pictures",
-                image_url="https://image.tmdb.org/t/p/w500/dB6Krk806zeqd0YNp2ngQ9zXznH.jpg",
-                trailer_url="https://www.youtube.com/watch?v=EG0si8TTL-k",
-                awards=["Academy Award for Best Supporting Actress"],
-                details={"imdb_rating": 7.6, "historical_crime": True}
-            ),
-            Movie(
                 title="Barbie",
                 description="Barbie and Ken are having the time of their lives in the colorful and seemingly perfect world of Barbie Land, but when they get a chance to go to the real world, they soon discover the joys and perils of living among humans.",
                 duration_minutes=114,
@@ -2256,68 +2226,47 @@ def seed_database():
         session.commit()
         print(f"   ✓ Created {len(movies)} movies with cast details")
         
-        # Create screenings (February 1-9, 2026 for popular movies, February 1-3 for others)
-        print("\n📅 Creating screenings...")
+        # Create screenings - Distribute 8-10 movies per cinema
+        print("\n📅 Creating screenings with 8-10 movies per cinema...")
         base_date = datetime(2026, 2, 1)  # February 1, 2026
         screening_count = 0
         
         showing_movies = [m for m in movies if m.state == MovieState.SHOWING]
         
-        # Popular movies that get 9 days of screenings
-        popular_movie_titles = [
-            "No Time to Die", "Don't Look Up", "Bullet Train", "The Power of the Dog", 
-            "Civil War", "Monkey Man", "Killers of the Flower Moon", "The Lion King",
-            "Braveheart", "Terminator 2: Judgment Day", "Saving Private Ryan", "The Departed",
-            "The Usual Suspects", "The Prestige", "Wonka", "Drive-Away Dolls"
-        ]
+        # Distribute movies across cinemas (8-10 movies per cinema)
+        import random
+        random.seed(42)  # For consistent results
         
-        popular_movies = [m for m in showing_movies if m.title in popular_movie_titles]
-        regular_movies = [m for m in showing_movies if m.title not in popular_movie_titles]
+        movies_per_cinema = {}
+        available_movies = showing_movies.copy()
         
-        # Create 9-day screenings for popular movies
-        print(f"   Creating 9-day screenings for {len(popular_movies)} popular movies...")
-        for day in range(9):  # 9 days: Feb 1-9, 2026
-            current_date = base_date + timedelta(days=day)
-
-            # Morning, afternoon, evening, night showtimes
-            times = [10, 14, 18, 21]
+        for cinema in cinemas:
+            # Each cinema gets 8-10 movies
+            num_movies = random.randint(8, 10)
+            if len(available_movies) < num_movies:
+                # If running out of movies, recycle from the beginning
+                available_movies = showing_movies.copy()
+                random.shuffle(available_movies)
             
-            for movie in popular_movies:
-                for cinema in cinemas:
-                    # Get rooms for this cinema
-                    cinema_rooms = [r for r in rooms if r.cinema_id == cinema.id]
-                    
-                    for room in cinema_rooms:
-                        for time_hour in times:
-                            screening_time = current_date.replace(hour=time_hour, minute=0, second=0)
-                            
-                            # IMAX movies cost more
-                            base_price = 20.0 if room.name == "IMAX" else 15.0
-                            # Evening/night shows cost more
-                            price = base_price + 3.0 if time_hour >= 18 else base_price
-                            
-                            screening = Screening(
-                                movie_id=movie.id,
-                                room_id=room.id,
-                                screening_time=screening_time,
-                                price=price
-                            )
-                            session.add(screening)
-                            screening_count += 1
+            cinema_movies = available_movies[:num_movies]
+            available_movies = available_movies[num_movies:]
+            movies_per_cinema[cinema.id] = cinema_movies
+            print(f"   ✓ {cinema.name}: {len(cinema_movies)} movies")
         
-        # Create 3-day screenings for regular movies
-        print(f"   Creating 3-day screenings for {len(regular_movies)} regular movies...")
-        for day in range(3):  # 3 days: Feb 1-3, 2026
-            current_date = base_date + timedelta(days=day)
-
-            # Morning, afternoon, evening, night showtimes
-            times = [10, 14, 18, 21]
+        # Create screenings for each cinema's assigned movies
+        print(f"\n   Creating screenings for all cinemas...")
+        for cinema in cinemas:
+            cinema_movies = movies_per_cinema[cinema.id]
+            cinema_rooms = [r for r in rooms if r.cinema_id == cinema.id]
             
-            for movie in regular_movies:
-                for cinema in cinemas:
-                    # Get rooms for this cinema
-                    cinema_rooms = [r for r in rooms if r.cinema_id == cinema.id]
-                    
+            # Each movie gets 5 days of screenings
+            for day in range(5):  # 5 days: Feb 1-5, 2026
+                current_date = base_date + timedelta(days=day)
+                
+                # Morning, afternoon, evening, night showtimes
+                times = [10, 14, 18, 21]
+                
+                for movie in cinema_movies:
                     for room in cinema_rooms:
                         for time_hour in times:
                             screening_time = current_date.replace(hour=time_hour, minute=0, second=0)
@@ -2517,67 +2466,6 @@ def seed_database():
                 review = Review(
                     user_id=rev["user"].id,
                     movie_id=ghostbusters.id,
-                    rating=rev["rating"],
-                    title=rev["title"],
-                    comment=rev["comment"],
-                    likes=rev["likes"],
-                    dislikes=rev["dislikes"]
-                )
-                session.add(review)
-        
-        # Reviews for Killers of the Flower Moon
-        killers = find_movie("Killers of the Flower Moon")
-        if killers:
-            reviews_data = [
-                {"user": users[12], "rating": 5, "title": "Scorsese's epic masterpiece", "comment": "A devastating true story told with masterful direction. Lily Gladstone is phenomenal.", "likes": 178, "dislikes": 7},
-                {"user": users[13], "rating": 4, "title": "Long but powerful", "comment": "3.5 hours but never boring. Important story that needed to be told.", "likes": 89, "dislikes": 12},
-                {"user": users[14], "rating": 5, "title": "DiCaprio and De Niro shine", "comment": "Two legends working with Scorsese again. Perfection.", "likes": 145, "dislikes": 4},
-                {"user": users[15], "rating": 3, "title": "Too slow", "comment": "Important story but pacing is extremely slow.", "likes": 18, "dislikes": 67},
-            ]
-            for rev in reviews_data:
-                review = Review(
-                    user_id=rev["user"].id,
-                    movie_id=killers.id,
-                    rating=rev["rating"],
-                    title=rev["title"],
-                    comment=rev["comment"],
-                    likes=rev["likes"],
-                    dislikes=rev["dislikes"]
-                )
-                session.add(review)
-        
-        # Reviews for The Lion King
-        lion_king = find_movie("The Lion King")
-        if lion_king:
-            reviews_data = [
-                {"user": users[16], "rating": 5, "title": "Timeless classic", "comment": "One of Disney's best. The music, the story, everything is perfect!", "likes": 234, "dislikes": 3},
-                {"user": users[17], "rating": 5, "title": "Childhood favorite", "comment": "Still makes me cry every time. Hakuna Matata!", "likes": 189, "dislikes": 2},
-                {"user": users[3], "rating": 4, "title": "Beautiful animation", "comment": "Stunning visuals and unforgettable songs.", "likes": 156, "dislikes": 5},
-            ]
-            for rev in reviews_data:
-                review = Review(
-                    user_id=rev["user"].id,
-                    movie_id=lion_king.id,
-                    rating=rev["rating"],
-                    title=rev["title"],
-                    comment=rev["comment"],
-                    likes=rev["likes"],
-                    dislikes=rev["dislikes"]
-                )
-                session.add(review)
-        
-        # Reviews for Braveheart
-        braveheart = find_movie("Braveheart")
-        if braveheart:
-            reviews_data = [
-                {"user": users[4], "rating": 5, "title": "Epic war film", "comment": "Mel Gibson's masterpiece. They may take our lives, but they'll never take our freedom!", "likes": 201, "dislikes": 8},
-                {"user": users[5], "rating": 4, "title": "Powerful and moving", "comment": "Great battle scenes and emotional storytelling.", "likes": 87, "dislikes": 6},
-                {"user": users[6], "rating": 5, "title": "Best historical drama", "comment": "The soundtrack alone is worth watching. Magnificent film!", "likes": 145, "dislikes": 4},
-            ]
-            for rev in reviews_data:
-                review = Review(
-                    user_id=rev["user"].id,
-                    movie_id=braveheart.id,
                     rating=rev["rating"],
                     title=rev["title"],
                     comment=rev["comment"],

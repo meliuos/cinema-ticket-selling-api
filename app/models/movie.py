@@ -23,7 +23,7 @@ class Movie(SQLModel, table=True):
     rating: Optional[str] = Field(default=None, max_length=10)  # e.g., "PG-13", "R"
     state: MovieState = Field(default=MovieState.SHOWING)
     
-    cast: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))  # List of actor names
+    cast: Optional[List[Dict[str, str]]] = Field(default=None, sa_column=Column(JSON))  # List of actor dicts
     director: Optional[str] = Field(default=None, max_length=255)
     writers: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))
     producers: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))

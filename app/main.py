@@ -34,37 +34,6 @@ from app.routers import (
 )
 from app.routers.email_test import router as email_test_router
 from app.routers.contact import router as contact_router
-origins = [
-    
-   "http://localhost:4200",
-    "http://localhost:52970",
-    "http://localhost:3000",
-    "http://localhost:8080",
-    "http://localhost",
-    "http://127.0.0.1",
-]
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Handle application lifespan events."""
-    # Startup
-    create_db_and_tables()
-    
-    # Start background tasks
-    import asyncio
-    cleanup_task = asyncio.create_task(
-        background_manager.start_cleanup_task(interval_minutes=1)
-    )
-    
-    yield
-    
-    # Shutdown
-    background_manager.stop_cleanup_task()
-    cleanup_task.cancel()
-    try:
-        await cleanup_task
-    except asyncio.CancelledError:
-        pass
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -95,25 +64,18 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Add CORS middleware FIRST (must be before other middleware)
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Mount static files for uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], 
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 @app.on_event("startup")

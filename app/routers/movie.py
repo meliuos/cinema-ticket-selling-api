@@ -25,10 +25,22 @@ from app.services.auth import get_current_admin_user, get_current_active_user
 from app.services.notification import NotificationService
 
 def normalize_movie_genre(movie: Movie) -> dict:
-    """Normalize movie data, converting genre string to list if needed."""
+    """Normalize movie data, converting genre string to list if needed and cast strings to dicts."""
     movie_dict = movie.model_dump()
     if isinstance(movie_dict.get('genre'), str):
         movie_dict['genre'] = [movie_dict['genre']] if movie_dict['genre'] else None
+    
+    # Normalize cast field: convert list of strings to list of dicts
+    if movie_dict.get('cast') and isinstance(movie_dict['cast'], list):
+        normalized_cast = []
+        for item in movie_dict['cast']:
+            if isinstance(item, str):
+                # Convert string to dict format
+                normalized_cast.append({"name": item, "role": ""})
+            elif isinstance(item, dict):
+                normalized_cast.append(item)
+        movie_dict['cast'] = normalized_cast if normalized_cast else None
+    
     return movie_dict
 
 router = APIRouter(prefix=f"{settings.API_V1_PREFIX}/movies", tags=["Movies"])
